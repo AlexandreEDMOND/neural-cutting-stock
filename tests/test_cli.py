@@ -26,6 +26,7 @@ def test_classical_cli_emits_structured_verified_result(capsys) -> None:
     output = json.loads(capsys.readouterr().out)
     assert output["status"] == "converged"
     assert output["termination_reason"] == "no_improving_column"
+    assert output["reduced_cost_tolerance"] == 1e-9
     assert output["integrality_gap"] == 0.5
     assert output["rmp"]["dual_values"] == [0.5, 0.5]
     assert output["pricing"]["dual_value"] == 1.0

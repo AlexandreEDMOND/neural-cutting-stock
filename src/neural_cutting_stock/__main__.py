@@ -21,6 +21,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     result = ColumnGeneration(instance, args.reduced_cost_tolerance).solve()
     output: dict[str, object] = {
         "solver": args.solver,
+        "reduced_cost_tolerance": args.reduced_cost_tolerance,
         "status": result.status,
         "termination_reason": result.termination_reason,
         "instance": {
