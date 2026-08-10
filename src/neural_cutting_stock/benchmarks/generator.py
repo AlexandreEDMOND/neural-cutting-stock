@@ -1,8 +1,10 @@
 """Deterministic synthetic instances for benchmark preparation."""
 
+import json
 import math
 import random
 from dataclasses import dataclass
+from hashlib import sha256
 from numbers import Real
 
 from neural_cutting_stock.problem import CuttingStockInstance
@@ -58,6 +60,23 @@ class SyntheticInstanceGenerator:
         demand_lower, demand_upper = self.demand_range
         demands = [rng.randint(demand_lower, demand_upper) for _ in lengths]
         return CuttingStockInstance(self.stock_length, self.kerf, lengths, demands)
+
+    @property
+    def instance_id(self) -> str:
+        """Return a stable identifier for the generated, normalized instance."""
+
+        instance = self.generate()
+        payload = json.dumps(
+            {
+                "stock_length": instance.stock_length,
+                "kerf": instance.kerf,
+                "piece_lengths": instance.piece_lengths,
+                "demands": instance.demands,
+            },
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("ascii")
+        return sha256(payload).hexdigest()
 
 
 def _validate_range(value: tuple[int, int], name: str) -> None:

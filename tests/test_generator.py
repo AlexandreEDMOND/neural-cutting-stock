@@ -19,6 +19,16 @@ def test_synthetic_generator_is_reproducible_and_seeded() -> None:
     )
 
 
+def test_synthetic_generator_instance_id_is_stable_for_normalized_data() -> None:
+    configuration = SyntheticInstanceGenerator(seed=17, number_of_types=4)
+
+    assert configuration.instance_id == configuration.instance_id
+    assert len(configuration.instance_id) == 64
+    assert configuration.instance_id != SyntheticInstanceGenerator(
+        seed=18, number_of_types=4
+    ).instance_id
+
+
 @pytest.mark.parametrize(
     "kwargs",
     [
