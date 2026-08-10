@@ -63,6 +63,8 @@ def test_instance_normalizes_piece_types_and_applies_kerf() -> None:
             {"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [True]},
             "positive integers",
         ),
+        ({"stock_length": 10, "kerf": 0, "piece_lengths": None, "demands": [1]}, "iterable"),
+        ({"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": None}, "iterable"),
     ],
 )
 def test_instance_rejects_invalid_data(kwargs: dict[str, object], message: str) -> None:

@@ -27,8 +27,13 @@ class CuttingStockInstance:
         if kerf < 0:
             raise ValueError("kerf must be non-negative")
 
-        lengths = tuple(_finite_real(value, "piece_lengths") for value in self.piece_lengths)
-        demands = tuple(_positive_integer(value, "demands") for value in self.demands)
+        try:
+            lengths = tuple(
+                _finite_real(value, "piece_lengths") for value in self.piece_lengths
+            )
+            demands = tuple(_positive_integer(value, "demands") for value in self.demands)
+        except TypeError as error:
+            raise ValueError("piece_lengths and demands must be iterable") from error
         if not lengths:
             raise ValueError("piece_lengths must not be empty")
         if len(lengths) != len(demands):
