@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Environnements et builds
+.venv/
+venv/
+dist/
+build/
+
+# IDE et système
+.DS_Store
+.idea/
+.vscode/
+
+# Fichiers temporaires de benchmark ; les artefacts publiés restent versionnables.
+results/tmp/
