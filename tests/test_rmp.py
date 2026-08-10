@@ -53,6 +53,18 @@ def test_masters_reject_patterns_exceeding_capacity_with_kerf() -> None:
             raise AssertionError("an over-capacity pattern was accepted")
 
 
+def test_masters_reject_patterns_exceeding_demand() -> None:
+    instance = CuttingStockInstance(10, 0, [2], [1])
+
+    for master in (RestrictedMasterProblem, IntegerRestrictedMasterProblem):
+        try:
+            master(instance, ((2,),))
+        except ValueError as error:
+            assert "demands" in str(error)
+        else:
+            raise AssertionError("a demand-exceeding pattern was accepted")
+
+
 def test_integer_master_returns_feasible_restricted_plan() -> None:
     instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
     patterns = (*instance.initial_patterns(), (1, 1))

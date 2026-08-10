@@ -33,6 +33,11 @@ class IntegerRestrictedMasterProblem:
         for pattern in patterns:
             if instance.capacity_used(pattern) > instance.stock_length:
                 raise ValueError("patterns must respect stock capacity")
+            if any(
+                count > demand
+                for count, demand in zip(pattern, instance.demands, strict=True)
+            ):
+                raise ValueError("patterns must not exceed demands")
             if not any(pattern):
                 raise ValueError("patterns must be non-empty")
         self.instance = instance
