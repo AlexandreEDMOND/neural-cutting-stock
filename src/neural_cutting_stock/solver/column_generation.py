@@ -102,6 +102,20 @@ class ColumnGeneration:
                     duplicate_columns,
                     "pricing_returned_no_pattern",
                 )
+            if pricing_result.pattern in patterns:
+                duplicate_columns += 1
+                if pricing_result.reduced_cost < -self.reduced_cost_tolerance:
+                    return ColumnGenerationResult(
+                        "solver_error",
+                        tuple(patterns),
+                        rmp_result,
+                        pricing_result,
+                        integer_master_result,
+                        iterations,
+                        columns_added,
+                        duplicate_columns,
+                        "improving_duplicate_column",
+                    )
             if pricing_result.reduced_cost >= -self.reduced_cost_tolerance:
                 integer_master_result = IntegerRestrictedMasterProblem(
                     self.instance, tuple(patterns)
@@ -150,20 +164,6 @@ class ColumnGeneration:
                     "no_improving_column",
                     verification,
                 )
-            if pricing_result.pattern in patterns:
-                duplicate_columns += 1
-                return ColumnGenerationResult(
-                    "solver_error",
-                    tuple(patterns),
-                    rmp_result,
-                    pricing_result,
-                    integer_master_result,
-                    iterations,
-                    columns_added,
-                    duplicate_columns,
-                    "improving_duplicate_column",
-                )
-
             patterns.append(pricing_result.pattern)
             columns_added += 1
 

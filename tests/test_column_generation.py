@@ -30,7 +30,26 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.integer_master_result is not None
     assert result.integer_master_result.objective_value == 2
     assert result.integrality_gap == 0.5
-    assert result.duplicate_columns == 0
+    assert result.duplicate_columns == 1
+
+
+def test_column_generation_counts_duplicate_non_improving_pattern(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    def duplicate_pricing(self, dual_values: tuple[float, ...]) -> PricingResult:
+        return PricingResult(0, (1,), 1.0, 0.0, "optimal")
+
+    monkeypatch.setattr(
+        "neural_cutting_stock.solver.column_generation.ExactPricing.solve", duplicate_pricing
+    )
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == "converged"
+    assert result.duplicate_columns == 1
+    assert result.termination_reason == "no_improving_column"
 
 
 def test_column_generation_integer_plan_is_independently_verified() -> None:
