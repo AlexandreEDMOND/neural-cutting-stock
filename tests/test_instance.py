@@ -1,6 +1,7 @@
 import pytest
 
 from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.solver import RestrictedMasterProblem
 
 
 def test_instance_normalizes_piece_types_and_applies_kerf() -> None:
@@ -92,6 +93,15 @@ def test_initial_patterns_are_demand_bounded_and_feasible_with_kerf() -> None:
         for pattern in instance.initial_patterns()
     )
     assert all(any(pattern[index] for pattern in instance.initial_patterns()) for index in range(2))
+
+
+def test_initial_patterns_make_the_restricted_master_feasible() -> None:
+    instance = CuttingStockInstance(100, 2, [30, 10], [10, 4])
+
+    result = RestrictedMasterProblem(instance, instance.initial_patterns()).solve()
+
+    assert result.status == 0
+    assert result.objective_value is not None
 
 
 def test_decimal_capacity_does_not_lose_a_piece_to_binary_rounding() -> None:
