@@ -33,6 +33,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "iterations": result.iterations,
         "columns_added": result.columns_added,
         "duplicate_columns": result.duplicate_columns,
+        "integrality_gap": result.integrality_gap,
     }
     if result.rmp_result is not None:
         output["rmp"] = {

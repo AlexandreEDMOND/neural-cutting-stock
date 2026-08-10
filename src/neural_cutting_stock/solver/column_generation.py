@@ -24,6 +24,18 @@ class ColumnGenerationResult:
     duplicate_columns: int
     termination_reason: str
 
+    @property
+    def integrality_gap(self) -> float | None:
+        """Return the restricted integer objective minus the converged LP bound."""
+
+        if self.rmp_result is None or self.rmp_result.objective_value is None:
+            return None
+        if self.integer_master_result is None:
+            return None
+        if self.integer_master_result.objective_value is None:
+            return None
+        return self.integer_master_result.objective_value - self.rmp_result.objective_value
+
 
 class ColumnGeneration:
     """Iteratively solve the RMP and add exact pricing columns."""
