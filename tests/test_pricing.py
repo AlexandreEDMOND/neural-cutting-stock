@@ -31,3 +31,14 @@ def test_pricing_rejects_invalid_dual_vector() -> None:
             pass
         else:
             raise AssertionError("invalid dual values were accepted")
+
+
+def test_exact_pricing_excludes_the_empty_pattern() -> None:
+    instance = CuttingStockInstance(10, 0, [2], [1])
+
+    result = ExactPricing(instance).solve((0.0,))
+
+    assert result.status == 0
+    assert result.pattern == (1,)
+    assert result.dual_value == 0.0
+    assert result.reduced_cost == 1.0

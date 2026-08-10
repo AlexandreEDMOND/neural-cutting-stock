@@ -41,7 +41,12 @@ class ExactPricing:
             c=-np.asarray(dual_values, dtype=float),
             integrality=np.ones(self.instance.number_of_types),
             bounds=(np.zeros(self.instance.number_of_types), self.instance.demands),
-            constraints=LinearConstraint(weights, -np.inf, self.instance.stock_length),
+            constraints=(
+                LinearConstraint(weights, -np.inf, self.instance.stock_length),
+                LinearConstraint(
+                    np.ones(self.instance.number_of_types), 1, np.inf
+                ),
+            ),
         )
         if not result.success:
             return PricingResult(result.status, (), None, None, result.message)
