@@ -72,6 +72,26 @@ def test_column_generation_counts_duplicate_non_improving_pattern(
     assert result.termination_reason == "no_improving_column"
 
 
+def test_column_generation_rejects_improving_duplicate_pattern(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    def improving_duplicate(self, dual_values: tuple[float, ...]) -> PricingResult:
+        return PricingResult(0, (1,), 2.0, -1.0, "optimal")
+
+    monkeypatch.setattr(
+        "neural_cutting_stock.solver.column_generation.ExactPricing.solve",
+        improving_duplicate,
+    )
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == "solver_error"
+    assert result.termination_reason == "improving_duplicate_column"
+    assert result.duplicate_columns == 1
+
+
 def test_column_generation_integer_plan_is_independently_verified() -> None:
     instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
 
