@@ -69,6 +69,19 @@ class CuttingStockInstance:
             for length, count in zip(self.piece_lengths, pattern, strict=True)
         )
 
+    def initial_patterns(self) -> tuple[tuple[int, ...], ...]:
+        """Return one demand-bounded homogeneous pattern for each piece type."""
+
+        patterns: list[tuple[int, ...]] = []
+        for index, (length, demand) in enumerate(
+            zip(self.piece_lengths, self.demands, strict=True)
+        ):
+            count = min(demand, math.floor(self.stock_length / (length + self.kerf)))
+            pattern = [0] * self.number_of_types
+            pattern[index] = count
+            patterns.append(tuple(pattern))
+        return tuple(patterns)
+
 
 def _finite_real(value: Real, name: str) -> float:
     if isinstance(value, bool) or not isinstance(value, Real):

@@ -44,3 +44,18 @@ def test_capacity_used_rejects_invalid_pattern() -> None:
         instance.capacity_used((1, 2))
     with pytest.raises(ValueError, match="non-negative integers"):
         instance.capacity_used((-1,))
+
+
+def test_initial_patterns_are_demand_bounded_and_feasible_with_kerf() -> None:
+    instance = CuttingStockInstance(
+        stock_length=100,
+        kerf=2,
+        piece_lengths=[30, 10],
+        demands=[10, 4],
+    )
+
+    assert instance.initial_patterns() == ((4, 0), (0, 3))
+    assert all(
+        instance.capacity_used(pattern) <= instance.stock_length
+        for pattern in instance.initial_patterns()
+    )
