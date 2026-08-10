@@ -97,6 +97,14 @@ def test_initial_patterns_are_demand_bounded_and_feasible_with_kerf() -> None:
     assert all(any(pattern[index] for pattern in instance.initial_patterns()) for index in range(2))
 
 
+def test_kerf_can_make_a_shared_pattern_exceed_capacity() -> None:
+    instance = CuttingStockInstance(10, 1, [6, 3], [1, 1])
+
+    assert instance.capacity_used((1, 1)) == 11
+    with pytest.raises(ValueError, match="stock capacity"):
+        RestrictedMasterProblem(instance, ((1, 1),))
+
+
 def test_initial_patterns_make_the_restricted_master_feasible() -> None:
     instance = CuttingStockInstance(100, 2, [30, 10], [10, 4])
 
