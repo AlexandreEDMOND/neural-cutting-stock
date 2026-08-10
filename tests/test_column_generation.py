@@ -24,6 +24,15 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.duplicate_columns == 0
 
 
+def test_column_generation_is_reproducible_for_same_instance() -> None:
+    instance = CuttingStockInstance(11, 1, [2, 3, 5], [2, 2, 1])
+
+    first = ColumnGeneration(instance).solve()
+    second = ColumnGeneration(instance).solve()
+
+    assert first == second
+
+
 @pytest.mark.parametrize(
     "instance",
     [
