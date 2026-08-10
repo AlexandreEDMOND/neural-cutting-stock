@@ -1,5 +1,9 @@
+from itertools import product
+
+import pytest
+
 from neural_cutting_stock.problem import CuttingStockInstance
-from neural_cutting_stock.solver import ColumnGeneration
+from neural_cutting_stock.solver import ColumnGeneration, RestrictedMasterProblem
 
 
 def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
@@ -16,6 +20,33 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.pricing_result is not None
     assert result.pricing_result.reduced_cost >= -1e-9
     assert result.duplicate_columns == 0
+
+
+@pytest.mark.parametrize(
+    "instance",
+    [
+        CuttingStockInstance(10, 0, [6, 4], [1, 2]),
+        CuttingStockInstance(11, 1, [2, 3, 5], [2, 2, 1]),
+    ],
+)
+def test_converged_lp_matches_master_with_all_small_patterns(
+    instance: CuttingStockInstance,
+) -> None:
+    all_patterns = tuple(
+        pattern
+        for pattern in product(*(range(demand + 1) for demand in instance.demands))
+        if any(pattern) and instance.capacity_used(pattern) <= instance.stock_length
+    )
+
+    generated = ColumnGeneration(instance).solve()
+    complete_master = RestrictedMasterProblem(instance, all_patterns).solve()
+
+    assert generated.status == "converged"
+    assert complete_master.status == 0
+    assert generated.rmp_result is not None
+    assert generated.rmp_result.objective_value == pytest.approx(
+        complete_master.objective_value
+    )
 
 
 def test_column_generation_rejects_invalid_reduced_cost_tolerance() -> None:
