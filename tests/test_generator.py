@@ -33,12 +33,14 @@ def test_synthetic_generator_instance_id_is_stable_for_normalized_data() -> None
     "kwargs",
     [
         {"seed": 1, "number_of_types": 0},
+        {"seed": 1, "number_of_types": True},
         {"seed": 1, "stock_length": 0},
         {"seed": 1, "kerf": -1},
         {"seed": 1, "kerf": float("inf")},
         {"seed": 1, "piece_length_range": (0, 10)},
         {"seed": 1, "demand_range": (3, 2)},
         {"seed": 1, "piece_length_range": (10, 101)},
+        {"seed": 1, "piece_length_range": None},
     ],
 )
 def test_synthetic_generator_rejects_invalid_configuration(kwargs: dict[str, object]) -> None:

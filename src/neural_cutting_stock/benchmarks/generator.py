@@ -41,7 +41,11 @@ class SyntheticInstanceGenerator:
             or self.kerf < 0
         ):
             raise ValueError("kerf must be finite and non-negative")
-        if not isinstance(self.number_of_types, int) or self.number_of_types <= 0:
+        if (
+            not isinstance(self.number_of_types, int)
+            or isinstance(self.number_of_types, bool)
+            or self.number_of_types <= 0
+        ):
             raise ValueError("number_of_types must be a positive integer")
         _validate_range(self.piece_length_range, "piece_length_range")
         _validate_range(self.demand_range, "demand_range")
@@ -81,7 +85,8 @@ class SyntheticInstanceGenerator:
 
 def _validate_range(value: tuple[int, int], name: str) -> None:
     if (
-        len(value) != 2
+        not isinstance(value, tuple)
+        or len(value) != 2
         or any(not isinstance(item, int) or isinstance(item, bool) for item in value)
         or value[0] <= 0
         or value[0] > value[1]
