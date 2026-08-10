@@ -59,3 +59,4 @@ def test_initial_patterns_are_demand_bounded_and_feasible_with_kerf() -> None:
         instance.capacity_used(pattern) <= instance.stock_length
         for pattern in instance.initial_patterns()
     )
+    assert all(any(pattern[index] for pattern in instance.initial_patterns()) for index in range(2))
