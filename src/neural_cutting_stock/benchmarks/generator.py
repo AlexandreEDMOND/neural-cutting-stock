@@ -1,0 +1,54 @@
+"""Deterministic synthetic instances for benchmark preparation."""
+
+import random
+from dataclasses import dataclass
+
+from neural_cutting_stock.problem import CuttingStockInstance
+
+
+@dataclass(frozen=True, slots=True)
+class SyntheticInstanceGenerator:
+    """Generate reproducible instances from a small, explicit configuration."""
+
+    seed: int
+    stock_length: float = 100.0
+    kerf: float = 0.0
+    number_of_types: int = 3
+    piece_length_range: tuple[int, int] = (10, 90)
+    demand_range: tuple[int, int] = (1, 10)
+
+    name = "uniform_integer_v1"
+    version = "1"
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.seed, int) or isinstance(self.seed, bool):
+            raise ValueError("seed must be an integer")
+        if not isinstance(self.number_of_types, int) or self.number_of_types <= 0:
+            raise ValueError("number_of_types must be a positive integer")
+        _validate_range(self.piece_length_range, "piece_length_range")
+        _validate_range(self.demand_range, "demand_range")
+        if self.piece_length_range[1] > self.stock_length - self.kerf:
+            raise ValueError("piece_length_range contains pieces that do not fit")
+
+    def generate(self) -> CuttingStockInstance:
+        """Return one instance; the same configuration always yields the same data."""
+
+        rng = random.Random(self.seed)
+        lower, upper = self.piece_length_range
+        available_lengths = range(lower, upper + 1)
+        if self.number_of_types > len(available_lengths):
+            raise ValueError("number_of_types exceeds the available length values")
+        lengths = rng.sample(list(available_lengths), self.number_of_types)
+        demand_lower, demand_upper = self.demand_range
+        demands = [rng.randint(demand_lower, demand_upper) for _ in lengths]
+        return CuttingStockInstance(self.stock_length, self.kerf, lengths, demands)
+
+
+def _validate_range(value: tuple[int, int], name: str) -> None:
+    if (
+        len(value) != 2
+        or any(not isinstance(item, int) or isinstance(item, bool) for item in value)
+        or value[0] <= 0
+        or value[0] > value[1]
+    ):
+        raise ValueError(f"{name} must be an increasing pair of positive integers")
