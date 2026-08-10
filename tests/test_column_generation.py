@@ -3,7 +3,14 @@ from itertools import product
 import pytest
 
 from neural_cutting_stock.problem import CuttingStockInstance
-from neural_cutting_stock.solver import ColumnGeneration, RestrictedMasterProblem
+from neural_cutting_stock.solver import (
+    ColumnGeneration,
+    IntegerMasterResult,
+    IntegerRestrictedMasterProblem,
+    PricingResult,
+    RestrictedMasterProblem,
+    RMPResult,
+)
 
 
 def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
@@ -70,3 +77,57 @@ def test_column_generation_rejects_invalid_reduced_cost_tolerance() -> None:
             pass
         else:
             raise AssertionError("invalid reduced-cost tolerance was accepted")
+
+
+@pytest.mark.parametrize(
+    ("solver_status", "expected_status"),
+    [(1, "limit_reached"), (2, "infeasible"), (4, "solver_error")],
+)
+def test_column_generation_reports_rmp_failure_status(
+    monkeypatch: pytest.MonkeyPatch, solver_status: int, expected_status: str
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    def failed_rmp(self: RestrictedMasterProblem) -> RMPResult:
+        return RMPResult(solver_status, None, (), (), "failure")
+
+    monkeypatch.setattr(RestrictedMasterProblem, "solve", failed_rmp)
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == expected_status
+    assert result.termination_reason == "rmp_failed"
+
+
+def test_column_generation_reports_pricing_infeasibility(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    def failed_pricing(self, dual_values: tuple[float, ...]) -> PricingResult:
+        return PricingResult(2, (), None, None, "infeasible")
+
+    monkeypatch.setattr(
+        "neural_cutting_stock.solver.column_generation.ExactPricing.solve", failed_pricing
+    )
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == "infeasible"
+    assert result.termination_reason == "pricing_failed"
+
+
+def test_column_generation_reports_integer_master_time_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    def limited_integer_master(self: IntegerRestrictedMasterProblem) -> IntegerMasterResult:
+        return IntegerMasterResult(1, None, (), "time limit")
+
+    monkeypatch.setattr(IntegerRestrictedMasterProblem, "solve", limited_integer_master)
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == "limit_reached"
+    assert result.termination_reason == "integer_master_failed"

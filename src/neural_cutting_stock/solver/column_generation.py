@@ -52,7 +52,7 @@ class ColumnGeneration:
             rmp_result = RestrictedMasterProblem(self.instance, tuple(patterns)).solve()
             if rmp_result.status != 0:
                 return ColumnGenerationResult(
-                    "solver_error",
+                    _failure_status(rmp_result.status),
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
@@ -66,7 +66,7 @@ class ColumnGeneration:
             pricing_result = ExactPricing(self.instance).solve(rmp_result.dual_values)
             if pricing_result.status != 0:
                 return ColumnGenerationResult(
-                    "solver_error",
+                    _failure_status(pricing_result.status),
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
@@ -94,7 +94,7 @@ class ColumnGeneration:
                 ).solve()
                 if integer_master_result.status != 0:
                     return ColumnGenerationResult(
-                        "solver_error",
+                        _failure_status(integer_master_result.status),
                         tuple(patterns),
                         rmp_result,
                         pricing_result,
@@ -131,3 +131,13 @@ class ColumnGeneration:
 
             patterns.append(pricing_result.pattern)
             columns_added += 1
+
+
+def _failure_status(solver_status: int) -> str:
+    """Translate HiGHS' common failure statuses into public result statuses."""
+
+    if solver_status == 1:
+        return "limit_reached"
+    if solver_status == 2:
+        return "infeasible"
+    return "solver_error"
