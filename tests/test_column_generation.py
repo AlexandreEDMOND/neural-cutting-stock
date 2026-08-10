@@ -140,6 +140,7 @@ def test_column_generation_is_reproducible_for_same_instance() -> None:
     [
         CuttingStockInstance(10, 0, [6, 4], [1, 2]),
         CuttingStockInstance(11, 1, [2, 3, 5], [2, 2, 1]),
+        CuttingStockInstance(12, 1, [2, 4, 5], [3, 2, 2]),
     ],
 )
 def test_converged_lp_matches_master_with_all_small_patterns(
@@ -157,6 +158,8 @@ def test_converged_lp_matches_master_with_all_small_patterns(
     assert generated.status == "converged"
     assert complete_master.status == 0
     assert generated.rmp_result is not None
+    assert generated.pricing_result is not None
+    assert generated.pricing_result.reduced_cost >= -1e-9
     assert generated.rmp_result.objective_value == pytest.approx(
         complete_master.objective_value
     )
