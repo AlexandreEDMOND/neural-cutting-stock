@@ -47,6 +47,10 @@ def test_instance_normalizes_piece_types_and_applies_kerf() -> None:
             "positive integers",
         ),
         (
+            {"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [-1]},
+            "positive integers",
+        ),
+        (
             {"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [1.5]},
             "positive integers",
         ),
