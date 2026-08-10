@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
+from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
 from .rmp import RestrictedMasterProblem, RMPResult
 
@@ -17,6 +18,7 @@ class ColumnGenerationResult:
     patterns: tuple[tuple[int, ...], ...]
     rmp_result: RMPResult | None
     pricing_result: PricingResult | None
+    integer_master_result: IntegerMasterResult | None
     iterations: int
     columns_added: int
     duplicate_columns: int
@@ -43,6 +45,7 @@ class ColumnGeneration:
         iterations = 0
         rmp_result: RMPResult | None = None
         pricing_result: PricingResult | None = None
+        integer_master_result: IntegerMasterResult | None = None
 
         while True:
             iterations += 1
@@ -53,6 +56,7 @@ class ColumnGeneration:
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
+                    integer_master_result,
                     iterations,
                     columns_added,
                     duplicate_columns,
@@ -66,6 +70,7 @@ class ColumnGeneration:
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
+                    integer_master_result,
                     iterations,
                     columns_added,
                     duplicate_columns,
@@ -77,17 +82,34 @@ class ColumnGeneration:
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
+                    integer_master_result,
                     iterations,
                     columns_added,
                     duplicate_columns,
                     "pricing_returned_no_pattern",
                 )
             if pricing_result.reduced_cost >= -self.reduced_cost_tolerance:
+                integer_master_result = IntegerRestrictedMasterProblem(
+                    self.instance, tuple(patterns)
+                ).solve()
+                if integer_master_result.status != 0:
+                    return ColumnGenerationResult(
+                        "solver_error",
+                        tuple(patterns),
+                        rmp_result,
+                        pricing_result,
+                        integer_master_result,
+                        iterations,
+                        columns_added,
+                        duplicate_columns,
+                        "integer_master_failed",
+                    )
                 return ColumnGenerationResult(
                     "converged",
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
+                    integer_master_result,
                     iterations,
                     columns_added,
                     duplicate_columns,
@@ -100,6 +122,7 @@ class ColumnGeneration:
                     tuple(patterns),
                     rmp_result,
                     pricing_result,
+                    integer_master_result,
                     iterations,
                     columns_added,
                     duplicate_columns,

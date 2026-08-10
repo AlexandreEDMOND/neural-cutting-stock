@@ -19,6 +19,8 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.rmp_result.objective_value == 1.5
     assert result.pricing_result is not None
     assert result.pricing_result.reduced_cost >= -1e-9
+    assert result.integer_master_result is not None
+    assert result.integer_master_result.objective_value == 2
     assert result.duplicate_columns == 0
 
 
