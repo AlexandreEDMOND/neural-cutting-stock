@@ -27,6 +27,8 @@ def test_classical_cli_emits_structured_verified_result(capsys) -> None:
     assert output["status"] == "converged"
     assert output["termination_reason"] == "no_improving_column"
     assert output["integrality_gap"] == 0.5
+    assert output["rmp"]["dual_values"] == [0.5, 0.5]
+    assert output["pricing"]["dual_value"] == 1.0
     assert output["integer_master"]["objective_value"] == 2
     assert output["verification"]["feasible"] is True
 
