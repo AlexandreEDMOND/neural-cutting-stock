@@ -113,3 +113,13 @@ def test_plan_verification_reports_infeasible_pattern_and_coverage() -> None:
 
     assert not verification.feasible
     assert any("does not cover every demand" in error for error in verification.errors)
+
+
+def test_plan_verification_reports_malformed_patterns_and_column_values() -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    verification = verify_plan(instance, ((1, 0), (1,)), (1, -1))
+
+    assert not verification.feasible
+    assert any("patterns[0] is invalid" in error for error in verification.errors)
+    assert any("column_values[1]" in error for error in verification.errors)
