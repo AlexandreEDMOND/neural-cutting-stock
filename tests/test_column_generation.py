@@ -10,6 +10,7 @@ from neural_cutting_stock.solver import (
     PricingResult,
     RestrictedMasterProblem,
     RMPResult,
+    verify_plan,
 )
 
 
@@ -30,6 +31,21 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.integer_master_result.objective_value == 2
     assert result.integrality_gap == 0.5
     assert result.duplicate_columns == 0
+
+
+def test_column_generation_integer_plan_is_independently_verified() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.integer_master_result is not None
+    verification = verify_plan(
+        instance, result.patterns, result.integer_master_result.column_values
+    )
+
+    assert verification.feasible
+    assert verification.errors == ()
+    assert verification.number_of_stock_bars == result.integer_master_result.objective_value
 
 
 def test_column_generation_is_reproducible_for_same_instance() -> None:
