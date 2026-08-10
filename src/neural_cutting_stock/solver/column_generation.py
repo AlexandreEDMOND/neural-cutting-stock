@@ -38,6 +38,14 @@ class ColumnGenerationResult:
             return None
         return self.integer_master_result.objective_value - self.rmp_result.objective_value
 
+    @property
+    def integer_solution_guarantee(self) -> str | None:
+        """Describe the scope of the restricted integer master's guarantee."""
+
+        if self.integer_master_result is None:
+            return None
+        return "optimal_over_generated_columns_only"
+
 
 class ColumnGeneration:
     """Iteratively solve the RMP and add exact pricing columns."""

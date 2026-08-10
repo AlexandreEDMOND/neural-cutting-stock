@@ -30,6 +30,7 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.integer_master_result is not None
     assert result.integer_master_result.objective_value == 2
     assert result.integrality_gap == 0.5
+    assert result.integer_solution_guarantee == "optimal_over_generated_columns_only"
     assert result.duplicate_columns == 1
 
 
