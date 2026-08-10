@@ -58,6 +58,12 @@ def verify_plan(
         if capacity > instance.stock_length + tolerance:
             errors.append(f"patterns[{index}] exceeds stock capacity")
             continue
+        if any(
+            count > demand
+            for count, demand in zip(pattern, instance.demands, strict=True)
+        ):
+            errors.append(f"patterns[{index}] exceeds demand bounds")
+            continue
 
         multiplicity = int(value)
         number_of_bars += multiplicity

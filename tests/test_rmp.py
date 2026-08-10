@@ -115,6 +115,15 @@ def test_plan_verification_reports_infeasible_pattern_and_coverage() -> None:
     assert any("does not cover every demand" in error for error in verification.errors)
 
 
+def test_plan_verification_rejects_pattern_exceeding_demand_bounds() -> None:
+    instance = CuttingStockInstance(10, 0, [2], [1])
+
+    verification = verify_plan(instance, ((2,),), (1,))
+
+    assert not verification.feasible
+    assert "patterns[0] exceeds demand bounds" in verification.errors
+
+
 def test_plan_verification_reports_malformed_patterns_and_column_values() -> None:
     instance = CuttingStockInstance(10, 0, [6], [1])
 
