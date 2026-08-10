@@ -65,4 +65,5 @@ def test_classical_cli_preserves_integer_master_failure_status(
     assert output["status"] == "limit_reached"
     assert output["termination_reason"] == "integer_master_failed"
     assert output["integer_master"]["objective_value"] is None
+    assert output["integer_master"]["message"] == "time limit"
     assert "verification" not in output

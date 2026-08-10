@@ -40,12 +40,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             "status": result.rmp_result.status,
             "objective_value": result.rmp_result.objective_value,
             "column_values": result.rmp_result.column_values,
+            "message": result.rmp_result.message,
         }
     if result.pricing_result is not None:
         output["pricing"] = {
             "status": result.pricing_result.status,
             "pattern": result.pricing_result.pattern,
             "reduced_cost": result.pricing_result.reduced_cost,
+            "message": result.pricing_result.message,
         }
     if result.integer_master_result is not None:
         integer_result = result.integer_master_result
@@ -53,6 +55,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "status": integer_result.status,
             "objective_value": integer_result.objective_value,
             "column_values": integer_result.column_values,
+            "message": integer_result.message,
         }
         if result.verification is not None:
             output["verification"] = asdict(result.verification)
