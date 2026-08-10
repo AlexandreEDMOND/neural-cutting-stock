@@ -1,7 +1,9 @@
 """Deterministic synthetic instances for benchmark preparation."""
 
+import math
 import random
 from dataclasses import dataclass
+from numbers import Real
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
@@ -23,6 +25,20 @@ class SyntheticInstanceGenerator:
     def __post_init__(self) -> None:
         if not isinstance(self.seed, int) or isinstance(self.seed, bool):
             raise ValueError("seed must be an integer")
+        if (
+            isinstance(self.stock_length, bool)
+            or not isinstance(self.stock_length, Real)
+            or not math.isfinite(self.stock_length)
+            or self.stock_length <= 0
+        ):
+            raise ValueError("stock_length must be finite and strictly positive")
+        if (
+            isinstance(self.kerf, bool)
+            or not isinstance(self.kerf, Real)
+            or not math.isfinite(self.kerf)
+            or self.kerf < 0
+        ):
+            raise ValueError("kerf must be finite and non-negative")
         if not isinstance(self.number_of_types, int) or self.number_of_types <= 0:
             raise ValueError("number_of_types must be a positive integer")
         _validate_range(self.piece_length_range, "piece_length_range")

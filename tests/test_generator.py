@@ -23,6 +23,9 @@ def test_synthetic_generator_is_reproducible_and_seeded() -> None:
     "kwargs",
     [
         {"seed": 1, "number_of_types": 0},
+        {"seed": 1, "stock_length": 0},
+        {"seed": 1, "kerf": -1},
+        {"seed": 1, "kerf": float("inf")},
         {"seed": 1, "piece_length_range": (0, 10)},
         {"seed": 1, "demand_range": (3, 2)},
         {"seed": 1, "piece_length_range": (10, 101)},
