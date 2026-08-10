@@ -21,13 +21,37 @@ def test_instance_normalizes_piece_types_and_applies_kerf() -> None:
     ("kwargs", "message"),
     [
         ({"stock_length": 0, "kerf": 0, "piece_lengths": [1], "demands": [1]}, "stock_length"),
+        (
+            {"stock_length": True, "kerf": 0, "piece_lengths": [1], "demands": [1]},
+            "stock_length",
+        ),
+        (
+            {"stock_length": float("inf"), "kerf": 0, "piece_lengths": [1], "demands": [1]},
+            "finite numbers",
+        ),
         ({"stock_length": 10, "kerf": -1, "piece_lengths": [1], "demands": [1]}, "kerf"),
+        (
+            {"stock_length": 10, "kerf": True, "piece_lengths": [1], "demands": [1]},
+            "kerf",
+        ),
         ({"stock_length": 10, "kerf": 0, "piece_lengths": [], "demands": []}, "piece_lengths"),
         ({"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [1, 2]}, "same length"),
         ({"stock_length": 10, "kerf": 0, "piece_lengths": [0], "demands": [1]}, "piece lengths"),
+        (
+            {"stock_length": 10, "kerf": 0, "piece_lengths": [float("nan")], "demands": [1]},
+            "finite numbers",
+        ),
         ({"stock_length": 10, "kerf": 1, "piece_lengths": [10], "demands": [1]}, "fit"),
         (
             {"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [0]},
+            "positive integers",
+        ),
+        (
+            {"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [1.5]},
+            "positive integers",
+        ),
+        (
+            {"stock_length": 10, "kerf": 0, "piece_lengths": [1], "demands": [True]},
             "positive integers",
         ),
     ],
