@@ -51,3 +51,14 @@ def test_exact_pricing_excludes_the_empty_pattern() -> None:
     assert result.pattern == (1,)
     assert result.dual_value == 0.0
     assert result.reduced_cost == 1.0
+
+
+def test_exact_pricing_keeps_decimal_boundary_pattern_feasible() -> None:
+    instance = CuttingStockInstance(0.3, 0, [0.1], [3])
+
+    result = ExactPricing(instance).solve((1.0,))
+
+    assert result.status == 0
+    assert result.pattern == (3,)
+    assert result.dual_value == 3.0
+    assert result.reduced_cost == -2.0

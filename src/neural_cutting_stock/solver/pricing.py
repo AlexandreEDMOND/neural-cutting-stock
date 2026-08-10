@@ -1,6 +1,7 @@
 """Exact integer pricing for the one-dimensional Cutting Stock problem."""
 
 from dataclasses import dataclass
+from decimal import Decimal
 from numbers import Real
 
 import numpy as np
@@ -40,16 +41,13 @@ class ExactPricing:
         ):
             raise ValueError("dual_values must be finite and non-negative")
 
-        weights = np.asarray(
-            [length + self.instance.kerf for length in self.instance.piece_lengths],
-            dtype=float,
-        )
+        weights, stock_length = _integer_capacity_coefficients(self.instance)
         result = milp(
             c=-np.asarray(dual_values, dtype=float),
             integrality=np.ones(self.instance.number_of_types),
             bounds=(np.zeros(self.instance.number_of_types), self.instance.demands),
             constraints=(
-                LinearConstraint(weights, -np.inf, self.instance.stock_length),
+                LinearConstraint(weights, -np.inf, stock_length),
                 LinearConstraint(
                     np.ones(self.instance.number_of_types), 1, np.inf
                 ),
@@ -67,3 +65,22 @@ class ExactPricing:
             reduced_cost=1.0 - dual_value,
             message=result.message,
         )
+
+
+def _integer_capacity_coefficients(
+    instance: CuttingStockInstance,
+) -> tuple[np.ndarray, float]:
+    """Scale decimal capacities so exact boundary patterns remain feasible."""
+
+    values = [
+        Decimal(str(length)) + Decimal(str(instance.kerf))
+        for length in instance.piece_lengths
+    ]
+    stock_length = Decimal(str(instance.stock_length))
+    scale = max(
+        0,
+        *(-value.as_tuple().exponent for value in (*values, stock_length)),
+    )
+    multiplier = Decimal(10) ** scale
+    weights = np.asarray([float(value * multiplier) for value in values], dtype=float)
+    return weights, float(stock_length * multiplier)
