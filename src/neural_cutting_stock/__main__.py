@@ -54,7 +54,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             "objective_value": integer_result.objective_value,
             "column_values": integer_result.column_values,
         }
-        output["verification"] = asdict(result.verification)
+        if result.verification is not None:
+            output["verification"] = asdict(result.verification)
     print(json.dumps(output, default=_json_default, sort_keys=True))
     return 0
 
