@@ -32,7 +32,8 @@ class RestrictedMasterProblem:
         if len(set(patterns)) != len(patterns):
             raise ValueError("patterns must be distinct")
         for pattern in patterns:
-            instance.capacity_used(pattern)
+            if instance.capacity_used(pattern) > instance.stock_length:
+                raise ValueError("patterns must respect stock capacity")
             if not any(pattern):
                 raise ValueError("patterns must be non-empty")
         self.instance = instance
