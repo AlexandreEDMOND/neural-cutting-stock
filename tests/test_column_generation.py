@@ -46,6 +46,25 @@ def test_column_generation_integer_plan_is_independently_verified() -> None:
     assert verification.feasible
     assert verification.errors == ()
     assert verification.number_of_stock_bars == result.integer_master_result.objective_value
+    assert result.verification == verification
+
+
+def test_column_generation_rejects_an_invalid_integer_plan(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+
+    def invalid_integer_master(self: IntegerRestrictedMasterProblem) -> IntegerMasterResult:
+        return IntegerMasterResult(0, 1.0, (0,), "success")
+
+    monkeypatch.setattr(IntegerRestrictedMasterProblem, "solve", invalid_integer_master)
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == "invalid_plan"
+    assert result.termination_reason == "invalid_plan"
+    assert result.verification is not None
+    assert not result.verification.feasible
 
 
 def test_column_generation_is_reproducible_for_same_instance() -> None:

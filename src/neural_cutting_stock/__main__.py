@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import asdict
 
 from neural_cutting_stock.problem import CuttingStockInstance
-from neural_cutting_stock.solver import ColumnGeneration, verify_plan
+from neural_cutting_stock.solver import ColumnGeneration
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -54,10 +54,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "objective_value": integer_result.objective_value,
             "column_values": integer_result.column_values,
         }
-        verification = verify_plan(
-            instance, result.patterns, integer_result.column_values
-        )
-        output["verification"] = asdict(verification)
+        output["verification"] = asdict(result.verification)
     print(json.dumps(output, default=_json_default, sort_keys=True))
     return 0
 

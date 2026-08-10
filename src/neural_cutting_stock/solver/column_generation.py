@@ -8,6 +8,7 @@ from neural_cutting_stock.problem import CuttingStockInstance
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
 from .rmp import RestrictedMasterProblem, RMPResult
+from .verification import PlanVerification, verify_plan
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +24,7 @@ class ColumnGenerationResult:
     columns_added: int
     duplicate_columns: int
     termination_reason: str
+    verification: PlanVerification | None = None
 
     @property
     def integrality_gap(self) -> float | None:
@@ -116,6 +118,26 @@ class ColumnGeneration:
                         duplicate_columns,
                         "integer_master_failed",
                     )
+                verification = verify_plan(
+                    self.instance, tuple(patterns), integer_master_result.column_values
+                )
+                if (
+                    not verification.feasible
+                    or verification.number_of_stock_bars
+                    != integer_master_result.objective_value
+                ):
+                    return ColumnGenerationResult(
+                        "invalid_plan",
+                        tuple(patterns),
+                        rmp_result,
+                        pricing_result,
+                        integer_master_result,
+                        iterations,
+                        columns_added,
+                        duplicate_columns,
+                        "invalid_plan",
+                        verification,
+                    )
                 return ColumnGenerationResult(
                     "converged",
                     tuple(patterns),
@@ -126,6 +148,7 @@ class ColumnGeneration:
                     columns_added,
                     duplicate_columns,
                     "no_improving_column",
+                    verification,
                 )
             if pricing_result.pattern in patterns:
                 duplicate_columns += 1
