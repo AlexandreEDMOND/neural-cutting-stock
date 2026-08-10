@@ -33,6 +33,26 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.duplicate_columns == 1
 
 
+def test_column_generation_converges_for_single_type_with_kerf() -> None:
+    instance = CuttingStockInstance(10, 1, [6], [2])
+
+    result = ColumnGeneration(instance).solve()
+
+    assert result.status == "converged"
+    assert result.patterns == ((1,),)
+    assert result.rmp_result is not None
+    assert result.rmp_result.objective_value == 2
+    assert result.pricing_result is not None
+    assert result.pricing_result.reduced_cost >= -1e-9
+    assert result.integer_master_result is not None
+    assert result.integer_master_result.objective_value == 2
+    assert result.verification is not None
+    assert result.verification.feasible
+    assert result.verification.kerf_loss == 2
+    assert result.verification.trim_loss == 6
+    assert result.verification.total_waste == 8
+
+
 def test_column_generation_counts_duplicate_non_improving_pattern(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
