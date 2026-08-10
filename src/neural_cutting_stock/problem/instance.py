@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import dataclass
+from decimal import Decimal
 from numbers import Integral, Real
 
 
@@ -64,9 +65,11 @@ class CuttingStockInstance:
             for count in pattern
         ):
             raise ValueError("pattern counts must be non-negative integers")
-        return sum(
-            (length + self.kerf) * count
-            for length, count in zip(self.piece_lengths, pattern, strict=True)
+        return float(
+            sum(
+                (_decimal(length) + _decimal(self.kerf)) * count
+                for length, count in zip(self.piece_lengths, pattern, strict=True)
+            )
         )
 
     def initial_patterns(self) -> tuple[tuple[int, ...], ...]:
@@ -76,7 +79,8 @@ class CuttingStockInstance:
         for index, (length, demand) in enumerate(
             zip(self.piece_lengths, self.demands, strict=True)
         ):
-            count = min(demand, math.floor(self.stock_length / (length + self.kerf)))
+            capacity_per_piece = _decimal(length) + _decimal(self.kerf)
+            count = min(demand, int(_decimal(self.stock_length) // capacity_per_piece))
             pattern = [0] * self.number_of_types
             pattern[index] = count
             patterns.append(tuple(pattern))
@@ -90,6 +94,12 @@ def _finite_real(value: Real, name: str) -> float:
     if not math.isfinite(result):
         raise ValueError(f"{name} must contain finite numbers")
     return result
+
+
+def _decimal(value: float) -> Decimal:
+    """Use the decimal spelling of validated inputs for capacity arithmetic."""
+
+    return Decimal(str(value))
 
 
 def _positive_integer(value: Integral, name: str) -> int:

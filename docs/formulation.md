@@ -15,7 +15,7 @@ La représentation normalisée regroupera les types de même longueur et les ord
 l_i + k <= L
 ```
 
-Les longueurs et le kerf utilisent la même unité, typiquement le millimètre. La validation numérique et la stratégie éventuelle de mise à l’échelle vers des entiers seront fixées dans la Phase 1.
+Les longueurs et le kerf utilisent la même unité, typiquement le millimètre. Les valeurs réelles validées sont converties depuis leur représentation décimale (`str(value)`) pour les calculs de capacité et de division entière ; cela évite qu’un arrondi binaire fasse perdre une pièce exactement admissible. Les solveurs conservent leurs tolérances explicites pour les comparaisons numériques.
 
 ## 2. Convention de kerf
 

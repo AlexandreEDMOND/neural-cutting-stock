@@ -88,3 +88,10 @@ def test_initial_patterns_are_demand_bounded_and_feasible_with_kerf() -> None:
         for pattern in instance.initial_patterns()
     )
     assert all(any(pattern[index] for pattern in instance.initial_patterns()) for index in range(2))
+
+
+def test_decimal_capacity_does_not_lose_a_piece_to_binary_rounding() -> None:
+    instance = CuttingStockInstance(0.3, 0, [0.1], [3])
+
+    assert instance.initial_patterns() == ((3,),)
+    assert instance.capacity_used((3,)) == 0.3
