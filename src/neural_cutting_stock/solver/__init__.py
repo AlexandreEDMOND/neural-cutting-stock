@@ -4,6 +4,7 @@ from .column_generation import ColumnGeneration, ColumnGenerationResult
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
 from .rmp import RestrictedMasterProblem, RMPResult
+from .verification import PlanVerification, verify_plan
 
 __all__ = [
     "ColumnGeneration",
@@ -14,4 +15,6 @@ __all__ = [
     "PricingResult",
     "RMPResult",
     "RestrictedMasterProblem",
+    "PlanVerification",
+    "verify_plan",
 ]

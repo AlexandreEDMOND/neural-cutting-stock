@@ -1,5 +1,9 @@
 from neural_cutting_stock.problem import CuttingStockInstance
-from neural_cutting_stock.solver import IntegerRestrictedMasterProblem, RestrictedMasterProblem
+from neural_cutting_stock.solver import (
+    IntegerRestrictedMasterProblem,
+    RestrictedMasterProblem,
+    verify_plan,
+)
 
 
 def test_rmp_solves_covering_master_and_extracts_nonnegative_duals() -> None:
@@ -56,3 +60,32 @@ def test_integer_master_returns_feasible_restricted_plan() -> None:
     assert all(
         actual >= demand for actual, demand in zip(produced, instance.demands, strict=True)
     )
+
+
+def test_plan_verification_checks_coverage_and_material_balance() -> None:
+    instance = CuttingStockInstance(10, 1, [6, 3], [1, 2])
+    patterns = ((0, 1), (2, 0))
+
+    verification = verify_plan(instance, patterns, (1, 1))
+
+    assert verification.feasible
+    assert verification.errors == ()
+    assert verification.number_of_stock_bars == 2
+    assert verification.produced_counts == (2, 1)
+    assert verification.kerf_loss == 3
+    assert verification.trim_loss == 5
+    assert verification.total_waste == 8
+    assert verification.total_waste == (
+        verification.overproduction_length
+        + verification.kerf_loss
+        + verification.trim_loss
+    )
+
+
+def test_plan_verification_reports_infeasible_pattern_and_coverage() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 3], [1, 2])
+
+    verification = verify_plan(instance, ((1, 0),), (1,))
+
+    assert not verification.feasible
+    assert any("does not cover every demand" in error for error in verification.errors)
