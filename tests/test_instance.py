@@ -29,6 +29,10 @@ def test_instance_normalizes_piece_types_and_applies_kerf() -> None:
             {"stock_length": float("inf"), "kerf": 0, "piece_lengths": [1], "demands": [1]},
             "finite numbers",
         ),
+        (
+            {"stock_length": 10**1000, "kerf": 0, "piece_lengths": [1], "demands": [1]},
+            "finite numbers",
+        ),
         ({"stock_length": 10, "kerf": -1, "piece_lengths": [1], "demands": [1]}, "kerf"),
         (
             {"stock_length": 10, "kerf": True, "piece_lengths": [1], "demands": [1]},

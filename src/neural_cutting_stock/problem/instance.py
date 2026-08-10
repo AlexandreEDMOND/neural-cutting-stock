@@ -90,7 +90,10 @@ class CuttingStockInstance:
 def _finite_real(value: Real, name: str) -> float:
     if isinstance(value, bool) or not isinstance(value, Real):
         raise ValueError(f"{name} must contain real numbers")
-    result = float(value)
+    try:
+        result = float(value)
+    except OverflowError as error:
+        raise ValueError(f"{name} must contain finite numbers") from error
     if not math.isfinite(result):
         raise ValueError(f"{name} must contain finite numbers")
     return result
