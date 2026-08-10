@@ -24,7 +24,7 @@ def test_exact_pricing_matches_exhaustive_enumeration() -> None:
 def test_pricing_rejects_invalid_dual_vector() -> None:
     instance = CuttingStockInstance(10, 0, [2], [1])
 
-    for dual_values in [(), (-0.1,), (float("inf"),)]:
+    for dual_values in [(), (-0.1,), (float("inf"),), (True,), ("0.5",)]:
         try:
             ExactPricing(instance).solve(dual_values)
         except ValueError:

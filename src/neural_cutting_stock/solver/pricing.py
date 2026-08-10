@@ -1,6 +1,7 @@
 """Exact integer pricing for the one-dimensional Cutting Stock problem."""
 
 from dataclasses import dataclass
+from numbers import Real
 
 import numpy as np
 from scipy.optimize import LinearConstraint, milp
@@ -30,7 +31,13 @@ class ExactPricing:
 
         if len(dual_values) != self.instance.number_of_types:
             raise ValueError("dual_values must contain one value per piece type")
-        if any(not np.isfinite(value) or value < 0 for value in dual_values):
+        if any(
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not np.isfinite(value)
+            or value < 0
+            for value in dual_values
+        ):
             raise ValueError("dual_values must be finite and non-negative")
 
         weights = np.asarray(
