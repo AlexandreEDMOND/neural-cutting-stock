@@ -1,13 +1,22 @@
 from itertools import product
 
+import pytest
+
 from neural_cutting_stock.problem import CuttingStockInstance
 from neural_cutting_stock.solver import ExactPricing
 
 
-def test_exact_pricing_matches_exhaustive_enumeration() -> None:
-    instance = CuttingStockInstance(10, 1, [2, 3], [3, 2])
-    dual_values = (0.6, 0.75)
-
+@pytest.mark.parametrize(
+    ("instance", "dual_values"),
+    [
+        (CuttingStockInstance(10, 1, [2, 3], [3, 2]), (0.6, 0.75)),
+        (CuttingStockInstance(7, 0, [2, 3, 5], [2, 1, 1]), (0.4, 0.8, 0.9)),
+        (CuttingStockInstance(12, 2, [2, 4], [3, 2]), (0.25, 0.7)),
+    ],
+)
+def test_exact_pricing_matches_exhaustive_enumeration(
+    instance: CuttingStockInstance, dual_values: tuple[float, ...]
+) -> None:
     result = ExactPricing(instance).solve(dual_values)
     feasible_values = [
         sum(value * count for value, count in zip(dual_values, pattern, strict=True))
