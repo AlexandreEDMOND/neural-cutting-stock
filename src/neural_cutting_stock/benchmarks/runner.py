@@ -1,0 +1,203 @@
+"""Execution of configured classical benchmark matrices."""
+
+import hashlib
+import json
+from dataclasses import dataclass
+from typing import ClassVar
+
+from neural_cutting_stock.solver import ColumnGeneration, ColumnGenerationResult
+
+from .generator import SyntheticInstanceGenerator
+from .schema import (
+    BenchmarkRunRecord,
+    EnvironmentMetadata,
+    RunStatus,
+    SolverMode,
+)
+
+
+@dataclass(frozen=True, slots=True)
+class ClassicalBenchmarkConfig:
+    """Configuration for one deterministic matrix of classical runs."""
+
+    generators: tuple[SyntheticInstanceGenerator, ...]
+    environment: EnvironmentMetadata
+    repetitions: int = 1
+    reduced_cost_tolerance: float = 1e-9
+    solver_version: str = "classical-cg-v1"
+    schema_version: ClassVar[str] = "benchmark-run-v1"
+
+    def __post_init__(self) -> None:
+        if not self.generators:
+            raise ValueError("generators must not be empty")
+        if (
+            not isinstance(self.repetitions, int)
+            or isinstance(self.repetitions, bool)
+            or self.repetitions <= 0
+        ):
+            raise ValueError("repetitions must be a positive integer")
+        if self.reduced_cost_tolerance < 0:
+            raise ValueError("reduced_cost_tolerance must be non-negative")
+        if not self.solver_version.strip():
+            raise ValueError("solver_version must not be empty")
+
+    @property
+    def config_id(self) -> str:
+        """Return the stable identifier of the complete solver matrix."""
+
+        payload = {
+            "generators": [
+                {
+                    "seed": generator.seed,
+                    "stock_length": generator.stock_length,
+                    "kerf": generator.kerf,
+                    "number_of_types": generator.number_of_types,
+                    "piece_length_range": generator.piece_length_range,
+                    "demand_range": generator.demand_range,
+                }
+                for generator in self.generators
+            ],
+            "repetitions": self.repetitions,
+            "reduced_cost_tolerance": self.reduced_cost_tolerance,
+            "solver_version": self.solver_version,
+        }
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("ascii")
+        return hashlib.sha256(encoded).hexdigest()
+
+
+class ClassicalBenchmarkRunner:
+    """Run every configured generator and repetition in deterministic order."""
+
+    def __init__(self, configuration: ClassicalBenchmarkConfig) -> None:
+        self.configuration = configuration
+
+    def run(self) -> tuple[BenchmarkRunRecord, ...]:
+        """Return one raw in-memory record for every matrix cell."""
+
+        records: list[BenchmarkRunRecord] = []
+        for generator in self.configuration.generators:
+            instance = generator.generate()
+            for repetition in range(self.configuration.repetitions):
+                records.append(self._run_one(generator, instance, repetition))
+        return tuple(records)
+
+    def _run_one(
+        self,
+        generator: SyntheticInstanceGenerator,
+        instance,
+        repetition: int,
+    ) -> BenchmarkRunRecord:
+        run_key = f"{self.configuration.config_id}:{generator.instance_id}:{repetition}"
+        run_id = hashlib.sha256(run_key.encode("ascii")).hexdigest()
+        try:
+            result = ColumnGeneration(
+                instance, self.configuration.reduced_cost_tolerance
+            ).solve()
+        except Exception as error:  # Keep a matrix cell visible when a solver call fails.
+            return self._failed_record(generator, instance, repetition, run_id, str(error))
+        return self._record_from_result(generator, instance, repetition, run_id, result)
+
+    def _record_from_result(
+        self,
+        generator: SyntheticInstanceGenerator,
+        instance,
+        repetition: int,
+        run_id: str,
+        result: ColumnGenerationResult,
+    ) -> BenchmarkRunRecord:
+        verification = result.verification
+        integer = result.integer_master_result
+        rmp = result.rmp_result
+        pricing = result.pricing_result
+        status = _run_status(result.status)
+        error_message = (
+            None
+            if status is RunStatus.OPTIMAL_LP_RESTRICTED_IP
+            else result.termination_reason
+        )
+        return BenchmarkRunRecord(
+            run_id=run_id,
+            instance_id=generator.instance_id,
+            solver_mode=SolverMode.CLASSICAL,
+            solver_version=self.configuration.solver_version,
+            seed=generator.seed,
+            config_id=self.configuration.config_id,
+            repetition=repetition,
+            environment=self.configuration.environment,
+            stock_length=instance.stock_length,
+            kerf=instance.kerf,
+            number_of_piece_types=instance.number_of_types,
+            total_demand=sum(instance.demands),
+            requested_length=sum(
+                length * demand
+                for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
+            ),
+            length_distribution=generator.name,
+            demand_distribution=generator.name,
+            run_status=status,
+            master_status=_component_status(rmp.status if rmp else None),
+            pricing_status=_component_status(pricing.status if pricing else None),
+            integer_master_status=_component_status(integer.status if integer else None),
+            termination_reason=result.termination_reason,
+            objective_value=integer.objective_value if integer else None,
+            number_of_stock_bars=verification.number_of_stock_bars if verification else None,
+            lp_objective_value=rmp.objective_value if rmp else None,
+            restricted_integer_gap=result.integrality_gap,
+            total_waste=verification.total_waste if verification else None,
+            trim_loss=verification.trim_loss if verification else None,
+            kerf_loss=verification.kerf_loss if verification else None,
+            overproduction_length=verification.overproduction_length if verification else None,
+            plan_feasible=verification.feasible if verification else None,
+            number_of_cg_iterations=result.iterations,
+            number_of_generated_columns=result.columns_added + result.duplicate_columns,
+            number_of_columns_added=result.columns_added,
+            initial_column_count=len(instance.initial_patterns()),
+            final_column_count=len(result.patterns),
+            duplicate_column_count=result.duplicate_columns,
+            final_reduced_cost=pricing.reduced_cost if pricing else None,
+            error_message=error_message,
+        )
+
+    def _failed_record(self, generator, instance, repetition, run_id, message):
+        return BenchmarkRunRecord(
+            run_id=run_id,
+            instance_id=generator.instance_id,
+            solver_mode=SolverMode.CLASSICAL,
+            solver_version=self.configuration.solver_version,
+            seed=generator.seed,
+            config_id=self.configuration.config_id,
+            repetition=repetition,
+            environment=self.configuration.environment,
+            stock_length=instance.stock_length,
+            kerf=instance.kerf,
+            number_of_piece_types=instance.number_of_types,
+            total_demand=sum(instance.demands),
+            requested_length=sum(
+                length * demand
+                for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
+            ),
+            length_distribution=generator.name,
+            demand_distribution=generator.name,
+            run_status=RunStatus.SOLVER_ERROR,
+            master_status="not_run",
+            pricing_status="not_run",
+            integer_master_status="not_run",
+            termination_reason="solver_exception",
+            error_message=message or "solver call failed",
+        )
+
+
+def _component_status(status: int | None) -> str:
+    if status is None:
+        return "not_run"
+    return "optimal" if status == 0 else str(status)
+
+
+def _run_status(status: str) -> RunStatus:
+    if status == "converged":
+        return RunStatus.OPTIMAL_LP_RESTRICTED_IP
+    if status == "infeasible":
+        return RunStatus.INFEASIBLE
+    if status == "invalid_plan":
+        return RunStatus.INVALID_PLAN
+    return RunStatus.SOLVER_ERROR
