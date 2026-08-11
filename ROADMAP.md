@@ -82,7 +82,7 @@ solveur classique.
 - [x] **P3.09** — Définir les partitions train, validation et test par graine et famille avant collecte.
 - [x] **P3.10** — Construire le dataset à partir des seules trajectoires validées.
 - [x] **P3.11** — Tester l'absence de fuite d'instance et l'invariance à l'ordre des types.
-- [ ] **P3.12** — Produire un petit corpus versionné ou reproductible avec manifeste et statistiques réelles.
+- [x] **P3.12** — Produire un petit corpus versionné ou reproductible avec manifeste et statistiques réelles.
 - [ ] **P3.13** — Auditer la Phase 3 et retirer code mort, doublons et champs de trajectoire inutilisés.
 - [ ] **P3.14** — Publier `results/phase-3-summary.md` et les figures de données justifiées par le corpus réel.
 - [ ] **P3.15** — Mettre à jour le README avec le schéma, les partitions et la clôture de Phase 3.

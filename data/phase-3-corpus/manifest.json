@@ -1,0 +1,115 @@
+{
+  "corpus_id": "phase-3-small-v1",
+  "environment": {
+    "code_commit": "ce3d85831e2802374a6bf18f762015dd9d49493f",
+    "dependency_versions": "numpy,scipy",
+    "hardware_id": "Darwin-arm64",
+    "python_version": "3.11.15"
+  },
+  "generator": {
+    "name": "uniform_integer_v1",
+    "version": "1"
+  },
+  "partition_plan": {
+    "schema_version": "trajectory-partitions-v1",
+    "test_families": [
+      "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb"
+    ],
+    "test_seeds": [
+      13
+    ],
+    "train_families": [
+      "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4"
+    ],
+    "train_seeds": [
+      11
+    ],
+    "validation_families": [
+      "36719ab4e0c949b81feafb8c0f083cbdedd273246f8ee63338e3fed04d8c88bc"
+    ],
+    "validation_seeds": [
+      12
+    ]
+  },
+  "schema_version": "phase-3-corpus-v1",
+  "statistics": {
+    "columns_added": 0,
+    "instance_count": 3,
+    "iteration_count": 3,
+    "partition_counts": {
+      "test": 1,
+      "train": 1,
+      "validation": 1
+    },
+    "selected_pattern_count": 0,
+    "status_counts": {
+      "converged": 3
+    },
+    "trajectory_count": 3
+  },
+  "trajectories": [
+    {
+      "demands": [
+        3,
+        6,
+        7
+      ],
+      "family_id": "36719ab4e0c949b81feafb8c0f083cbdedd273246f8ee63338e3fed04d8c88bc",
+      "instance_id": "50a7b7eebb982f5cc8543118d4d0302afc8475cdc92c7f883e67a8e6f4446da4",
+      "kerf": 0.0,
+      "partition": "validation",
+      "path": "trajectories/2d99e5076130689aaba3a53f46bd03a6c9f3c47d2705d174adcf7d022cd8dcad.json",
+      "piece_lengths": [
+        44.0,
+        70.0,
+        77.0
+      ],
+      "seed": 12,
+      "sha256": "b044cd3b59fbb3c98185c707fdfb2e43b53b3182f42dede5f18a1b60e0a99c0b",
+      "stock_length": 100.0,
+      "trajectory_id": "2d99e5076130689aaba3a53f46bd03a6c9f3c47d2705d174adcf7d022cd8dcad"
+    },
+    {
+      "demands": [
+        8,
+        8
+      ],
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "instance_id": "0fd9968211d0856be24e2eb710d30ea0d121b8ce7060a0fe45fb72c32917f389",
+      "kerf": 0.0,
+      "partition": "train",
+      "path": "trajectories/773a2c5d340e1a02428d7d3706d545cb7ae41e46cddff8ad884b329579c76707.json",
+      "piece_lengths": [
+        67.0,
+        81.0
+      ],
+      "seed": 11,
+      "sha256": "e93648a07c271edc873c4bb3a51e353118cf0287c4a7b90569933a81c5c5cfb5",
+      "stock_length": 100.0,
+      "trajectory_id": "773a2c5d340e1a02428d7d3706d545cb7ae41e46cddff8ad884b329579c76707"
+    },
+    {
+      "demands": [
+        3,
+        3,
+        3,
+        4
+      ],
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "instance_id": "69ca07fbf554679274e694ffeffa515fdcdb4f130215d27575c8041bb34629e6",
+      "kerf": 0.0,
+      "partition": "test",
+      "path": "trajectories/bff0e4664de48ad13878a45c4c3f5200b7bdb04c4ed815c5e84cabd42e4c16da.json",
+      "piece_lengths": [
+        33.0,
+        39.0,
+        43.0,
+        47.0
+      ],
+      "seed": 13,
+      "sha256": "6659d9fa22d7c3ba50e141e611c6f675296e92293126275731d2842c88e8ed2d",
+      "stock_length": 100.0,
+      "trajectory_id": "bff0e4664de48ad13878a45c4c3f5200b7bdb04c4ed815c5e84cabd42e4c16da"
+    }
+  ]
+}

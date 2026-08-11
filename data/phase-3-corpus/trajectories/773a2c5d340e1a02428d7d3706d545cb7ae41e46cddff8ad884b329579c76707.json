@@ -1,0 +1,67 @@
+{
+  "error_message": null,
+  "iterations": [
+    {
+      "best_reduced_cost": null,
+      "candidate_patterns": null,
+      "candidate_reduced_costs": null,
+      "column_management_runtime_seconds": null,
+      "columns_added": 0,
+      "dual_values": [
+        1.0,
+        1.0
+      ],
+      "duplicate_column_count": 1,
+      "exact_fallback": true,
+      "final_column_count": 2,
+      "initial_column_count": 2,
+      "instance_id": "0fd9968211d0856be24e2eb710d30ea0d121b8ce7060a0fe45fb72c32917f389",
+      "iteration_index": 1,
+      "pricing_runtime_seconds": null,
+      "pricing_status": null,
+      "rmp_column_values": [
+        8.0,
+        8.0
+      ],
+      "rmp_objective_value": 16.0,
+      "rmp_pattern_count": 2,
+      "rmp_runtime_seconds": 0.01064300000143703,
+      "rmp_status": "optimal",
+      "selected_patterns": []
+    }
+  ],
+  "metadata": {
+    "code_commit": "ce3d85831e2802374a6bf18f762015dd9d49493f",
+    "config_id": "fd0c3bd909164ac54d448279530a47496c460f137f2b460ef8ca4c28fdfe6fe5",
+    "demands": [
+      8,
+      8
+    ],
+    "dependency_versions": "numpy,scipy",
+    "dual_sign_convention": "nonnegative_covering_dual",
+    "dual_tolerance": 1e-09,
+    "dual_type_order": [
+      67.0,
+      81.0
+    ],
+    "feasibility_tolerance": 1e-09,
+    "hardware_id": "Darwin-arm64",
+    "instance_id": "0fd9968211d0856be24e2eb710d30ea0d121b8ce7060a0fe45fb72c32917f389",
+    "integrality_tolerance": 1e-09,
+    "kerf": 0.0,
+    "piece_lengths": [
+      67.0,
+      81.0
+    ],
+    "python_version": "3.11.15",
+    "reduced_cost_tolerance": 1e-09,
+    "schema_version": "cg-trajectory-v2",
+    "seed": 11,
+    "solver_version": "classical-cg-v1",
+    "stock_length": 100.0,
+    "trajectory_id": "773a2c5d340e1a02428d7d3706d545cb7ae41e46cddff8ad884b329579c76707"
+  },
+  "schema_version": "cg-trajectory-v2",
+  "status": "converged",
+  "termination_reason": "no_improving_column"
+}

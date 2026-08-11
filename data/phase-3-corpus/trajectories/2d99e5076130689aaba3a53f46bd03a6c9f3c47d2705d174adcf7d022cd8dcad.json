@@ -1,0 +1,72 @@
+{
+  "error_message": null,
+  "iterations": [
+    {
+      "best_reduced_cost": null,
+      "candidate_patterns": null,
+      "candidate_reduced_costs": null,
+      "column_management_runtime_seconds": null,
+      "columns_added": 0,
+      "dual_values": [
+        0.5,
+        1.0,
+        1.0
+      ],
+      "duplicate_column_count": 1,
+      "exact_fallback": true,
+      "final_column_count": 3,
+      "initial_column_count": 3,
+      "instance_id": "50a7b7eebb982f5cc8543118d4d0302afc8475cdc92c7f883e67a8e6f4446da4",
+      "iteration_index": 1,
+      "pricing_runtime_seconds": null,
+      "pricing_status": null,
+      "rmp_column_values": [
+        1.5,
+        6.0,
+        7.0
+      ],
+      "rmp_objective_value": 14.5,
+      "rmp_pattern_count": 3,
+      "rmp_runtime_seconds": 0.003311249995022081,
+      "rmp_status": "optimal",
+      "selected_patterns": []
+    }
+  ],
+  "metadata": {
+    "code_commit": "ce3d85831e2802374a6bf18f762015dd9d49493f",
+    "config_id": "fd0c3bd909164ac54d448279530a47496c460f137f2b460ef8ca4c28fdfe6fe5",
+    "demands": [
+      3,
+      6,
+      7
+    ],
+    "dependency_versions": "numpy,scipy",
+    "dual_sign_convention": "nonnegative_covering_dual",
+    "dual_tolerance": 1e-09,
+    "dual_type_order": [
+      44.0,
+      70.0,
+      77.0
+    ],
+    "feasibility_tolerance": 1e-09,
+    "hardware_id": "Darwin-arm64",
+    "instance_id": "50a7b7eebb982f5cc8543118d4d0302afc8475cdc92c7f883e67a8e6f4446da4",
+    "integrality_tolerance": 1e-09,
+    "kerf": 0.0,
+    "piece_lengths": [
+      44.0,
+      70.0,
+      77.0
+    ],
+    "python_version": "3.11.15",
+    "reduced_cost_tolerance": 1e-09,
+    "schema_version": "cg-trajectory-v2",
+    "seed": 12,
+    "solver_version": "classical-cg-v1",
+    "stock_length": 100.0,
+    "trajectory_id": "2d99e5076130689aaba3a53f46bd03a6c9f3c47d2705d174adcf7d022cd8dcad"
+  },
+  "schema_version": "cg-trajectory-v2",
+  "status": "converged",
+  "termination_reason": "no_improving_column"
+}

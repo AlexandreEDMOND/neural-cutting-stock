@@ -1,5 +1,11 @@
 """Reproducible instance generation and benchmark execution."""
 
+from .corpus import (
+    CORPUS_SCHEMA_VERSION,
+    corpus_statistics,
+    read_corpus_manifest,
+    trajectory_sha256,
+)
 from .dataset import DATASET_SCHEMA_VERSION, DatasetExample, TrajectoryDataset, build_dataset
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
@@ -56,6 +62,10 @@ __all__ = [
     "DatasetExample",
     "TrajectoryDataset",
     "build_dataset",
+    "CORPUS_SCHEMA_VERSION",
+    "corpus_statistics",
+    "read_corpus_manifest",
+    "trajectory_sha256",
     "PARTITION_SCHEMA_VERSION",
     "DatasetPartition",
     "PartitionAssignment",
