@@ -1,4 +1,5 @@
 import json
+from dataclasses import fields
 
 import pytest
 
@@ -14,6 +15,7 @@ from neural_cutting_stock.benchmarks import (
     SolverMode,
     SyntheticInstanceGenerator,
     classify_runtime,
+    compare_paired_profiles,
     profile_classical_runs,
     profile_neural_runs,
 )
@@ -161,3 +163,99 @@ def test_runner_assigns_size_class_from_measured_total_runtime() -> None:
     assert record.total_runtime_seconds is not None
     assert record.size_class is not None
     assert record.size_class == classify_runtime(record.total_runtime_seconds).value
+
+
+def test_compare_paired_profiles_aggregates_only_quality_preserved_complete_pairs(tmp_path) -> None:
+    classical = _record(
+        "classical",
+        config_id="shared",
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+        total_runtime_seconds=8.0,
+        plan_feasible=True,
+        objective_value=5.0,
+    )
+    neural = _record(
+        "neural",
+        solver_mode=SolverMode.NEURAL,
+        model_id="model-v1",
+        config_id="shared",
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+        total_runtime_seconds=10.0,
+        feature_preparation_runtime=1.0,
+        neural_inference_runtime=2.0,
+        number_of_candidates=2,
+        number_of_selected_columns=1,
+        exact_fallback_calls=1,
+        plan_feasible=True,
+        objective_value=5.0,
+    )
+    failed = _record(
+        "failed-classical",
+        run_status=RunStatus.SOLVER_ERROR,
+        error_message="timeout",
+        master_problem_runtime=None,
+        pricing_runtime=None,
+        integer_master_runtime=None,
+        column_management_runtime=None,
+        verification_runtime=None,
+        unattributed_runtime=None,
+        total_runtime_seconds=None,
+    )
+    failed_neural = _record(
+        "failed-neural",
+        solver_mode=SolverMode.NEURAL,
+        model_id="model-v1",
+        run_status=RunStatus.SOLVER_ERROR,
+        error_message="timeout",
+        master_problem_runtime=None,
+        pricing_runtime=None,
+        integer_master_runtime=None,
+        column_management_runtime=None,
+        verification_runtime=None,
+        unattributed_runtime=None,
+        total_runtime_seconds=None,
+    )
+    # The helper records use one fixed instance/repetition, so make the second pair unique.
+    failed = replace_record(failed, instance_id="instance-2")
+    failed_neural = replace_record(failed_neural, instance_id="instance-2")
+    output = tmp_path / "paired-profile.json"
+
+    profile = compare_paired_profiles(
+        (classical, neural, failed, failed_neural), output_path=output
+    )
+
+    assert profile["profile_schema_version"] == "paired-profile-v1"
+    assert profile["pair_count"] == 2
+    assert profile["quality_preserved_pair_count"] == 1
+    assert profile["profile_eligible_pair_count"] == 1
+    assert profile["component_medians_seconds"]["classical"]["total_runtime_seconds"] == 8.0
+    assert profile["component_medians_seconds"]["neural"]["total_runtime_seconds"] == 10.0
+    assert profile["component_medians_seconds"]["neural"]["feature_preparation_runtime"] == 1.0
+    assert profile["component_medians_seconds"]["neural"]["neural_inference_runtime"] == 2.0
+    assert json.loads(output.read_text()) == profile
+
+
+def test_compare_paired_profiles_rejects_different_resources() -> None:
+    classical = _record("classical", plan_feasible=True, objective_value=5.0)
+    neural = _record(
+        "neural",
+        solver_mode=SolverMode.NEURAL,
+        model_id="model-v1",
+        plan_feasible=True,
+        objective_value=5.0,
+        feature_preparation_runtime=1.0,
+        neural_inference_runtime=2.0,
+        number_of_candidates=2,
+        number_of_selected_columns=1,
+        exact_fallback_calls=1,
+        environment=EnvironmentMetadata("other-commit", "3.11", "deps", "machine"),
+    )
+
+    with pytest.raises(ValueError, match="same environment"):
+        compare_paired_profiles((classical, neural))
+
+
+def replace_record(record: BenchmarkRunRecord, **changes: object) -> BenchmarkRunRecord:
+    values = {field.name: getattr(record, field.name) for field in fields(record)}
+    values.update(changes)
+    return BenchmarkRunRecord(**values)

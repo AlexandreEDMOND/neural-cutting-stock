@@ -25,11 +25,13 @@ from .partitions import (
 )
 from .profile import (
     NEURAL_PROFILE_SCHEMA_VERSION,
+    PAIRED_PROFILE_SCHEMA_VERSION,
     PROFILE_SCHEMA_VERSION,
     SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS,
     SIZE_CLASS_SCHEMA_VERSION,
     SizeClass,
     classify_runtime,
+    compare_paired_profiles,
     profile_classical_runs,
     profile_neural_runs,
 )
@@ -90,8 +92,10 @@ __all__ = [
     "PairedBenchmarkRunner",
     "PROFILE_SCHEMA_VERSION",
     "NEURAL_PROFILE_SCHEMA_VERSION",
+    "PAIRED_PROFILE_SCHEMA_VERSION",
     "profile_classical_runs",
     "profile_neural_runs",
+    "compare_paired_profiles",
     "SIZE_CLASS_SCHEMA_VERSION",
     "SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS",
     "SizeClass",

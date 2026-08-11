@@ -6,10 +6,12 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+from .comparison import compare_paired_runs
 from .schema import BenchmarkRunRecord, RunStatus, SolverMode
 
 PROFILE_SCHEMA_VERSION = "baseline-profile-v1"
 NEURAL_PROFILE_SCHEMA_VERSION = "neural-profile-v1"
+PAIRED_PROFILE_SCHEMA_VERSION = "paired-profile-v1"
 SIZE_CLASS_SCHEMA_VERSION = "size-class-v1"
 PROFILE_COMPONENTS = (
     "master_problem_runtime",
@@ -29,6 +31,19 @@ NEURAL_PROFILE_COMPONENTS = (
     "column_management_runtime",
     "verification_runtime",
     "unattributed_runtime",
+)
+PAIRED_PROFILE_COMPONENTS = (
+    "total_runtime_seconds",
+    "master_problem_runtime",
+    "pricing_runtime",
+    "integer_master_runtime",
+    "column_management_runtime",
+    "verification_runtime",
+    "unattributed_runtime",
+)
+NEURAL_ONLY_PROFILE_COMPONENTS = (
+    "feature_preparation_runtime",
+    "neural_inference_runtime",
 )
 SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS = (0.015997, 0.06385, 0.1433)
 
@@ -165,6 +180,82 @@ def profile_neural_runs(
     return profile
 
 
+def compare_paired_profiles(
+    records: tuple[BenchmarkRunRecord, ...],
+    quality_tolerance: float = 0.0,
+    output_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Compare measured components on identical instances and resources.
+
+    Raw failures and pairs excluded from aggregation remain in ``paired_runs``.
+    Only quality-preserved pairs with complete timing decompositions contribute to
+    the component medians.
+    """
+
+    if not math.isfinite(quality_tolerance) or quality_tolerance < 0:
+        raise ValueError("quality_tolerance must be finite and non-negative")
+    comparisons = compare_paired_runs(records, quality_tolerance)
+    by_id = {record.run_id: record for record in records}
+    paired_runs = []
+    eligible: list[tuple[BenchmarkRunRecord, BenchmarkRunRecord]] = []
+    for comparison in comparisons:
+        classical = by_id[comparison.classical_run_id]
+        neural = by_id[comparison.neural_run_id]
+        _validate_pair_resources(classical, neural)
+        complete = all(
+            getattr(classical, component) is not None
+            and getattr(neural, component) is not None
+            for component in PAIRED_PROFILE_COMPONENTS
+        ) and all(
+            getattr(neural, component) is not None for component in NEURAL_ONLY_PROFILE_COMPONENTS
+        )
+        included = comparison.quality_preserved and complete
+        if included:
+            eligible.append((classical, neural))
+        paired_runs.append(
+            {
+                "instance_id": comparison.instance_id,
+                "repetition": comparison.repetition,
+                "classical_run_id": comparison.classical_run_id,
+                "neural_run_id": comparison.neural_run_id,
+                "objective_difference_vs_classical": comparison.objective_difference_vs_classical,
+                "speedup_vs_classical": comparison.speedup_vs_classical,
+                "quality_preserved": comparison.quality_preserved,
+                "comparable": comparison.comparable,
+                "profile_complete": complete,
+                "included_in_profile": included,
+            }
+        )
+
+    component_medians = {
+        "classical": {
+            component: _median([getattr(record, component) for record, _ in eligible])
+            for component in PAIRED_PROFILE_COMPONENTS
+        },
+        "neural": {
+            component: _median([getattr(record, component) for _, record in eligible])
+            for component in PAIRED_PROFILE_COMPONENTS + NEURAL_ONLY_PROFILE_COMPONENTS
+        },
+    }
+    profile = {
+        "profile_schema_version": PAIRED_PROFILE_SCHEMA_VERSION,
+        "quality_tolerance": quality_tolerance,
+        "run_count": len(records),
+        "pair_count": len(comparisons),
+        "comparable_pair_count": sum(item.comparable for item in comparisons),
+        "quality_preserved_pair_count": sum(item.quality_preserved for item in comparisons),
+        "profile_eligible_pair_count": len(eligible),
+        "incomplete_profile_pair_count": sum(
+            not item["profile_complete"] for item in paired_runs
+        ),
+        "component_medians_seconds": component_medians,
+        "paired_runs": paired_runs,
+    }
+    if output_path is not None:
+        _write_profile(output_path, profile)
+    return profile
+
+
 def _finite_sum(values: Any) -> float:
     total = sum(value for value in values if value is not None)
     if not math.isfinite(total):
@@ -178,6 +269,37 @@ def _size_class_counts(records: list[BenchmarkRunRecord]) -> dict[str, int]:
         if record.size_class is not None:
             counts[record.size_class] = counts.get(record.size_class, 0) + 1
     return dict(sorted(counts.items()))
+
+
+def _validate_pair_resources(
+    classical: BenchmarkRunRecord, neural: BenchmarkRunRecord
+) -> None:
+    if classical.config_id != neural.config_id:
+        raise ValueError("paired runs must use the same config_id")
+    if classical.environment != neural.environment:
+        raise ValueError("paired runs must use the same environment")
+    for field in (
+        "seed",
+        "stock_length",
+        "kerf",
+        "number_of_piece_types",
+        "total_demand",
+        "requested_length",
+        "length_distribution",
+        "demand_distribution",
+    ):
+        if getattr(classical, field) != getattr(neural, field):
+            raise ValueError(f"paired runs must share instance field {field}")
+
+
+def _median(values: list[float | None]) -> float | None:
+    numbers = sorted(value for value in values if value is not None)
+    if not numbers:
+        return None
+    middle = len(numbers) // 2
+    if len(numbers) % 2:
+        return float(numbers[middle])
+    return float((numbers[middle - 1] + numbers[middle]) / 2)
 
 
 def _write_profile(path: str | Path, profile: dict[str, Any]) -> None:
