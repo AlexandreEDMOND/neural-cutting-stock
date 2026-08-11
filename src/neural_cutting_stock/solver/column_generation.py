@@ -39,6 +39,7 @@ class ColumnGenerationResult:
     column_management_runtime: float = 0.0
     verification_runtime: float = 0.0
     unattributed_runtime: float = 0.0
+    exact_pricing_calls: int = 0
     rmp_states: tuple[RMPState, ...] = ()
 
     @property
@@ -104,6 +105,7 @@ class ColumnGeneration:
         integer_master_runtime = 0.0
         column_management_runtime = 0.0
         verification_runtime = 0.0
+        exact_pricing_calls = 0
         rmp_states: list[RMPState] = []
 
         def make_result(
@@ -137,6 +139,7 @@ class ColumnGeneration:
                 column_management_runtime,
                 verification_runtime,
                 total_runtime - instrumented_runtime,
+                exact_pricing_calls,
                 tuple(rmp_states),
             )
 
@@ -188,6 +191,7 @@ class ColumnGeneration:
 
             component_started = perf_counter()
             pricing_result = ExactPricing(self.instance).solve(rmp_result.dual_values)
+            exact_pricing_calls += 1
             pricing_runtime += perf_counter() - component_started
             if pricing_result.status != 0:
                 return make_result(_failure_status(pricing_result.status), "pricing_failed")

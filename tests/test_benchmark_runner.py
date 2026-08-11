@@ -83,6 +83,9 @@ def test_classical_runner_persists_component_runtimes() -> None:
     assert record.integer_master_runtime is not None
     assert record.column_management_runtime is not None
     assert record.unattributed_runtime is not None
+    assert record.peak_memory_bytes is not None
+    assert record.exact_pricing_calls is not None
+    assert record.exact_pricing_calls > 0
     assert record.total_runtime_seconds == pytest.approx(
         record.master_problem_runtime
         + record.pricing_runtime

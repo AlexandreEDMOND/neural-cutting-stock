@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .comparison import compare_paired_runs
 from .generator import SyntheticInstanceGenerator
-from .runner import ClassicalBenchmarkRunner, write_raw_runs
+from .runner import ClassicalBenchmarkRunner, solve_with_peak_memory, write_raw_runs
 from .schema import BenchmarkRunRecord, EnvironmentMetadata, SolverMode
 
 
@@ -119,7 +119,7 @@ class PairedBenchmarkRunner:
             instance_id=generator.instance_id,
         )
         try:
-            result = solver.solve()
+            result, peak_memory_bytes = solve_with_peak_memory(solver)
         except Exception as error:
             return runner._failed_record(
                 generator,
@@ -141,6 +141,7 @@ class PairedBenchmarkRunner:
             solver_version=self.configuration.solver_version,
             model_id=self.configuration.model_id,
             neural_profile=solver.runtime_profile,
+            peak_memory_bytes=peak_memory_bytes,
         )
 
 

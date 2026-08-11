@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import math
+import tracemalloc
 from dataclasses import dataclass, fields
 from pathlib import Path
 
@@ -101,16 +102,18 @@ class ClassicalBenchmarkRunner:
         run_key = f"{self.configuration.config_id}:{generator.instance_id}:{repetition}"
         run_id = hashlib.sha256(run_key.encode("ascii")).hexdigest()
         try:
-            result = ColumnGeneration(
+            result, peak_memory_bytes = solve_with_peak_memory(ColumnGeneration(
                 instance,
                 self.configuration.reduced_cost_tolerance,
                 self.configuration.max_runtime_seconds,
                 self.configuration.max_cg_iterations,
                 generator.instance_id,
-            ).solve()
+            ))
         except Exception as error:  # Keep a matrix cell visible when a solver call fails.
             return self._failed_record(generator, instance, repetition, run_id, str(error))
-        return self._record_from_result(generator, instance, repetition, run_id, result)
+        return self._record_from_result(
+            generator, instance, repetition, run_id, result, peak_memory_bytes=peak_memory_bytes
+        )
 
     def _record_from_result(
         self,
@@ -123,6 +126,7 @@ class ClassicalBenchmarkRunner:
         solver_version: str | None = None,
         model_id: str | None = None,
         neural_profile=None,
+        peak_memory_bytes: int | None = None,
     ) -> BenchmarkRunRecord:
         verification = result.verification
         integer = result.integer_master_result
@@ -172,6 +176,8 @@ class ClassicalBenchmarkRunner:
             column_management_runtime=result.column_management_runtime,
             verification_runtime=result.verification_runtime,
             unattributed_runtime=result.unattributed_runtime,
+            peak_memory_bytes=peak_memory_bytes,
+            exact_pricing_calls=result.exact_pricing_calls,
             error_message=error_message,
             model_id=model_id,
             neural_inference_runtime=(
@@ -267,6 +273,18 @@ def _run_status(status: str) -> RunStatus:
     if status == "invalid_plan":
         return RunStatus.INVALID_PLAN
     return RunStatus.SOLVER_ERROR
+
+
+def solve_with_peak_memory(solver) -> tuple[ColumnGenerationResult, int]:
+    """Run one solver and measure its peak Python allocation footprint."""
+
+    tracemalloc.start()
+    try:
+        result = solver.solve()
+        _current, peak_memory_bytes = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    return result, peak_memory_bytes
 
 
 def write_raw_runs(path: str | Path, records: tuple[BenchmarkRunRecord, ...]) -> None:

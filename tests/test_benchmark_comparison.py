@@ -129,6 +129,8 @@ def test_paired_runner_executes_both_modes_on_the_same_instance() -> None:
     assert neural.neural_inference_runtime is not None
     assert neural.number_of_candidates is not None
     assert neural.exact_fallback_calls is not None
+    assert neural.peak_memory_bytes is not None
+    assert neural.exact_pricing_calls is not None
 
 
 def test_paired_runner_retains_neural_model_errors_as_raw_failures() -> None:

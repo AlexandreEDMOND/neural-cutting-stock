@@ -89,6 +89,8 @@ class BenchmarkRunRecord:
     column_management_runtime: float | None = None
     verification_runtime: float | None = None
     unattributed_runtime: float | None = None
+    peak_memory_bytes: int | None = None
+    exact_pricing_calls: int | None = None
     error_message: str | None = None
     model_id: str | None = None
     neural_inference_runtime: float | None = None
@@ -146,6 +148,15 @@ class BenchmarkRunRecord:
             value = getattr(self, field.name)
             if isinstance(value, float) and not math.isfinite(value):
                 raise ValueError(f"{field.name} must be finite when present")
+            if field.name in {
+                "peak_memory_bytes",
+                "exact_pricing_calls",
+                "number_of_candidates",
+                "number_of_selected_columns",
+            } and value is not None and (
+                not isinstance(value, int) or isinstance(value, bool) or value < 0
+            ):
+                raise ValueError(f"{field.name} must be a non-negative integer when present")
 
     def to_dict(self) -> dict[str, Any]:
         """Return the flat, JSON-ready representation used by raw tables."""

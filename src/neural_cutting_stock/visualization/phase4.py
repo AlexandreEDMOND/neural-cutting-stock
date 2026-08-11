@@ -19,7 +19,17 @@ from neural_cutting_stock.benchmarks.schema import (
 )
 
 SIZE_CLASSES = ("SMALL", "MEDIUM", "LARGE", "XL")
-_INT_FIELDS = {"seed", "repetition", "number_of_piece_types", "total_demand"}
+_INT_FIELDS = {
+    "seed",
+    "repetition",
+    "number_of_piece_types",
+    "total_demand",
+    "peak_memory_bytes",
+    "exact_pricing_calls",
+    "number_of_candidates",
+    "number_of_selected_columns",
+    "exact_fallback_calls",
+}
 _BOOL_FIELDS = {"plan_feasible"}
 _FLOAT_FIELDS = {
     "stock_length",
@@ -49,9 +59,6 @@ _FLOAT_FIELDS = {
     "unattributed_runtime",
     "neural_inference_runtime",
     "feature_preparation_runtime",
-    "number_of_candidates",
-    "number_of_selected_columns",
-    "exact_fallback_calls",
     "speedup_vs_classical",
     "objective_difference_vs_classical",
 }
@@ -80,6 +87,8 @@ _NULLABLE_FIELDS = {
     "column_management_runtime",
     "verification_runtime",
     "unattributed_runtime",
+    "peak_memory_bytes",
+    "exact_pricing_calls",
     "error_message",
     "model_id",
     "neural_inference_runtime",
@@ -103,7 +112,8 @@ def load_phase4_runs(path: str | Path) -> tuple[BenchmarkRunRecord, ...]:
                 if values.get(field, "") == "":
                     values[field] = None
             for field in _INT_FIELDS:
-                values[field] = int(values[field])
+                if values.get(field) is not None:
+                    values[field] = int(values[field])
             for field in _BOOL_FIELDS:
                 if values[field] is not None:
                     values[field] = values[field].lower() == "true"

@@ -100,6 +100,8 @@ Tous les temps sont exprimés en secondes et mesurés par une horloge monotone (
 | `column_management_runtime` | réel | Construction, filtrage et insertion des colonnes hors solveur. |
 | `verification_runtime` | réel | Vérification finale indépendante. |
 | `unattributed_runtime` | réel | Total moins composants instrumentés ; conservé pour détecter un oubli. |
+| `peak_memory_bytes` | entier | Pic d’allocations Python tracé pendant l’exécution du solveur avec `tracemalloc`. |
+| `exact_pricing_calls` | entier | Nombre d’appels au pricing exact, contrôle final compris. |
 
 Le chargement et la validation de l’instance sont exclus si les deux modes reçoivent le même objet déjà construit. Toute préparation spécifique au mode neural, y compris features et transfert de tenseurs, est incluse. La politique de chargement du modèle (à froid ou préchargé) doit être déclarée ; le graphique principal utilise une politique identique pour toutes les tailles et n’omet aucun coût récurrent.
 

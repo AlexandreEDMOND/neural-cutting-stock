@@ -96,7 +96,7 @@ def test_neural_solver_records_preparation_inference_and_fallback_work() -> None
         LearnedColumnSelectionPolicy(MisleadingScorer(), candidate_budget=1),
     )
 
-    solver.solve()
+    result = solver.solve()
 
     profile = solver.runtime_profile
     assert profile.feature_preparation_runtime >= 0
@@ -104,6 +104,7 @@ def test_neural_solver_records_preparation_inference_and_fallback_work() -> None
     assert profile.number_of_candidates > 0
     assert profile.number_of_selected_columns > 0
     assert profile.exact_fallback_calls > 0
+    assert result.exact_pricing_calls > 0
 
 
 def test_neural_solver_rejects_invalid_resource_limits() -> None:
