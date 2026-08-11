@@ -130,7 +130,7 @@ séquentielle plus complexe est justifiée.
 - [x] **P5.09** — Tester les cas limites, timeouts, erreurs modèle et indisponibilités d'artefact.
 - [x] **P5.10** — Ajouter des tests de non-régression sur qualité, convergence et reproductibilité.
 - [x] **P5.11** — Mesurer mémoire, appels exacts, candidats, colonnes retenues et coût d'inférence.
-- [ ] **P5.12** — Geler le candidat optimisé uniquement s'il améliore le temps total sur validation.
+- [x] **P5.12** — Geler le candidat optimisé uniquement s'il améliore le temps total sur validation.
 - [ ] **P5.13** — Auditer la Phase 5 et retirer code mort, doublons et branches expérimentales rejetées.
 - [ ] **P5.14** — Publier `results/phase-5-summary.md` et les figures de décision issues des mesures réelles.
 - [ ] **P5.15** — Mettre à jour le README avec la décision, les optimisations et la clôture de Phase 5.

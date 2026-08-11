@@ -11,6 +11,7 @@ from neural_cutting_stock.benchmarks import (
     SolverMode,
     SyntheticInstanceGenerator,
     compare_paired_runs,
+    freeze_candidate_on_validation,
     quality_gated_speedup,
 )
 from neural_cutting_stock.learning import LearnedColumnSelectionPolicy, LinearColumnScoringModel
@@ -99,6 +100,64 @@ def test_quality_gated_speedup_zeroes_quality_violation_but_keeps_diagnostics() 
     assert metric.speedup_vs_classical == 2.0
     assert metric.objective_difference_vs_classical == 1.0
     assert not metric.quality_preserved
+
+
+def test_freeze_candidate_requires_strict_validation_total_runtime_gain() -> None:
+    decision = freeze_candidate_on_validation(
+        (
+            _record(
+                SolverMode.CLASSICAL,
+                "classical-1",
+                instance_id="instance-1",
+                total_runtime_seconds=2.0,
+            ),
+            _record(
+                SolverMode.NEURAL, "neural-1", instance_id="instance-1", total_runtime_seconds=1.0
+            ),
+            _record(
+                SolverMode.CLASSICAL,
+                "classical-2",
+                instance_id="instance-2",
+                total_runtime_seconds=4.0,
+            ),
+            _record(
+                SolverMode.NEURAL, "neural-2", instance_id="instance-2", total_runtime_seconds=3.0
+            ),
+        ),
+        "candidate-v1",
+    )
+
+    assert decision.frozen
+    assert decision.reason == "strict_total_runtime_improvement"
+    assert decision.classical_total_runtime_seconds == 6.0
+    assert decision.candidate_total_runtime_seconds == 4.0
+    assert decision.pair_count == 2
+
+
+def test_freeze_candidate_rejects_quality_loss_even_when_faster() -> None:
+    decision = freeze_candidate_on_validation(
+        (
+            _record(SolverMode.CLASSICAL, "classical"),
+            _record(SolverMode.NEURAL, "neural", objective_value=6.0, total_runtime_seconds=0.1),
+        ),
+        "candidate-v1",
+    )
+
+    assert not decision.frozen
+    assert decision.reason == "quality_not_preserved"
+
+
+def test_freeze_candidate_rejects_equal_or_slower_total_runtime() -> None:
+    decision = freeze_candidate_on_validation(
+        (
+            _record(SolverMode.CLASSICAL, "classical"),
+            _record(SolverMode.NEURAL, "neural", total_runtime_seconds=2.0),
+        ),
+        "candidate-v1",
+    )
+
+    assert not decision.frozen
+    assert decision.reason == "no_total_runtime_improvement"
 
 
 def test_comparison_rejects_missing_or_duplicate_pair() -> None:

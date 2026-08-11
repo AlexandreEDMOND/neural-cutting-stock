@@ -1,10 +1,13 @@
 """Reproducible instance generation and benchmark execution."""
 
 from .comparison import (
+    FREEZE_DECISION_SCHEMA_VERSION,
     OPTIMIZATION_METRIC_SCHEMA_VERSION,
+    CandidateFreezeDecision,
     OptimizationMetric,
     PairedRunComparison,
     compare_paired_runs,
+    freeze_candidate_on_validation,
     quality_gated_speedup,
 )
 from .corpus import (
@@ -95,8 +98,11 @@ __all__ = [
     "PairedRunComparison",
     "compare_paired_runs",
     "OPTIMIZATION_METRIC_SCHEMA_VERSION",
+    "FREEZE_DECISION_SCHEMA_VERSION",
+    "CandidateFreezeDecision",
     "OptimizationMetric",
     "quality_gated_speedup",
+    "freeze_candidate_on_validation",
     "PairedBenchmarkConfig",
     "PairedBenchmarkRunner",
     "PROFILE_SCHEMA_VERSION",

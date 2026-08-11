@@ -7,6 +7,7 @@ from math import isfinite
 from .schema import BenchmarkRunRecord, RunStatus, SolverMode
 
 OPTIMIZATION_METRIC_SCHEMA_VERSION = "quality-gated-speedup-v1"
+FREEZE_DECISION_SCHEMA_VERSION = "validation-freeze-decision-v1"
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +34,76 @@ class OptimizationMetric:
     objective_difference_vs_classical: float | None
     quality_preserved: bool
     comparable: bool
+
+
+@dataclass(frozen=True, slots=True)
+class CandidateFreezeDecision:
+    """Validation decision for retaining one end-to-end candidate."""
+
+    schema_version: str
+    candidate_id: str
+    frozen: bool
+    reason: str
+    pair_count: int
+    classical_total_runtime_seconds: float | None
+    candidate_total_runtime_seconds: float | None
+
+
+def freeze_candidate_on_validation(
+    records: Sequence[BenchmarkRunRecord],
+    candidate_id: str,
+    quality_tolerance: float = 0.0,
+) -> CandidateFreezeDecision:
+    """Freeze a candidate only after a quality-preserving total-runtime gain.
+
+    Runtime is aggregated across the paired validation records, rather than
+    inferred from per-pair speedups. A missing, failed, infeasible, or
+    lower-quality pair therefore prevents freezing and remains diagnosable in
+    the returned decision.
+    """
+
+    if not candidate_id.strip():
+        raise ValueError("candidate_id must not be empty")
+    comparisons = compare_paired_runs(records, quality_tolerance)
+    by_run_id = {record.run_id: record for record in records}
+    classical_runtimes = [
+        by_run_id[comparison.classical_run_id].total_runtime_seconds
+        for comparison in comparisons
+    ]
+    candidate_runtimes = [
+        by_run_id[comparison.neural_run_id].total_runtime_seconds for comparison in comparisons
+    ]
+    runtimes_available = all(
+        runtime is not None and isfinite(runtime) and runtime > 0
+        for runtime in (*classical_runtimes, *candidate_runtimes)
+    )
+    classical_total = sum(classical_runtimes) if runtimes_available else None
+    candidate_total = sum(candidate_runtimes) if runtimes_available else None
+    quality_preserved = all(comparison.quality_preserved for comparison in comparisons)
+    frozen = (
+        bool(comparisons)
+        and quality_preserved
+        and classical_total is not None
+        and candidate_total is not None
+        and candidate_total < classical_total
+    )
+    if not quality_preserved:
+        reason = "quality_not_preserved"
+    elif not runtimes_available:
+        reason = "total_runtime_missing_or_invalid"
+    elif candidate_total >= classical_total:
+        reason = "no_total_runtime_improvement"
+    else:
+        reason = "strict_total_runtime_improvement"
+    return CandidateFreezeDecision(
+        schema_version=FREEZE_DECISION_SCHEMA_VERSION,
+        candidate_id=candidate_id,
+        frozen=frozen,
+        reason=reason,
+        pair_count=len(comparisons),
+        classical_total_runtime_seconds=classical_total,
+        candidate_total_runtime_seconds=candidate_total,
+    )
 
 
 def quality_gated_speedup(comparison: PairedRunComparison) -> OptimizationMetric:
