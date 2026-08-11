@@ -24,12 +24,14 @@ from .partitions import (
     PartitionPlan,
 )
 from .profile import (
+    NEURAL_PROFILE_SCHEMA_VERSION,
     PROFILE_SCHEMA_VERSION,
     SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS,
     SIZE_CLASS_SCHEMA_VERSION,
     SizeClass,
     classify_runtime,
     profile_classical_runs,
+    profile_neural_runs,
 )
 from .runner import ClassicalBenchmarkConfig, ClassicalBenchmarkRunner, write_raw_runs
 from .schema import (
@@ -87,7 +89,9 @@ __all__ = [
     "PairedBenchmarkConfig",
     "PairedBenchmarkRunner",
     "PROFILE_SCHEMA_VERSION",
+    "NEURAL_PROFILE_SCHEMA_VERSION",
     "profile_classical_runs",
+    "profile_neural_runs",
     "SIZE_CLASS_SCHEMA_VERSION",
     "SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS",
     "SizeClass",

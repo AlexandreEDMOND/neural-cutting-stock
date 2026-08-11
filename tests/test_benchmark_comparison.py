@@ -95,3 +95,7 @@ def test_paired_runner_executes_both_modes_on_the_same_instance() -> None:
     neural = next(record for record in records if record.solver_mode is SolverMode.NEURAL)
     assert neural.objective_difference_vs_classical == 0.0
     assert neural.speedup_vs_classical is not None
+    assert neural.feature_preparation_runtime is not None
+    assert neural.neural_inference_runtime is not None
+    assert neural.number_of_candidates is not None
+    assert neural.exact_fallback_calls is not None

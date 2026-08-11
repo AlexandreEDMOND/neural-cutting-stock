@@ -3,6 +3,7 @@ import json
 import pytest
 
 from neural_cutting_stock.benchmarks import (
+    NEURAL_PROFILE_SCHEMA_VERSION,
     PROFILE_SCHEMA_VERSION,
     BenchmarkRunRecord,
     ClassicalBenchmarkConfig,
@@ -14,6 +15,7 @@ from neural_cutting_stock.benchmarks import (
     SyntheticInstanceGenerator,
     classify_runtime,
     profile_classical_runs,
+    profile_neural_runs,
 )
 
 
@@ -84,6 +86,46 @@ def test_profile_rejects_neural_runs() -> None:
 
     with pytest.raises(ValueError, match="classical runs only"):
         profile_classical_runs((neural,))
+
+
+def test_neural_profile_aggregates_end_to_end_and_neural_components(tmp_path) -> None:
+    output_path = tmp_path / "neural-profile.json"
+    neural = _record(
+        "run-neural",
+        solver_mode=SolverMode.NEURAL,
+        model_id="model-v1",
+        total_runtime_seconds=10.0,
+        feature_preparation_runtime=1.0,
+        neural_inference_runtime=2.0,
+        number_of_candidates=12,
+        number_of_selected_columns=3,
+        exact_fallback_calls=2,
+    )
+    failed = _record(
+        "run-failed",
+        solver_mode=SolverMode.NEURAL,
+        model_id="model-v1",
+        run_status=RunStatus.SOLVER_ERROR,
+        error_message="model unavailable",
+    )
+
+    profile = profile_neural_runs((neural, failed), output_path)
+
+    assert profile["profile_schema_version"] == NEURAL_PROFILE_SCHEMA_VERSION
+    assert profile["successful_run_count"] == 1
+    assert profile["status_counts"] == {"optimal_lp_restricted_ip": 1, "solver_error": 1}
+    assert profile["component_totals_seconds"]["total_runtime_seconds"] == 10.0
+    assert profile["candidate_totals"] == {
+        "number_of_candidates": 12,
+        "number_of_selected_columns": 3,
+        "exact_fallback_calls": 2,
+    }
+    assert json.loads(output_path.read_text()) == profile
+
+
+def test_neural_profile_rejects_classical_runs() -> None:
+    with pytest.raises(ValueError, match="neural runs only"):
+        profile_neural_runs((_record("run-classical"),))
 
 
 def test_runner_profile_is_reproducible_in_shape_and_status() -> None:

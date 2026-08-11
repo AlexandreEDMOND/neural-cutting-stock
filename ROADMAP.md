@@ -119,7 +119,7 @@ exact et réduit sur validation un coût pertinent sans dégrader la qualité au
 Objectif : optimiser uniquement les goulots observés et décider expérimentalement si une politique
 séquentielle plus complexe est justifiée.
 
-- [ ] **P5.01** — Profiler de bout en bout le mode neural, préparation et inférence comprises.
+- [x] **P5.01** — Profiler de bout en bout le mode neural, préparation et inférence comprises.
 - [ ] **P5.02** — Comparer le profil neural au profil classique sur les mêmes instances et ressources.
 - [ ] **P5.03** — Documenter la décision mesurée d'entreprendre ou non une optimisation séquentielle.
 - [ ] **P5.04** — Définir état, action et horizon si justifié, sinon formaliser l'optimisation alternative retenue.

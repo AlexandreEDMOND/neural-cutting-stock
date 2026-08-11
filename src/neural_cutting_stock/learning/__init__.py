@@ -13,7 +13,7 @@ from .interfaces import (
     PricingState,
 )
 from .model import MODEL_SCHEMA_VERSION, LinearColumnScoringModel
-from .neural_solver import NeuralColumnGeneration
+from .neural_solver import NeuralColumnGeneration, NeuralRuntimeProfile
 from .policy import LearnedColumnSelectionPolicy
 from .training import (
     TRAINING_ARTIFACT_SCHEMA_VERSION,
@@ -39,6 +39,7 @@ __all__ = [
     "LinearColumnScoringModel",
     "LearnedColumnSelectionPolicy",
     "NeuralColumnGeneration",
+    "NeuralRuntimeProfile",
     "deterministic_candidate_pool",
     "TRAINING_ARTIFACT_SCHEMA_VERSION",
     "load_training_artifact",

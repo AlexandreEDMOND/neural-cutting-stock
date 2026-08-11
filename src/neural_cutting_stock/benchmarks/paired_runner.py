@@ -90,16 +90,17 @@ class PairedBenchmarkRunner:
         run_key = f"{self.configuration.config_id}:{generator.instance_id}:neural:{repetition}"
         run_id = hashlib.sha256(run_key.encode("ascii")).hexdigest()
         runner = ClassicalBenchmarkRunner(_classical_config(self.configuration))
+        solver = NeuralColumnGeneration(
+            instance,
+            self.configuration.policy,
+            candidate_budget=self.configuration.candidate_budget,
+            reduced_cost_tolerance=self.configuration.reduced_cost_tolerance,
+            max_runtime_seconds=self.configuration.max_runtime_seconds,
+            max_iterations=self.configuration.max_cg_iterations,
+            instance_id=generator.instance_id,
+        )
         try:
-            result = NeuralColumnGeneration(
-                instance,
-                self.configuration.policy,
-                candidate_budget=self.configuration.candidate_budget,
-                reduced_cost_tolerance=self.configuration.reduced_cost_tolerance,
-                max_runtime_seconds=self.configuration.max_runtime_seconds,
-                max_iterations=self.configuration.max_cg_iterations,
-                instance_id=generator.instance_id,
-            ).solve()
+            result = solver.solve()
         except Exception as error:
             return runner._failed_record(
                 generator,
@@ -120,6 +121,7 @@ class PairedBenchmarkRunner:
             solver_mode=SolverMode.NEURAL,
             solver_version=self.configuration.solver_version,
             model_id=self.configuration.model_id,
+            neural_profile=solver.runtime_profile,
         )
 
 

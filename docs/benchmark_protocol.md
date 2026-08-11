@@ -121,8 +121,8 @@ Ils sont nuls pour le mode classique, et obligatoires pour le mode neural.
 | Champ | Type | Définition |
 |---|---:|---|
 | `model_id` | chaîne | Checkpoint et configuration du modèle. |
-| `neural_inference_runtime` | réel | Inférence seule ; reste incluse dans le total. |
-| `feature_preparation_runtime` | réel | Construction des entrées du modèle. |
+| `neural_inference_runtime` | réel | Appel de la politique, construction des features comprise ; reste incluse dans le total. |
+| `feature_preparation_runtime` | réel | Construction du pool de candidats et de l'état présenté à la politique. |
 | `number_of_candidates` | entier | Nombre total de motifs présentés à la politique. |
 | `number_of_selected_columns` | entier | Nombre total retenu par la politique. |
 | `exact_fallback_calls` | entier | Nombre d’appels exacts de sauvegarde/contrôle. |

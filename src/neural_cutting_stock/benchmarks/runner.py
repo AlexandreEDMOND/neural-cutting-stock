@@ -122,6 +122,7 @@ class ClassicalBenchmarkRunner:
         solver_mode: SolverMode = SolverMode.CLASSICAL,
         solver_version: str | None = None,
         model_id: str | None = None,
+        neural_profile=None,
     ) -> BenchmarkRunRecord:
         verification = result.verification
         integer = result.integer_master_result
@@ -173,6 +174,19 @@ class ClassicalBenchmarkRunner:
             unattributed_runtime=result.unattributed_runtime,
             error_message=error_message,
             model_id=model_id,
+            neural_inference_runtime=(
+                neural_profile.neural_inference_runtime if neural_profile else None
+            ),
+            feature_preparation_runtime=(
+                neural_profile.feature_preparation_runtime if neural_profile else None
+            ),
+            number_of_candidates=(neural_profile.number_of_candidates if neural_profile else None),
+            number_of_selected_columns=(
+                neural_profile.number_of_selected_columns if neural_profile else None
+            ),
+            exact_fallback_calls=(
+                neural_profile.exact_fallback_calls if neural_profile else None
+            ),
         )
 
     def _failed_record(
