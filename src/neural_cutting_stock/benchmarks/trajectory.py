@@ -112,12 +112,19 @@ class TrajectoryIteration:
             _require_text("instance_id", self.instance_id)
         if self.pricing_status is not None:
             _require_text("pricing_status", self.pricing_status)
-        if (
-            self.candidate_reduced_costs is not None
-            and self.candidate_patterns is not None
-            and len(self.candidate_reduced_costs) != len(self.candidate_patterns)
-        ):
-            raise ValueError("candidate patterns and reduced costs must have the same length")
+        if (self.candidate_patterns is None) != (self.candidate_reduced_costs is None):
+            raise ValueError("candidate patterns and reduced costs must be recorded together")
+        if self.candidate_patterns is not None:
+            if len(self.candidate_patterns) != len(self.candidate_reduced_costs):
+                raise ValueError("candidate patterns and reduced costs must have the same length")
+            for pattern in self.candidate_patterns:
+                if any(
+                    not isinstance(count, int) or isinstance(count, bool) or count < 0
+                    for count in pattern
+                ):
+                    raise ValueError("candidate patterns must contain non-negative integers")
+            for reduced_cost in self.candidate_reduced_costs:
+                _require_finite("candidate_reduced_costs", reduced_cost)
         if self.dual_values is not None:
             if len(self.dual_values) == 0:
                 raise ValueError("dual_values must not be empty when present")

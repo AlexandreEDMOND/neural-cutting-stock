@@ -135,6 +135,27 @@ def test_trajectory_records_duals_in_the_declared_type_order() -> None:
     assert trajectory.to_dict()["iterations"][0]["dual_values"] == (0.5, 0.25)
 
 
+def test_trajectory_records_candidate_patterns_and_exact_pricing_result() -> None:
+    iteration = TrajectoryIteration(
+        1,
+        "optimal",
+        pricing_status="optimal",
+        candidate_patterns=((2, 0), (1, 1)),
+        candidate_reduced_costs=(0.25, -0.1),
+        best_reduced_cost=-0.1,
+    )
+
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(), (iteration,), TrajectoryStatus.CONVERGED, "no_improving_column"
+    )
+
+    output = trajectory.to_dict()["iterations"][0]
+    assert output["candidate_patterns"] == ((2, 0), (1, 1))
+    assert output["candidate_reduced_costs"] == (0.25, -0.1)
+    assert output["pricing_status"] == "optimal"
+    assert output["best_reduced_cost"] == -0.1
+
+
 def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
     iteration = TrajectoryIteration(
         1,
@@ -188,6 +209,30 @@ def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
                 "pricing_failed",
             ),
             "error_message",
+        ),
+        (
+            lambda: TrajectoryIteration(
+                1, "optimal", candidate_patterns=((1,),), candidate_reduced_costs=None
+            ),
+            "recorded together",
+        ),
+        (
+            lambda: TrajectoryIteration(
+                1,
+                "optimal",
+                candidate_patterns=((1,),),
+                candidate_reduced_costs=(float("nan"),),
+            ),
+            "candidate_reduced_costs",
+        ),
+        (
+            lambda: TrajectoryIteration(
+                1,
+                "optimal",
+                candidate_patterns=((1.0,),),
+                candidate_reduced_costs=(0.0,),
+            ),
+            "non-negative integers",
         ),
     ],
 )
