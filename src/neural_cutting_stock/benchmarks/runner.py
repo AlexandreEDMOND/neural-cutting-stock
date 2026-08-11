@@ -6,7 +6,6 @@ import json
 import math
 from dataclasses import dataclass, fields
 from pathlib import Path
-from typing import ClassVar
 
 from neural_cutting_stock.solver import ColumnGeneration, ColumnGenerationResult
 
@@ -31,7 +30,6 @@ class ClassicalBenchmarkConfig:
     max_runtime_seconds: float | None = None
     max_cg_iterations: int | None = None
     solver_version: str = "classical-cg-v1"
-    schema_version: ClassVar[str] = "benchmark-run-v1"
 
     def __post_init__(self) -> None:
         if not self.generators:
@@ -132,24 +130,7 @@ class ClassicalBenchmarkRunner:
             else result.termination_reason
         )
         return BenchmarkRunRecord(
-            run_id=run_id,
-            instance_id=generator.instance_id,
-            solver_mode=SolverMode.CLASSICAL,
-            solver_version=self.configuration.solver_version,
-            seed=generator.seed,
-            config_id=self.configuration.config_id,
-            repetition=repetition,
-            environment=self.configuration.environment,
-            stock_length=instance.stock_length,
-            kerf=instance.kerf,
-            number_of_piece_types=instance.number_of_types,
-            total_demand=sum(instance.demands),
-            requested_length=sum(
-                length * demand
-                for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
-            ),
-            length_distribution=generator.length_distribution,
-            demand_distribution=generator.demand_distribution,
+            **self._record_identity(generator, instance, repetition, run_id),
             run_status=status,
             master_status=_component_status(rmp.status if rmp else None),
             pricing_status=_component_status(pricing.status if pricing else None),
@@ -188,24 +169,7 @@ class ClassicalBenchmarkRunner:
 
     def _failed_record(self, generator, instance, repetition, run_id, message):
         return BenchmarkRunRecord(
-            run_id=run_id,
-            instance_id=generator.instance_id,
-            solver_mode=SolverMode.CLASSICAL,
-            solver_version=self.configuration.solver_version,
-            seed=generator.seed,
-            config_id=self.configuration.config_id,
-            repetition=repetition,
-            environment=self.configuration.environment,
-            stock_length=instance.stock_length,
-            kerf=instance.kerf,
-            number_of_piece_types=instance.number_of_types,
-            total_demand=sum(instance.demands),
-            requested_length=sum(
-                length * demand
-                for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
-            ),
-            length_distribution=generator.length_distribution,
-            demand_distribution=generator.demand_distribution,
+            **self._record_identity(generator, instance, repetition, run_id),
             run_status=RunStatus.SOLVER_ERROR,
             master_status="not_run",
             pricing_status="not_run",
@@ -213,6 +177,28 @@ class ClassicalBenchmarkRunner:
             termination_reason="solver_exception",
             error_message=message or "solver call failed",
         )
+
+    def _record_identity(self, generator, instance, repetition, run_id):
+        return {
+            "run_id": run_id,
+            "instance_id": generator.instance_id,
+            "solver_mode": SolverMode.CLASSICAL,
+            "solver_version": self.configuration.solver_version,
+            "seed": generator.seed,
+            "config_id": self.configuration.config_id,
+            "repetition": repetition,
+            "environment": self.configuration.environment,
+            "stock_length": instance.stock_length,
+            "kerf": instance.kerf,
+            "number_of_piece_types": instance.number_of_types,
+            "total_demand": sum(instance.demands),
+            "requested_length": sum(
+                length * demand
+                for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
+            ),
+            "length_distribution": generator.length_distribution,
+            "demand_distribution": generator.demand_distribution,
+        }
 
 
 def _component_status(status: int | None) -> str:
