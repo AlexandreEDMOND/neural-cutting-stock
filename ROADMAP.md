@@ -78,7 +78,7 @@ solveur classique.
 - [x] **P3.05** — Enregistrer colonnes retenues, progrès, durées et décisions de fallback.
 - [x] **P3.06** — Implémenter un validateur et un lecteur capables de rejouer une trajectoire.
 - [x] **P3.07** — Mesurer le surcoût de collecte et vérifier qu'il n'altère pas les décisions classiques.
-- [ ] **P3.08** — Définir une cible de colonne utile liée à une réduction mesurable du travail total.
+- [x] **P3.08** — Définir une cible de colonne utile liée à une réduction mesurable du travail total.
 - [ ] **P3.09** — Définir les partitions train, validation et test par graine et famille avant collecte.
 - [ ] **P3.10** — Construire le dataset à partir des seules trajectoires validées.
 - [ ] **P3.11** — Tester l'absence de fuite d'instance et l'invariance à l'ordre des types.

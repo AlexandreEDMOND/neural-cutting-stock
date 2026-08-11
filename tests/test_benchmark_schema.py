@@ -12,7 +12,9 @@ from neural_cutting_stock.benchmarks import (
     TrajectoryIteration,
     TrajectoryMetadata,
     TrajectoryStatus,
+    UsefulColumnTarget,
     collect_trajectory,
+    define_useful_column_target,
     read_trajectory,
     replay_trajectory,
     write_trajectory,
@@ -359,6 +361,59 @@ def test_trajectory_collection_measures_serialization_and_preserves_decisions() 
     assert replay.replayed_result.patterns == result.patterns
     assert replay.replayed_result.columns_added == result.columns_added
     assert replay.replayed_result.duplicate_columns == result.duplicate_columns
+
+
+def test_useful_column_target_requires_and_reports_measured_work_reduction() -> None:
+    pattern = (1, 1)
+    without_column = ColumnGenerationTrajectory(
+        _trajectory_metadata(),
+        (
+            TrajectoryIteration(
+                1,
+                "optimal",
+                rmp_runtime_seconds=0.3,
+                pricing_runtime_seconds=0.2,
+                column_management_runtime_seconds=0.1,
+            ),
+        ),
+        TrajectoryStatus.CONVERGED,
+        "no_improving_column",
+    )
+    with_column = ColumnGenerationTrajectory(
+        _trajectory_metadata(),
+        (
+            TrajectoryIteration(
+                1,
+                "optimal",
+                selected_patterns=(pattern,),
+                rmp_runtime_seconds=0.2,
+                pricing_runtime_seconds=0.1,
+                column_management_runtime_seconds=0.1,
+            ),
+        ),
+        TrajectoryStatus.CONVERGED,
+        "no_improving_column",
+    )
+
+    target = define_useful_column_target(without_column, with_column, pattern)
+
+    assert isinstance(target, UsefulColumnTarget)
+    assert target.work_without_column_seconds == pytest.approx(0.6)
+    assert target.work_with_column_seconds == pytest.approx(0.4)
+    assert target.work_reduction_seconds == pytest.approx(0.2)
+    assert target.useful
+
+
+def test_useful_column_target_rejects_missing_work_measurement() -> None:
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(),
+        (TrajectoryIteration(1, "optimal", selected_patterns=((1, 1),)),),
+        TrajectoryStatus.CONVERGED,
+        "no_improving_column",
+    )
+
+    with pytest.raises(ValueError, match="complete column-generation work"):
+        define_useful_column_target(trajectory, trajectory, (1, 1))
 
 
 def test_trajectory_replay_rejects_changed_dual() -> None:

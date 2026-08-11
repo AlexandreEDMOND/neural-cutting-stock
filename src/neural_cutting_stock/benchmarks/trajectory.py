@@ -298,6 +298,71 @@ class TrajectoryCollectionMeasurement:
     serialized_size_bytes: int
 
 
+@dataclass(frozen=True, slots=True)
+class UsefulColumnTarget:
+    """Counterfactual target for a column that reduces classical CG work."""
+
+    pattern: tuple[int, ...]
+    work_without_column_seconds: float
+    work_with_column_seconds: float
+    work_reduction_seconds: float
+    useful: bool
+
+
+def define_useful_column_target(
+    without_column: ColumnGenerationTrajectory,
+    with_column: ColumnGenerationTrajectory,
+    pattern: tuple[int, ...],
+    tolerance: float = 1e-12,
+) -> UsefulColumnTarget:
+    """Label a column from two comparable, measured classical trajectories.
+
+    Work is the recorded RMP, pricing and column-management time. A missing
+    component is rejected instead of being treated as zero.
+    """
+
+    if not math.isfinite(tolerance) or tolerance < 0:
+        raise ValueError("tolerance must be finite and non-negative")
+    if without_column.metadata.instance_id != with_column.metadata.instance_id:
+        raise ValueError("trajectories must describe the same instance")
+    if without_column.metadata.config_id != with_column.metadata.config_id:
+        raise ValueError("trajectories must use the same configuration")
+    if len(pattern) == 0 or any(
+        not isinstance(value, int) or isinstance(value, bool) or value < 0 for value in pattern
+    ):
+        raise ValueError("pattern must contain non-negative integers")
+    selected_patterns = tuple(
+        selected
+        for iteration in with_column.iterations
+        for selected in (iteration.selected_patterns or ())
+    )
+    if pattern not in selected_patterns:
+        raise ValueError("pattern must be selected in the with-column trajectory")
+
+    without_work = _trajectory_work_seconds(without_column)
+    with_work = _trajectory_work_seconds(with_column)
+    reduction = without_work - with_work
+    return UsefulColumnTarget(
+        pattern,
+        without_work,
+        with_work,
+        reduction,
+        reduction > tolerance,
+    )
+
+
+def _trajectory_work_seconds(trajectory: ColumnGenerationTrajectory) -> float:
+    durations = (
+        "rmp_runtime_seconds",
+        "pricing_runtime_seconds",
+        "column_management_runtime_seconds",
+    )
+    values = [getattr(iteration, name) for iteration in trajectory.iterations for name in durations]
+    if any(value is None for value in values):
+        raise ValueError("trajectory lacks complete column-generation work measurements")
+    return sum(value for value in values if value is not None)
+
+
 def collect_trajectory(
     result: Any,
     metadata: TrajectoryMetadata,

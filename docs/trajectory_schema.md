@@ -53,3 +53,19 @@ décision classique. La mesure expose `collection_runtime_seconds` et `serialize
 Chaque trajectoire collectée doit ensuite être passée à `replay_trajectory` ; la comparaison des
 statuts et des motifs constitue le contrôle de non-altération. Le temps de collecte est rapporté
 séparément et ne remplace jamais le temps mur-à-mur du solveur.
+
+## Cible de colonne utile
+
+P3.08 définit une cible contrefactuelle, sans entraîner ni sélectionner de modèle. Pour une même
+instance et configuration, deux trajectoires classiques sont comparées : une référence sans la
+colonne et une exécution où la colonne est retenue. Le travail mesuré est la somme des durées RMP,
+pricing et gestion des colonnes de toutes les itérations. La réduction est :
+
+```text
+work_reduction_seconds = work_without_column_seconds - work_with_column_seconds
+```
+
+La colonne est `useful = true` seulement si cette réduction est strictement supérieure à la
+tolérance déclarée. Les deux trajectoires doivent fournir toutes les durées ; une mesure absente
+n'est jamais remplacée par zéro. La cible ne porte donc ni sur le seul temps d'inférence ni sur la
+qualité finale, qui reste vérifiée séparément par le solveur classique.
