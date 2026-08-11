@@ -125,8 +125,10 @@ class LearningInterfaceTests(unittest.TestCase):
 
         instance = CuttingStockInstance(10, 0, [2, 3], [2, 2])
         pool = deterministic_candidate_pool(instance, (0.4, 0.7), max_candidates=2)
+        complete_pool = deterministic_candidate_pool(instance, (0.4, 0.7))
 
         self.assertEqual(len(pool), 2)
+        self.assertEqual(pool, complete_pool[:2])
         exact = ExactPricing(instance).solve((0.4, 0.7))
         self.assertEqual(exact.pattern, (2, 2))
         self.assertAlmostEqual(exact.reduced_cost, -1.2)

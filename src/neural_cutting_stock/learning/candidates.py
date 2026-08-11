@@ -2,6 +2,7 @@
 
 import math
 from collections.abc import Sequence
+from heapq import nsmallest
 from itertools import product
 from numbers import Real
 
@@ -36,21 +37,30 @@ def deterministic_candidate_pool(
     for pattern in excluded:
         _validate_pattern(pattern, number_of_types, "current_patterns")
 
-    candidates = []
-    for pattern in product(*(range(demand + 1) for demand in instance.demands)):
-        if not any(pattern) or pattern in excluded:
-            continue
-        if instance.capacity_used(pattern) > instance.stock_length:
-            continue
-        reduced_cost = 1.0 - math.fsum(
-            dual * count for dual, count in zip(dual_values, pattern, strict=True)
-        )
-        candidates.append(PatternCandidate(pattern, reduced_cost))
+    def candidate_patterns():
+        for pattern in product(*(range(demand + 1) for demand in instance.demands)):
+            if not any(pattern) or pattern in excluded:
+                continue
+            if instance.capacity_used(pattern) > instance.stock_length:
+                continue
+            reduced_cost = 1.0 - math.fsum(
+                dual * count for dual, count in zip(dual_values, pattern, strict=True)
+            )
+            yield PatternCandidate(pattern, reduced_cost)
 
-    candidates.sort(key=lambda candidate: (candidate.reduced_cost, candidate.pattern))
+    candidates = candidate_patterns()
     if max_candidates is not None:
-        candidates = candidates[:max_candidates]
-    return tuple(candidates)
+        return tuple(
+            nsmallest(
+                max_candidates,
+                candidates,
+                key=lambda candidate: (candidate.reduced_cost, candidate.pattern),
+            )
+        )
+
+    result = list(candidates)
+    result.sort(key=lambda candidate: (candidate.reduced_cost, candidate.pattern))
+    return tuple(result)
 
 
 def _validate_dual_values(instance: CuttingStockInstance, dual_values: Sequence[float]) -> None:
