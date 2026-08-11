@@ -149,6 +149,11 @@ def _finite_nonnegative(name: str, value: float) -> None:
         raise ValueError(f"{name} must be non-negative")
 
 
+def _validate_positive_integer(value: object, name: str) -> None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(f"{name} must be a positive integer")
+
+
 def _validate_pattern(pattern: tuple[int, ...], number_of_types: int, name: str) -> None:
     if len(pattern) != number_of_types:
         raise ValueError(f"{name} patterns must follow piece_lengths order")

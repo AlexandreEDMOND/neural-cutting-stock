@@ -8,7 +8,7 @@ from numbers import Real
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
-from .interfaces import PatternCandidate
+from .interfaces import PatternCandidate, _validate_positive_integer
 
 
 def deterministic_candidate_pool(
@@ -25,12 +25,8 @@ def deterministic_candidate_pool(
     """
 
     _validate_dual_values(instance, dual_values)
-    if max_candidates is not None and (
-        isinstance(max_candidates, bool)
-        or not isinstance(max_candidates, int)
-        or max_candidates < 1
-    ):
-        raise ValueError("max_candidates must be a positive integer when present")
+    if max_candidates is not None:
+        _validate_positive_integer(max_candidates, "max_candidates")
 
     number_of_types = instance.number_of_types
     excluded = set(current_patterns)

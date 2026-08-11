@@ -119,6 +119,16 @@ def test_neural_solver_rejects_invalid_resource_limits() -> None:
         NeuralColumnGeneration(instance, policy, max_iterations=True)
 
 
+def test_neural_solver_rejects_invalid_candidate_budget() -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+    policy = LearnedColumnSelectionPolicy(MisleadingScorer())
+
+    import pytest
+
+    with pytest.raises(ValueError, match="candidate_budget must be a positive integer"):
+        NeuralColumnGeneration(instance, policy, candidate_budget=0)
+
+
 def test_neural_solver_retains_iteration_timeout_without_claiming_convergence() -> None:
     instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
     result = NeuralColumnGeneration(

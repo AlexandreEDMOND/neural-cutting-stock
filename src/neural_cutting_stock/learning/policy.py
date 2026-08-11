@@ -7,6 +7,7 @@ from .interfaces import (
     ColumnSelectionDecision,
     PatternCandidate,
     PricingState,
+    _validate_positive_integer,
 )
 
 
@@ -18,12 +19,8 @@ class LearnedColumnSelectionPolicy:
     """
 
     def __init__(self, model: ColumnScoringModel, candidate_budget: int | None = None) -> None:
-        if candidate_budget is not None and (
-            isinstance(candidate_budget, bool)
-            or not isinstance(candidate_budget, int)
-            or candidate_budget < 1
-        ):
-            raise ValueError("candidate_budget must be a positive integer when present")
+        if candidate_budget is not None:
+            _validate_positive_integer(candidate_budget, "candidate_budget")
         self.model = model
         self.candidate_budget = candidate_budget
 

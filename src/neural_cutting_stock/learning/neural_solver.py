@@ -8,7 +8,7 @@ from neural_cutting_stock.problem import CuttingStockInstance
 from neural_cutting_stock.solver import ColumnGeneration, ColumnGenerationResult
 
 from .candidates import deterministic_candidate_pool
-from .interfaces import ColumnSelectionPolicy, PricingState
+from .interfaces import ColumnSelectionPolicy, PricingState, _validate_positive_integer
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,12 +35,8 @@ class NeuralColumnGeneration:
         max_iterations: int | None = None,
         instance_id: str | None = None,
     ) -> None:
-        if candidate_budget is not None and (
-            isinstance(candidate_budget, bool)
-            or not isinstance(candidate_budget, int)
-            or candidate_budget < 1
-        ):
-            raise ValueError("candidate_budget must be a positive integer when present")
+        if candidate_budget is not None:
+            _validate_positive_integer(candidate_budget, "candidate_budget")
         if not math.isfinite(reduced_cost_tolerance) or reduced_cost_tolerance < 0:
             raise ValueError("reduced_cost_tolerance must be finite and non-negative")
         if max_runtime_seconds is not None and (
