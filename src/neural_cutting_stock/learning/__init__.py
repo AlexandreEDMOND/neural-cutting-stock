@@ -1,5 +1,6 @@
 """Stable interfaces between classical column generation and learned policies."""
 
+from .candidates import CANDIDATE_POOL_SCHEMA_VERSION, deterministic_candidate_pool
 from .features import FEATURE_SCHEMA_VERSION, pricing_features
 from .interfaces import (
     LEARNING_INTERFACE_SCHEMA_VERSION,
@@ -21,4 +22,6 @@ __all__ = [
     "PricingState",
     "FEATURE_SCHEMA_VERSION",
     "pricing_features",
+    "CANDIDATE_POOL_SCHEMA_VERSION",
+    "deterministic_candidate_pool",
 ]
