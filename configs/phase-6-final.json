@@ -18,6 +18,52 @@
     "training_partition": "train",
     "selection_partition": "validation"
   },
+  "final_instances": [
+    {
+      "target_size_class": "SMALL",
+      "seeds": [101, 102, 103],
+      "stock_length": 100.0,
+      "kerf": 0.0,
+      "number_of_types": 2,
+      "piece_length_range": [10, 90],
+      "demand_range": [1, 10],
+      "length_distribution": "uniform_integer_v1",
+      "demand_distribution": "uniform_integer_v1"
+    },
+    {
+      "target_size_class": "MEDIUM",
+      "seeds": [201, 202, 203],
+      "stock_length": 100.0,
+      "kerf": 0.0,
+      "number_of_types": 4,
+      "piece_length_range": [10, 90],
+      "demand_range": [1, 10],
+      "length_distribution": "uniform_integer_v1",
+      "demand_distribution": "uniform_integer_v1"
+    },
+    {
+      "target_size_class": "LARGE",
+      "seeds": [301, 302, 303],
+      "stock_length": 100.0,
+      "kerf": 0.0,
+      "number_of_types": 6,
+      "piece_length_range": [10, 90],
+      "demand_range": [1, 10],
+      "length_distribution": "uniform_integer_v1",
+      "demand_distribution": "uniform_integer_v1"
+    },
+    {
+      "target_size_class": "XL",
+      "seeds": [401, 402, 403],
+      "stock_length": 100.0,
+      "kerf": 0.0,
+      "number_of_types": 8,
+      "piece_length_range": [10, 90],
+      "demand_range": [1, 10],
+      "length_distribution": "uniform_integer_v1",
+      "demand_distribution": "uniform_integer_v1"
+    }
+  ],
   "protocol": {
     "benchmark_schema_version": "benchmark-run-v1",
     "comparison": "paired_instance_id",
@@ -34,6 +80,7 @@
   "files": {
     "dependency_lock": "uv.lock",
     "partition_manifest": "data/phase-3-corpus/manifest.json",
-    "model_artifact": "models/linear-scorer-v1-zero-weight.json"
+    "model_artifact": "models/linear-scorer-v1-zero-weight.json",
+    "final_instance_manifest": "data/phase-6-final/manifest.json"
   }
 }

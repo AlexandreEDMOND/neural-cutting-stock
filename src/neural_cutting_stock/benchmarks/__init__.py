@@ -23,6 +23,13 @@ from .dataset import (
     build_dataset,
     load_phase3_dataset,
 )
+from .final_manifest import (
+    FINAL_MANIFEST_SCHEMA_VERSION,
+    SIZE_CLASSES,
+    build_final_manifest,
+    validate_final_manifest,
+    write_final_manifest,
+)
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
 from .paired_runner import PairedBenchmarkConfig, PairedBenchmarkRunner
@@ -77,6 +84,11 @@ __all__ = [
     "RunStatus",
     "SolverMode",
     "SyntheticInstanceGenerator",
+    "FINAL_MANIFEST_SCHEMA_VERSION",
+    "SIZE_CLASSES",
+    "build_final_manifest",
+    "validate_final_manifest",
+    "write_final_manifest",
     "BenchmarkMatrix",
     "DistributionSpec",
     "DATASET_SCHEMA_VERSION",

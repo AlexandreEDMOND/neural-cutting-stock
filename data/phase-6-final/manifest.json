@@ -1,0 +1,504 @@
+{
+  "classification": {
+    "basis": "pre_evaluation_workload_stratum",
+    "field": "target_size_class",
+    "measured_field": "size_class",
+    "version": "size-class-v1"
+  },
+  "instances": [
+    {
+      "demands": [
+        2,
+        8,
+        2,
+        3,
+        4,
+        9
+      ],
+      "family_id": "ecdaf63fdab485f4525ae4c3f6239db5fbf224d37475377f863478d7734f8ab7",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 301,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "2db8f04b0672b4e39578ab96c31e1989f5e93a806b484a143f83761c7a1f4c50",
+      "kerf": 0.0,
+      "piece_lengths": [
+        40.0,
+        42.0,
+        61.0,
+        68.0,
+        73.0,
+        79.0
+      ],
+      "seed": 301,
+      "stock_length": 100.0,
+      "target_size_class": "LARGE"
+    },
+    {
+      "demands": [
+        10,
+        2
+      ],
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 2,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 103,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "2e8d6ecbaa342a376ff4bf4c2261c4dc9641091f94c4aebbb8364b9e2584f6af",
+      "kerf": 0.0,
+      "piece_lengths": [
+        37.0,
+        68.0
+      ],
+      "seed": 103,
+      "stock_length": 100.0,
+      "target_size_class": "SMALL"
+    },
+    {
+      "demands": [
+        7,
+        4,
+        9,
+        7,
+        7,
+        1
+      ],
+      "family_id": "ecdaf63fdab485f4525ae4c3f6239db5fbf224d37475377f863478d7734f8ab7",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 302,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "35714b99e7af814094a2bd53d0a82a4c33fb1c3bcdedddf861740c744140d125",
+      "kerf": 0.0,
+      "piece_lengths": [
+        34.0,
+        62.0,
+        70.0,
+        78.0,
+        80.0,
+        81.0
+      ],
+      "seed": 302,
+      "stock_length": 100.0,
+      "target_size_class": "LARGE"
+    },
+    {
+      "demands": [
+        6,
+        9
+      ],
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 2,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 101,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "3eb804881591494848f167ba7b26a2b9267a3ba54e1727e6932ff3b14cd58e50",
+      "kerf": 0.0,
+      "piece_lengths": [
+        34.0,
+        84.0
+      ],
+      "seed": 101,
+      "stock_length": 100.0,
+      "target_size_class": "SMALL"
+    },
+    {
+      "demands": [
+        5,
+        3,
+        2,
+        2,
+        8,
+        5,
+        3,
+        2
+      ],
+      "family_id": "268daf05c1f28c536573f20bbd06c4dba4453728268e5cb8190679b0eaaea3e4",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 8,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 401,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "5d7cde942f6f9a9811561fb1c16bb97f0f197f7fd567dcb7f41c33103c0406a0",
+      "kerf": 0.0,
+      "piece_lengths": [
+        22.0,
+        45.0,
+        50.0,
+        60.0,
+        64.0,
+        71.0,
+        73.0,
+        83.0
+      ],
+      "seed": 401,
+      "stock_length": 100.0,
+      "target_size_class": "XL"
+    },
+    {
+      "demands": [
+        7,
+        8,
+        1,
+        3,
+        3,
+        8,
+        10,
+        10
+      ],
+      "family_id": "268daf05c1f28c536573f20bbd06c4dba4453728268e5cb8190679b0eaaea3e4",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 8,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 402,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "6a97075552eaa33fc90b205108ea38eed24df5e00e18099237a5924d12beab13",
+      "kerf": 0.0,
+      "piece_lengths": [
+        22.0,
+        48.0,
+        61.0,
+        62.0,
+        63.0,
+        68.0,
+        72.0,
+        80.0
+      ],
+      "seed": 402,
+      "stock_length": 100.0,
+      "target_size_class": "XL"
+    },
+    {
+      "demands": [
+        1,
+        4,
+        10,
+        5
+      ],
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 203,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "a0828ac52b3d58f01bfdadbd2eee43a27a4dc2fb83b298eb885be71d25ab31a2",
+      "kerf": 0.0,
+      "piece_lengths": [
+        15.0,
+        21.0,
+        72.0,
+        86.0
+      ],
+      "seed": 203,
+      "stock_length": 100.0,
+      "target_size_class": "MEDIUM"
+    },
+    {
+      "demands": [
+        10,
+        5,
+        6,
+        8
+      ],
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 201,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "b09c9bbfd876bc77c5440191ebfb1a02f5aa41b774b446ae71d1f3ca862891e9",
+      "kerf": 0.0,
+      "piece_lengths": [
+        10.0,
+        18.0,
+        51.0,
+        63.0
+      ],
+      "seed": 201,
+      "stock_length": 100.0,
+      "target_size_class": "MEDIUM"
+    },
+    {
+      "demands": [
+        6,
+        5,
+        7,
+        9,
+        3,
+        7,
+        2,
+        9
+      ],
+      "family_id": "268daf05c1f28c536573f20bbd06c4dba4453728268e5cb8190679b0eaaea3e4",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 8,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 403,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "b7dc915107b5020410fb5597772f3b4a18c1dc4ded8e114a35d3dc5e895e96cc",
+      "kerf": 0.0,
+      "piece_lengths": [
+        14.0,
+        29.0,
+        30.0,
+        41.0,
+        44.0,
+        53.0,
+        71.0,
+        89.0
+      ],
+      "seed": 403,
+      "stock_length": 100.0,
+      "target_size_class": "XL"
+    },
+    {
+      "demands": [
+        10,
+        3,
+        7,
+        9,
+        8,
+        7
+      ],
+      "family_id": "ecdaf63fdab485f4525ae4c3f6239db5fbf224d37475377f863478d7734f8ab7",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 303,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "d71a500910a2039d84f38704af75d2036160060c50841a11b3d98be280d6f7fd",
+      "kerf": 0.0,
+      "piece_lengths": [
+        14.0,
+        21.0,
+        34.0,
+        40.0,
+        43.0,
+        82.0
+      ],
+      "seed": 303,
+      "stock_length": 100.0,
+      "target_size_class": "LARGE"
+    },
+    {
+      "demands": [
+        7,
+        4,
+        1,
+        7
+      ],
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 202,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "d98437a9e4d1ee8f330f95435351e503b39e6dc899a005394a24ce46ef0bfc7d",
+      "kerf": 0.0,
+      "piece_lengths": [
+        35.0,
+        59.0,
+        62.0,
+        70.0
+      ],
+      "seed": 202,
+      "stock_length": 100.0,
+      "target_size_class": "MEDIUM"
+    },
+    {
+      "demands": [
+        6,
+        3
+      ],
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "generator": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          1,
+          10
+        ],
+        "kerf": 0.0,
+        "length_distribution": "uniform_integer_v1",
+        "name": "uniform_integer_v1",
+        "number_of_types": 2,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "seed": 102,
+        "stock_length": 100.0,
+        "version": "1"
+      },
+      "instance_id": "e89f36850422c2316a18c0e5c220f81c1d6ab1fbeb7c500622d6d755ac5409b2",
+      "kerf": 0.0,
+      "piece_lengths": [
+        28.0,
+        88.0
+      ],
+      "seed": 102,
+      "stock_length": 100.0,
+      "target_size_class": "SMALL"
+    }
+  ],
+  "manifest_id": "cc139868f3500f38b74dc0c3db41dc93582593a08bc4ff90dafa102f30e4d1f7",
+  "schema_version": "phase-6-instance-manifest-v1",
+  "source": {
+    "phase3_manifest_schema_version": "phase-3-corpus-v1"
+  },
+  "statistics": {
+    "instance_count": 12,
+    "target_size_class_counts": {
+      "LARGE": 3,
+      "MEDIUM": 3,
+      "SMALL": 3,
+      "XL": 3
+    }
+  }
+}

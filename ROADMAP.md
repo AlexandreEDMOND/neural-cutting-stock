@@ -143,7 +143,7 @@ qualité ; sinon la politique supervisée de Phase 4 reste la solution retenue e
 Objectif : répondre sans ambiguïté à la question de recherche sur des instances non vues.
 
 - [x] **P6.01** — Geler code, dépendances, modèles, configurations, partitions et protocole final.
-- [ ] **P6.02** — Générer et valider le manifeste final des instances non vues et des catégories de taille.
+- [x] **P6.02** — Générer et valider le manifeste final des instances non vues et des catégories de taille.
 - [ ] **P6.03** — Exécuter la baseline classique finale avec données brutes et environnement tracés.
 - [ ] **P6.04** — Exécuter le mode neural final sur exactement les mêmes instances et ressources.
 - [ ] **P6.05** — Vérifier chaque paire et calculer les différences d'objectif avant toute agrégation.
