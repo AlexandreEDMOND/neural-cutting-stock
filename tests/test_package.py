@@ -139,6 +139,7 @@ class LearningInterfaceTests(unittest.TestCase):
             PatternCandidate,
             PricingState,
             pricing_features,
+            pricing_features_batch,
         )
 
         state = PricingState(
@@ -146,6 +147,7 @@ class LearningInterfaceTests(unittest.TestCase):
         )
         candidates = (PatternCandidate((1, 0), 0.2), PatternCandidate((0, 1), 0.4))
         rows = tuple(pricing_features(state, candidate) for candidate in candidates)
+        assert pricing_features_batch(state, candidates) == rows
         model = LinearColumnScoringModel.fit(rows, (0.0, 1.0))
 
         scores = model.score(state, candidates)
@@ -153,6 +155,13 @@ class LearningInterfaceTests(unittest.TestCase):
         assert model.feature_width == len(rows[0])
         assert [score.pattern for score in scores] == [(1, 0), (0, 1)]
         assert scores[0].score < scores[1].score
+
+    def test_batch_feature_preparation_accepts_no_candidates(self) -> None:
+        from neural_cutting_stock.learning import PricingState, pricing_features_batch
+
+        state = PricingState("instance-1", 1, 100.0, 0.0, (20.0,), (3,), (0.5,), ())
+
+        assert pricing_features_batch(state, ()) == ()
 
     def test_linear_model_rejects_invalid_training_data(self) -> None:
         import pytest

@@ -2,7 +2,7 @@
 
 from .candidates import deterministic_candidate_pool
 from .evaluation import EVALUATION_SCHEMA_VERSION, RANKING_CUTOFFS, evaluate_model
-from .features import FEATURE_SCHEMA_VERSION, pricing_features
+from .features import FEATURE_SCHEMA_VERSION, pricing_features, pricing_features_batch
 from .interfaces import (
     LEARNING_INTERFACE_SCHEMA_VERSION,
     ColumnScoringModel,
@@ -32,6 +32,7 @@ __all__ = [
     "PricingState",
     "FEATURE_SCHEMA_VERSION",
     "pricing_features",
+    "pricing_features_batch",
     "EVALUATION_SCHEMA_VERSION",
     "RANKING_CUTOFFS",
     "evaluate_model",

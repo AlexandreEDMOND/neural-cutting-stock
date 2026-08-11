@@ -5,7 +5,7 @@ from collections.abc import Sequence
 
 import numpy as np
 
-from .features import FEATURE_SCHEMA_VERSION, pricing_features
+from .features import FEATURE_SCHEMA_VERSION, pricing_features_batch
 from .interfaces import PatternCandidate, PatternScore, PricingState
 
 MODEL_SCHEMA_VERSION = "linear-scorer-v1"
@@ -62,8 +62,9 @@ class LinearColumnScoringModel:
 
         scores = []
         weights = np.asarray(self._weights)
-        for candidate in candidates:
-            features = pricing_features(state, candidate)
+        for candidate, features in zip(
+            candidates, pricing_features_batch(state, candidates), strict=True
+        ):
             if len(features) != self.feature_width:
                 raise ValueError(
                     f"feature width differs from model: expected {self.feature_width}, "
