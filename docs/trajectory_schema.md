@@ -43,3 +43,13 @@ La collecte des états du RMP et des identifiants d'instance est réalisée par 
 duales et de pricing sont définis par P3.03 et P3.04 ; P3.05 complète le contrat des colonnes
 retenues, du progrès, des durées et du fallback. La construction d'un lecteur et le rejeu sont
 réservés à P3.06.
+
+## Surcoût de collecte
+
+`collect_trajectory(result, metadata)` matérialise une trajectoire uniquement à partir des
+observations immuables déjà produites par `ColumnGeneration`, puis mesure la construction et la
+sérialisation JSON. Il n'est donc pas appelé dans la boucle de pricing et ne peut pas modifier une
+décision classique. La mesure expose `collection_runtime_seconds` et `serialized_size_bytes`.
+Chaque trajectoire collectée doit ensuite être passée à `replay_trajectory` ; la comparaison des
+statuts et des motifs constitue le contrôle de non-altération. Le temps de collecte est rapporté
+séparément et ne remplace jamais le temps mur-à-mur du solveur.

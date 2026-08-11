@@ -5,6 +5,7 @@ import math
 from dataclasses import dataclass, fields
 from enum import StrEnum
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 from neural_cutting_stock.problem import CuttingStockInstance
@@ -286,6 +287,73 @@ class TrajectoryValidation:
     def raise_if_invalid(self) -> None:
         if self.errors:
             raise ValueError("invalid trajectory: " + "; ".join(self.errors))
+
+
+@dataclass(frozen=True, slots=True)
+class TrajectoryCollectionMeasurement:
+    """Measured cost of materializing and serializing one solver result."""
+
+    trajectory: ColumnGenerationTrajectory
+    collection_runtime_seconds: float
+    serialized_size_bytes: int
+
+
+def collect_trajectory(
+    result: Any,
+    metadata: TrajectoryMetadata,
+) -> TrajectoryCollectionMeasurement:
+    """Collect a completed result without re-entering the solver loop."""
+
+    started = perf_counter()
+    iterations = []
+    for index, state in enumerate(result.rmp_states):
+        next_patterns = (
+            result.rmp_states[index + 1].patterns
+            if index + 1 < len(result.rmp_states)
+            else result.patterns
+        )
+        selected_patterns = tuple(
+            pattern for pattern in next_patterns if pattern not in state.patterns
+        )
+        iterations.append(
+            TrajectoryIteration(
+                iteration_index=state.iteration_index,
+                rmp_status="optimal" if state.result.status == 0 else str(state.result.status),
+                rmp_objective_value=state.result.objective_value,
+                dual_values=state.result.dual_values,
+                initial_column_count=len(state.patterns),
+                final_column_count=len(next_patterns),
+                columns_added=len(selected_patterns),
+                duplicate_column_count=(
+                    result.duplicate_columns if index == len(result.rmp_states) - 1 else 0
+                ),
+                selected_patterns=selected_patterns,
+                exact_fallback=True,
+                rmp_runtime_seconds=state.runtime_seconds,
+                instance_id=state.instance_id,
+                rmp_column_values=state.result.column_values,
+                rmp_pattern_count=len(state.patterns),
+            )
+        )
+    if not iterations:
+        raise ValueError("cannot collect a result without RMP states")
+    status = {
+        "converged": TrajectoryStatus.CONVERGED,
+        "limit_reached": TrajectoryStatus.RESOURCE_LIMIT,
+    }.get(result.status, TrajectoryStatus.FAILED)
+    trajectory = ColumnGenerationTrajectory(
+        metadata,
+        tuple(iterations),
+        status,
+        result.termination_reason,
+        None if status is TrajectoryStatus.CONVERGED else result.termination_reason,
+    )
+    serialized_size = len(json.dumps(trajectory.to_dict(), sort_keys=True).encode("utf-8"))
+    return TrajectoryCollectionMeasurement(
+        trajectory,
+        perf_counter() - started,
+        serialized_size,
+    )
 
 
 class TrajectoryReader:

@@ -12,6 +12,7 @@ from neural_cutting_stock.benchmarks import (
     TrajectoryIteration,
     TrajectoryMetadata,
     TrajectoryStatus,
+    collect_trajectory,
     read_trajectory,
     replay_trajectory,
     write_trajectory,
@@ -332,6 +333,32 @@ def test_trajectory_can_be_read_written_and_replayed(tmp_path) -> None:
     assert replay.replayed_result is not None
     assert replay.replayed_result.patterns == result.patterns
     assert path.read_bytes() == second_path.read_bytes()
+
+
+def test_trajectory_collection_measures_serialization_and_preserves_decisions() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+    result = ColumnGeneration(instance, instance_id="instance-1").solve()
+    measurement = collect_trajectory(
+        result,
+        _trajectory_metadata(
+            stock_length=instance.stock_length,
+            kerf=instance.kerf,
+            piece_lengths=instance.piece_lengths,
+            demands=instance.demands,
+            dual_type_order=instance.piece_lengths,
+        ),
+    )
+
+    replay = replay_trajectory(measurement.trajectory)
+
+    assert measurement.collection_runtime_seconds > 0
+    assert measurement.serialized_size_bytes > 0
+    assert measurement.trajectory.iterations[-1].final_column_count == len(result.patterns)
+    assert replay.valid
+    assert replay.replayed_result is not None
+    assert replay.replayed_result.patterns == result.patterns
+    assert replay.replayed_result.columns_added == result.columns_added
+    assert replay.replayed_result.duplicate_columns == result.duplicate_columns
 
 
 def test_trajectory_replay_rejects_changed_dual() -> None:
