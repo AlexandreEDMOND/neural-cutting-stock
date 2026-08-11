@@ -18,6 +18,14 @@ def test_instance_normalizes_piece_types_and_applies_kerf() -> None:
     assert instance.capacity_used((1, 2)) == 76
 
 
+def test_instance_is_invariant_to_piece_type_order() -> None:
+    first = CuttingStockInstance(100, 2, [30, 10, 30], [2, 4, 3])
+    reordered = CuttingStockInstance(100, 2, [10, 30, 30], [4, 3, 2])
+
+    assert reordered == first
+    assert reordered.initial_patterns() == first.initial_patterns()
+
+
 @pytest.mark.parametrize(
     ("kwargs", "message"),
     [

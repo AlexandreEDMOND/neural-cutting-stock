@@ -11,8 +11,8 @@ from neural_cutting_stock.benchmarks import (
 )
 
 
-def _trajectory(trajectory_id: str = "trajectory-1"):
-    metadata = _trajectory_metadata(trajectory_id=trajectory_id)
+def _trajectory(trajectory_id: str = "trajectory-1", instance_id: str = "instance-1"):
+    metadata = _trajectory_metadata(trajectory_id=trajectory_id, instance_id=instance_id)
     return ColumnGenerationTrajectory(
         metadata,
         (
@@ -44,6 +44,36 @@ def test_dataset_replays_sources_and_preserves_partitioned_examples(monkeypatch)
     assert [example.selected for example in dataset.examples] == [False, True]
     assert dataset.examples[1].partition is DatasetPartition.TRAIN
     assert dataset.to_dict()["examples"][1]["candidate_pattern"] == [1, 1]
+
+
+def test_dataset_rejects_instance_leakage_across_partitions(monkeypatch) -> None:
+    first = _trajectory("trajectory-1")
+    second = _trajectory("trajectory-2")
+    monkeypatch.setattr(
+        "neural_cutting_stock.benchmarks.dataset.replay_trajectory",
+        lambda value: type("Validation", (), {"valid": True, "errors": ()})(),
+    )
+
+    with pytest.raises(ValueError, match="appears in multiple partitions"):
+        build_dataset(
+            (first, second),
+            {"trajectory-1": DatasetPartition.TRAIN, "trajectory-2": DatasetPartition.TEST},
+        )
+
+
+def test_dataset_is_invariant_to_trajectory_input_order(monkeypatch) -> None:
+    first = _trajectory("trajectory-1", "instance-1")
+    second = _trajectory("trajectory-2", "instance-2")
+    monkeypatch.setattr(
+        "neural_cutting_stock.benchmarks.dataset.replay_trajectory",
+        lambda value: type("Validation", (), {"valid": True, "errors": ()})(),
+    )
+    partitions = {"trajectory-1": DatasetPartition.TRAIN, "trajectory-2": DatasetPartition.TEST}
+
+    ordered = build_dataset((first, second), partitions)
+    reversed_order = build_dataset((second, first), partitions)
+
+    assert reversed_order == ordered
 
 
 def test_dataset_rejects_invalid_trajectory_without_partial_output(monkeypatch) -> None:

@@ -80,6 +80,7 @@ def build_dataset(
         raise ValueError("partitions must contain exactly one entry per trajectory")
 
     examples: list[DatasetExample] = []
+    instance_partitions: dict[str, DatasetPartition] = {}
     for trajectory in ordered:
         validation = replay_trajectory(trajectory)
         if not validation.valid:
@@ -88,6 +89,13 @@ def build_dataset(
                 + "; ".join(validation.errors)
             )
         partition = DatasetPartition(partitions[trajectory.metadata.trajectory_id])
+        previous_partition = instance_partitions.setdefault(
+            trajectory.metadata.instance_id, partition
+        )
+        if previous_partition is not partition:
+            raise ValueError(
+                f"instance {trajectory.metadata.instance_id!r} appears in multiple partitions"
+            )
         for iteration in trajectory.iterations:
             if iteration.candidate_patterns is None:
                 continue

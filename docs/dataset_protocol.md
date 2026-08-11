@@ -11,4 +11,5 @@ d'exemple, et aucune valeur absente n'est remplacée artificiellement.
 
 Les identifiants de trajectoire sont uniques et triés avant matérialisation afin que la sérialisation
 soit indépendante de l'ordre d'entrée. Les partitions doivent couvrir exactement les trajectoires
-fournies ; elles ne sont pas déduites des données de l'instance.
+fournies ; elles ne sont pas déduites des données de l'instance. Une même `instance_id` ne peut pas
+apparaître dans plusieurs partitions, afin d'interdire une fuite entre train, validation et test.

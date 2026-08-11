@@ -81,7 +81,7 @@ solveur classique.
 - [x] **P3.08** — Définir une cible de colonne utile liée à une réduction mesurable du travail total.
 - [x] **P3.09** — Définir les partitions train, validation et test par graine et famille avant collecte.
 - [x] **P3.10** — Construire le dataset à partir des seules trajectoires validées.
-- [ ] **P3.11** — Tester l'absence de fuite d'instance et l'invariance à l'ordre des types.
+- [x] **P3.11** — Tester l'absence de fuite d'instance et l'invariance à l'ordre des types.
 - [ ] **P3.12** — Produire un petit corpus versionné ou reproductible avec manifeste et statistiques réelles.
 - [ ] **P3.13** — Auditer la Phase 3 et retirer code mort, doublons et champs de trajectoire inutilisés.
 - [ ] **P3.14** — Publier `results/phase-3-summary.md` et les figures de données justifiées par le corpus réel.
