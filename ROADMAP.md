@@ -175,6 +175,5 @@ succès.
 
 ## Prochaine itération
 
-La prochaine itération est toujours la première case `- [ ]` de ce fichier. Après la clôture de la
-Phase 1, il s'agit de **P2.04**, la définition du schéma versionné des résultats bruts, statuts et
-métadonnées d'environnement.
+La prochaine itération est toujours la première case `- [ ]` de ce fichier. Aucun identifiant
+n'est recopié dans cette section afin que cette règle reste correcte après chaque commit.

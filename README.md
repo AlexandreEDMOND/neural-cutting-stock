@@ -152,7 +152,7 @@ Le socle de résolution prévu repose sur NumPy et SciPy/HiGHS, sans licence com
 
 ## Feuille de route
 
-La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six phases contiennent chacune quinze étapes initiales et peuvent recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération exacte est **P2.04 : définir le schéma versionné des résultats bruts, statuts et métadonnées d’environnement**.
+La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six phases contiennent chacune quinze étapes initiales et peuvent recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération est toujours la première case non cochée de la roadmap ; son identifiant n’est pas recopié ici afin d’éviter toute information obsolète.
 
 ## Périmètre
 
