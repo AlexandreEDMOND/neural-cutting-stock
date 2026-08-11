@@ -7,6 +7,8 @@ from scipy.optimize import LinearConstraint, milp
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
+from ._patterns import validate_patterns
+
 
 @dataclass(frozen=True, slots=True)
 class IntegerMasterResult:
@@ -26,20 +28,7 @@ class IntegerRestrictedMasterProblem:
         instance: CuttingStockInstance,
         patterns: tuple[tuple[int, ...], ...],
     ) -> None:
-        if not patterns:
-            raise ValueError("patterns must not be empty")
-        if len(set(patterns)) != len(patterns):
-            raise ValueError("patterns must be distinct")
-        for pattern in patterns:
-            if instance.capacity_used(pattern) > instance.stock_length:
-                raise ValueError("patterns must respect stock capacity")
-            if any(
-                count > demand
-                for count, demand in zip(pattern, instance.demands, strict=True)
-            ):
-                raise ValueError("patterns must not exceed demands")
-            if not any(pattern):
-                raise ValueError("patterns must be non-empty")
+        validate_patterns(instance, patterns)
         self.instance = instance
         self.patterns = patterns
 
