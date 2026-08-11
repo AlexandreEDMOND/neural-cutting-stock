@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Les Phases 1, 2, 3 et 4 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes.
+Les Phases 1, 2, 3, 4 et 5 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe.
 
 ## Motivation
 
@@ -239,6 +239,34 @@ Le pipeline de visualisation produit à partir des mesures brutes validées :
 Les courbes de runtime incluent uniquement les paires dont la qualité de solution respecte le seuil
 déclaré, par défaut une différence de zéro barre ; les paires non admissibles restent conservées dans
 les données brutes.
+
+## Résultats et clôture de Phase 5
+
+Le bilan de Phase 5 est publié dans [`results/phase-5-summary.md`](results/phase-5-summary.md). La
+source est la même CSV brute validée `benchmark-run-v1` que pour la comparaison de Phase 4 : 8
+exécutions, 4 paires comparables et 4 paires à qualité préservée. Le runtime Classical agrégé est de
+`0.024098 s`, contre `0.038581 s` pour Neural. Le candidat
+`linear-scorer-v1-zero-weight` n'est donc pas gelé : la décision mesurée est
+`no_total_runtime_improvement`.
+
+| Taille | Paires admissibles | Médiane Classical (s) | Médiane Neural (s) | Médiane speedup |
+|---|---:|---:|---:|---:|
+| SMALL | 3 | 0.006379 | 0.007853 | 1.029572 |
+| MEDIUM | 1 | 0.006240 | 0.018792 | 0.332036 |
+| LARGE | 0 | n/a | n/a | n/a |
+| XL | 0 | n/a | n/a | n/a |
+
+L'optimisation conservée est donc la sélection supervisée bornée de Phase 4, avec budget explicite,
+pricing exact, fallback exact et vérification indépendante du plan. Aucune optimisation séquentielle
+plus complexe n'est ajoutée : les mesures ne montrent pas de gain end-to-end et ne couvrent aucune
+paire `LARGE` ou `XL`. La qualité est préservée sur les quatre paires publiées, mais ces données ne
+permettent pas de conclure à un speedup généralisable sur les grandes instances ni à la réussite de
+l'hypothèse de recherche.
+
+Les figures de décision issues des mesures brutes sont [`phase5_runtime_comparison.png`](results/phase5_runtime_comparison.png)
+et [`phase5_speedup_by_size.png`](results/phase5_speedup_by_size.png). La Phase 5 est clôturée avec
+la politique supervisée bornée comme solution retenue et sans modification des garanties du solveur
+classique.
 
 ## Organisation du dépôt
 
