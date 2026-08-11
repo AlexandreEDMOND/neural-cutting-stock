@@ -35,7 +35,7 @@ Objectif : disposer d'un solveur classique correct, vérifié et honnête sur se
 - [x] **P1.11** — Vérifier indépendamment capacité, couverture, objectif, kerf et bilan matière.
 - [x] **P1.12** — Exposer le solveur classique, ses diagnostics et ses statuts via la CLI structurée.
 - [x] **P1.13** — Auditer la Phase 1 et retirer code mort, doublons et abstractions devenues inutiles.
-- [ ] **P1.14** — Exécuter la validation de Phase 1 et publier `results/phase-1-summary.md` avec les résultats réels.
+- [x] **P1.14** — Exécuter la validation de Phase 1 et publier `results/phase-1-summary.md` avec les résultats réels.
 - [ ] **P1.15** — Mettre à jour le README avec l'état, les garanties, les résultats et la clôture de Phase 1.
 
 Critère de sortie : tous les tests passent ; sur le corpus exhaustif, la relaxation de Column
