@@ -8,7 +8,7 @@ from neural_cutting_stock.problem import CuttingStockInstance
 
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
-from .rmp import RestrictedMasterProblem, RMPResult
+from .rmp import RestrictedMasterProblem, RMPResult, RMPState
 from .verification import PlanVerification, verify_plan
 
 
@@ -33,6 +33,7 @@ class ColumnGenerationResult:
     column_management_runtime: float = 0.0
     verification_runtime: float = 0.0
     unattributed_runtime: float = 0.0
+    rmp_states: tuple[RMPState, ...] = ()
 
     @property
     def integrality_gap(self) -> float | None:
@@ -64,6 +65,7 @@ class ColumnGeneration:
         reduced_cost_tolerance: float = 1e-9,
         max_runtime_seconds: float | None = None,
         max_iterations: int | None = None,
+        instance_id: str | None = None,
     ) -> None:
         if not math.isfinite(reduced_cost_tolerance) or reduced_cost_tolerance < 0:
             raise ValueError("reduced_cost_tolerance must be finite and non-negative")
@@ -81,6 +83,9 @@ class ColumnGeneration:
         self.reduced_cost_tolerance = reduced_cost_tolerance
         self.max_runtime_seconds = max_runtime_seconds
         self.max_iterations = max_iterations
+        if instance_id is not None and not instance_id.strip():
+            raise ValueError("instance_id must be non-empty when present")
+        self.instance_id = instance_id
 
     def solve(self) -> ColumnGenerationResult:
         """Return the generated patterns once exact pricing finds no improvement."""
@@ -91,6 +96,7 @@ class ColumnGeneration:
         integer_master_runtime = 0.0
         column_management_runtime = 0.0
         verification_runtime = 0.0
+        rmp_states: list[RMPState] = []
 
         def make_result(
             status: str,
@@ -123,6 +129,7 @@ class ColumnGeneration:
                 column_management_runtime,
                 verification_runtime,
                 total_runtime - instrumented_runtime,
+                tuple(rmp_states),
             )
 
         management_started = perf_counter()
@@ -144,7 +151,11 @@ class ColumnGeneration:
             iterations += 1
             component_started = perf_counter()
             rmp_result = RestrictedMasterProblem(self.instance, tuple(patterns)).solve()
-            master_problem_runtime += perf_counter() - component_started
+            rmp_runtime = perf_counter() - component_started
+            master_problem_runtime += rmp_runtime
+            rmp_states.append(
+                RMPState(iterations, self.instance_id, tuple(patterns), rmp_result, rmp_runtime)
+            )
             if rmp_result.status != 0:
                 return make_result(_failure_status(rmp_result.status), "rmp_failed")
 

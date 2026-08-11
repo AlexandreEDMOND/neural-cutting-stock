@@ -85,6 +85,9 @@ class TrajectoryIteration:
     rmp_runtime_seconds: float | None = None
     pricing_runtime_seconds: float | None = None
     column_management_runtime_seconds: float | None = None
+    instance_id: str | None = None
+    rmp_column_values: tuple[float, ...] | None = None
+    rmp_pattern_count: int | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.iteration_index, int) or isinstance(self.iteration_index, bool):
@@ -92,6 +95,8 @@ class TrajectoryIteration:
         if self.iteration_index < 1:
             raise ValueError("iteration_index must start at 1")
         _require_text("rmp_status", self.rmp_status)
+        if self.instance_id is not None:
+            _require_text("instance_id", self.instance_id)
         if self.pricing_status is not None:
             _require_text("pricing_status", self.pricing_status)
         if (

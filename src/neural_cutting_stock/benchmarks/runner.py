@@ -106,6 +106,7 @@ class ClassicalBenchmarkRunner:
                 self.configuration.reduced_cost_tolerance,
                 self.configuration.max_runtime_seconds,
                 self.configuration.max_cg_iterations,
+                generator.instance_id,
             ).solve()
         except Exception as error:  # Keep a matrix cell visible when a solver call fails.
             return self._failed_record(generator, instance, repetition, run_id, str(error))

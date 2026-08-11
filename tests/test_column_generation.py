@@ -54,6 +54,19 @@ def test_column_generation_reports_component_runtimes() -> None:
     )
 
 
+def test_column_generation_records_rmp_state_for_each_iteration() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+
+    result = ColumnGeneration(instance, instance_id="instance-1").solve()
+
+    assert len(result.rmp_states) == result.iterations
+    assert [state.iteration_index for state in result.rmp_states] == [1, 2]
+    assert all(state.instance_id == "instance-1" for state in result.rmp_states)
+    assert result.rmp_states[0].patterns == instance.initial_patterns()
+    assert result.rmp_states[-1].result == result.rmp_result
+    assert all(state.runtime_seconds > 0 for state in result.rmp_states)
+
+
 def test_column_generation_converges_for_single_type_with_kerf() -> None:
     instance = CuttingStockInstance(10, 1, [6], [2])
 

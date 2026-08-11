@@ -21,6 +21,25 @@ class RMPResult:
     message: str
 
 
+@dataclass(frozen=True, slots=True)
+class RMPState:
+    """Immutable observation of one RMP solve in a CG trajectory."""
+
+    iteration_index: int
+    instance_id: str | None
+    patterns: tuple[tuple[int, ...], ...]
+    result: RMPResult
+    runtime_seconds: float
+
+    def __post_init__(self) -> None:
+        if self.iteration_index < 1:
+            raise ValueError("iteration_index must start at 1")
+        if self.instance_id is not None and not self.instance_id.strip():
+            raise ValueError("instance_id must be non-empty when present")
+        if self.runtime_seconds < 0:
+            raise ValueError("runtime_seconds must be non-negative")
+
+
 class RestrictedMasterProblem:
     """Solve a linear covering master over a fixed set of cutting patterns."""
 

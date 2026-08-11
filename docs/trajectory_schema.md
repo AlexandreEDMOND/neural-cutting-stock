@@ -11,7 +11,9 @@ Un document contient :
 - `schema_version` : valeur fixe `cg-trajectory-v1` ;
 - `metadata` : `trajectory_id`, `instance_id`, version du solveur, graine, configuration,
   environnement, données de l'instance et tolérances ;
-- `iterations` : liste ordonnée et contiguë d'observations indexées à partir de 1 ;
+- `iterations` : liste ordonnée et contiguë d'observations indexées à partir de 1 ; chaque
+  observation peut porter l'identifiant d'instance, les valeurs des colonnes du RMP et le nombre
+  de motifs présents dans le RMP ;
 - `status` : `converged`, `resource_limit` ou `failed` ;
 - `termination_reason` et `error_message` pour le diagnostic terminal.
 
@@ -27,6 +29,10 @@ des types de l'instance.
 - les itérations sont numérotées `1..n` sans trou ;
 - une trajectoire non convergée porte un diagnostic non vide ;
 - `to_dict()` conserve la version, les statuts textuels et un ordre déterministe des champs.
+- chaque résolution du RMP produit un `RMPState` dans le résultat de `ColumnGeneration`, avec son
+  index, ses motifs, son résultat et sa durée ; le runner transmet l'`instance_id` stable à chaque
+  état.
 
-Ce cycle définit uniquement le format. La collecte et le remplissage des observations sont
-réalisés par les étapes P3.02 à P3.05.
+La collecte des états du RMP et des identifiants d'instance est réalisée par P3.02. Les champs
+relatifs aux duales, candidats, colonnes retenues et fallbacks seront remplis dans les étapes
+suivantes.

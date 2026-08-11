@@ -72,7 +72,7 @@ Objectif : collecter des trajectoires rejouables sans modifier les décisions ni
 solveur classique.
 
 - [x] **P3.01** — Définir et versionner le schéma d'une trajectoire de génération de colonnes.
-- [ ] **P3.02** — Enregistrer les états du RMP et les identifiants d'instance à chaque itération.
+- [x] **P3.02** — Enregistrer les états du RMP et les identifiants d'instance à chaque itération.
 - [ ] **P3.03** — Enregistrer les duales avec ordre des types, tolérances et conventions explicites.
 - [ ] **P3.04** — Enregistrer motifs candidats, coûts réduits et résultat du pricing exact.
 - [ ] **P3.05** — Enregistrer colonnes retenues, progrès, durées et décisions de fallback.

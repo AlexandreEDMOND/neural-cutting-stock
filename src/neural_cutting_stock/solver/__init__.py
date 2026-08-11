@@ -3,7 +3,7 @@
 from .column_generation import ColumnGeneration, ColumnGenerationResult
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
-from .rmp import RestrictedMasterProblem, RMPResult
+from .rmp import RestrictedMasterProblem, RMPResult, RMPState
 from .verification import PlanVerification, verify_plan
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "ExactPricing",
     "PricingResult",
     "RMPResult",
+    "RMPState",
     "RestrictedMasterProblem",
     "PlanVerification",
     "verify_plan",

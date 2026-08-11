@@ -118,6 +118,25 @@ def test_trajectory_schema_is_versioned_and_json_ready() -> None:
     assert output["status"] == "converged"
 
 
+def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
+    iteration = TrajectoryIteration(
+        1,
+        "optimal",
+        instance_id="instance-1",
+        rmp_column_values=(1.0, 0.0),
+        rmp_pattern_count=2,
+    )
+
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(), (iteration,), TrajectoryStatus.CONVERGED, "no_improving_column"
+    )
+    output = trajectory.to_dict()["iterations"][0]
+
+    assert output["instance_id"] == "instance-1"
+    assert output["rmp_column_values"] == (1.0, 0.0)
+    assert output["rmp_pattern_count"] == 2
+
+
 @pytest.mark.parametrize(
     ("factory", "message"),
     [
