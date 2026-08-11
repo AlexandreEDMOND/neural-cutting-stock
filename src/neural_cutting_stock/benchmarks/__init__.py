@@ -1,5 +1,6 @@
 """Reproducible instance generation and benchmark execution."""
 
+from .dataset import DATASET_SCHEMA_VERSION, DatasetExample, TrajectoryDataset, build_dataset
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
 from .partitions import (
@@ -51,6 +52,10 @@ __all__ = [
     "SyntheticInstanceGenerator",
     "BenchmarkMatrix",
     "DistributionSpec",
+    "DATASET_SCHEMA_VERSION",
+    "DatasetExample",
+    "TrajectoryDataset",
+    "build_dataset",
     "PARTITION_SCHEMA_VERSION",
     "DatasetPartition",
     "PartitionAssignment",
