@@ -60,7 +60,7 @@ reproductible avant tout apprentissage.
 - [x] **P2.11** — Profiler la baseline et identifier le goulot dominant avec des mesures persistées.
 - [x] **P2.12** — Définir et versionner `SMALL`, `MEDIUM`, `LARGE`, `XL` à partir des profils réels.
 - [x] **P2.13** — Auditer la Phase 2 et retirer code mort, doublons et instrumentation sans valeur mesurée.
-- [ ] **P2.14** — Publier `results/phase-2-summary.md` et les figures classiques justifiées par les données réelles.
+- [x] **P2.14** — Publier `results/phase-2-summary.md` et les figures classiques justifiées par les données réelles.
 - [ ] **P2.15** — Mettre à jour le README avec le protocole, les profils et la clôture de Phase 2.
 
 Critère de sortie : un corpus classique reproductible couvre plusieurs régimes de difficulté, le
