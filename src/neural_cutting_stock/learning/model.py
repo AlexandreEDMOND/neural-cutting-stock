@@ -47,6 +47,14 @@ class LinearColumnScoringModel:
     def feature_width(self) -> int:
         return len(self._weights)
 
+    @property
+    def weights(self) -> tuple[float, ...]:
+        return self._weights
+
+    @property
+    def bias(self) -> float:
+        return self._bias
+
     def score(
         self, state: PricingState, candidates: Sequence[PatternCandidate]
     ) -> tuple[PatternScore, ...]:

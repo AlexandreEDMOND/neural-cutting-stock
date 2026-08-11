@@ -166,6 +166,14 @@ class LearningInterfaceTests(unittest.TestCase):
         with pytest.raises(ValueError, match="one value per feature row"):
             LinearColumnScoringModel.fit(((1.0,),), ())
 
+    def test_linear_model_exposes_parameters_for_persistence(self) -> None:
+        from neural_cutting_stock.learning import LinearColumnScoringModel
+
+        model = LinearColumnScoringModel((1.0, 2.0), 3.0)
+
+        assert model.weights == (1.0, 2.0)
+        assert model.bias == 3.0
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -24,6 +24,12 @@ class DatasetExample:
     candidate_pattern: tuple[int, ...]
     candidate_reduced_cost: float
     selected: bool
+    stock_length: float
+    kerf: float
+    piece_lengths: tuple[float, ...]
+    demands: tuple[int, ...]
+    current_patterns: tuple[tuple[int, ...], ...] = ()
+    rmp_objective_value: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -35,6 +41,12 @@ class DatasetExample:
             "candidate_pattern": list(self.candidate_pattern),
             "candidate_reduced_cost": self.candidate_reduced_cost,
             "selected": self.selected,
+            "stock_length": self.stock_length,
+            "kerf": self.kerf,
+            "piece_lengths": list(self.piece_lengths),
+            "demands": list(self.demands),
+            "current_patterns": [list(pattern) for pattern in self.current_patterns],
+            "rmp_objective_value": self.rmp_objective_value,
         }
 
 
@@ -121,6 +133,12 @@ def build_dataset(
                         pattern,
                         reduced_cost,
                         pattern in selected,
+                        trajectory.metadata.stock_length,
+                        trajectory.metadata.kerf,
+                        trajectory.metadata.piece_lengths,
+                        trajectory.metadata.demands,
+                        (),
+                        iteration.rmp_objective_value,
                     )
                 )
     return TrajectoryDataset(tuple(examples), trajectory_ids)

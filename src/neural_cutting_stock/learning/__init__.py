@@ -12,6 +12,7 @@ from .interfaces import (
     PricingState,
 )
 from .model import MODEL_SCHEMA_VERSION, LinearColumnScoringModel
+from .training import TRAINING_ARTIFACT_SCHEMA_VERSION, train_artifact, write_training_artifact
 
 __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
@@ -27,4 +28,7 @@ __all__ = [
     "LinearColumnScoringModel",
     "CANDIDATE_POOL_SCHEMA_VERSION",
     "deterministic_candidate_pool",
+    "TRAINING_ARTIFACT_SCHEMA_VERSION",
+    "train_artifact",
+    "write_training_artifact",
 ]

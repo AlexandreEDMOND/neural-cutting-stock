@@ -71,3 +71,36 @@ def test_classical_cli_preserves_integer_master_failure_status(
     assert output["integer_master"]["objective_value"] is None
     assert output["integer_master"]["message"] == "time limit"
     assert "verification" not in output
+
+
+def test_training_cli_writes_artifact(monkeypatch, tmp_path, capsys) -> None:
+    artifact = {"metadata": {"example_count": 3}}
+    calls = {}
+
+    def write(manifest, output, seed, config):
+        calls.update(manifest=manifest, output=output, seed=seed, config=config)
+        return artifact
+
+    monkeypatch.setattr("neural_cutting_stock.__main__.write_training_artifact", write)
+    output = tmp_path / "model.json"
+
+    assert main(
+        [
+            "train",
+            "--manifest",
+            "manifest.json",
+            "--output",
+            str(output),
+            "--seed",
+            "7",
+            "--config",
+            '{"epochs": 2}',
+        ]
+    ) == 0
+    assert calls == {
+        "manifest": "manifest.json",
+        "output": str(output),
+        "seed": 7,
+        "config": {"epochs": 2},
+    }
+    assert json.loads(capsys.readouterr().out)["example_count"] == 3

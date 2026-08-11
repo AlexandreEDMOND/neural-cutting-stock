@@ -2,14 +2,21 @@
 
 import argparse
 import json
+import sys
 from collections.abc import Sequence
 from dataclasses import asdict
+from pathlib import Path
 
+from neural_cutting_stock.learning import write_training_artifact
 from neural_cutting_stock.problem import CuttingStockInstance
 from neural_cutting_stock.solver import ColumnGeneration
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+    if argv and argv[0] == "train":
+        return _train_main(argv[1:])
     parser = _build_parser()
     args = parser.parse_args(argv)
     instance = CuttingStockInstance(
@@ -65,6 +72,33 @@ def main(argv: Sequence[str] | None = None) -> int:
             output["verification"] = asdict(result.verification)
     print(json.dumps(output, default=_json_default, sort_keys=True))
     return 0
+
+
+def _train_main(argv: Sequence[str]) -> int:
+    parser = argparse.ArgumentParser(description="Train the linear column scoring model.")
+    parser.add_argument("--manifest", required=True, help="Phase 3 corpus manifest")
+    parser.add_argument("--output", required=True, help="Training artifact JSON path")
+    parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--config", help="JSON configuration object or file path", default="{}")
+    args = parser.parse_args(argv)
+    config = _parse_config(args.config)
+    artifact = write_training_artifact(args.manifest, args.output, args.seed, config)
+    print(
+        json.dumps({"output": args.output, "example_count": artifact["metadata"]["example_count"]})
+    )
+    return 0
+
+
+def _parse_config(value: str) -> dict[str, object]:
+    try:
+        path = Path(value)
+        raw = path.read_text(encoding="utf-8") if path.is_file() else value
+        config = json.loads(raw)
+    except (OSError, json.JSONDecodeError) as error:
+        raise argparse.ArgumentTypeError("config must be a JSON object or JSON file") from error
+    if not isinstance(config, dict):
+        raise argparse.ArgumentTypeError("config must be a JSON object")
+    return config
 
 
 def _build_parser() -> argparse.ArgumentParser:

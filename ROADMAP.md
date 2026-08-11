@@ -100,7 +100,7 @@ exact de convergence.
 - [x] **P4.03** — Exposer un pool déterministe de candidats sans modifier le pricing exact final.
 - [x] **P4.04** — Implémenter le chargement reproductible des exemples et partitions de Phase 3.
 - [x] **P4.05** — Implémenter le plus petit modèle supervisé capable de scorer état et motif.
-- [ ] **P4.06** — Ajouter une commande d'entraînement avec graines, configuration et métadonnées persistées.
+- [x] **P4.06** — Ajouter une commande d'entraînement avec graines, configuration et métadonnées persistées.
 - [ ] **P4.07** — Évaluer hors entraînement le classement des colonnes avec des métriques définies à l'avance.
 - [ ] **P4.08** — Versionner les artefacts du modèle et vérifier leur compatibilité au chargement.
 - [ ] **P4.09** — Intégrer la politique de sélection avec budget de candidats configurable.
