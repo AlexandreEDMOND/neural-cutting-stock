@@ -174,6 +174,47 @@ class LearningInterfaceTests(unittest.TestCase):
         assert model.weights == (1.0, 2.0)
         assert model.bias == 3.0
 
+    def test_selection_policy_applies_a_deterministic_candidate_budget(self) -> None:
+        from neural_cutting_stock.learning import (
+            LearnedColumnSelectionPolicy,
+            PatternCandidate,
+            PatternScore,
+            PricingState,
+        )
+
+        class FixedScorer:
+            def score(self, state, candidates):
+                del state
+                values = {(1, 0): 0.5, (0, 1): 0.9, (1, 1): 0.9}
+                return tuple(
+                    PatternScore(candidate.pattern, values[candidate.pattern])
+                    for candidate in candidates
+                )
+
+        state = PricingState("instance-1", 1, 10.0, 0.0, (2.0, 3.0), (2, 2), (0.5, 0.25), ())
+        candidates = (
+            PatternCandidate((1, 0), 0.1),
+            PatternCandidate((1, 1), -0.1),
+            PatternCandidate((0, 1), 0.0),
+        )
+
+        decision = LearnedColumnSelectionPolicy(FixedScorer(), candidate_budget=2).select(
+            state, candidates
+        )
+
+        assert decision.selected_patterns == ((0, 1), (1, 1))
+        assert tuple(score.pattern for score in decision.scored_candidates) == tuple(
+            candidate.pattern for candidate in candidates
+        )
+
+    def test_selection_policy_rejects_invalid_budget(self) -> None:
+        import pytest
+
+        from neural_cutting_stock.learning import LearnedColumnSelectionPolicy
+
+        with pytest.raises(ValueError, match="candidate_budget must be a positive integer"):
+            LearnedColumnSelectionPolicy(object(), candidate_budget=0)
+
 
 if __name__ == "__main__":
     unittest.main()

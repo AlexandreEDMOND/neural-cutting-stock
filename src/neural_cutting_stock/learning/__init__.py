@@ -13,6 +13,7 @@ from .interfaces import (
     PricingState,
 )
 from .model import MODEL_SCHEMA_VERSION, LinearColumnScoringModel
+from .policy import LearnedColumnSelectionPolicy
 from .training import (
     TRAINING_ARTIFACT_SCHEMA_VERSION,
     load_training_artifact,
@@ -35,6 +36,7 @@ __all__ = [
     "evaluate_model",
     "MODEL_SCHEMA_VERSION",
     "LinearColumnScoringModel",
+    "LearnedColumnSelectionPolicy",
     "CANDIDATE_POOL_SCHEMA_VERSION",
     "deterministic_candidate_pool",
     "TRAINING_ARTIFACT_SCHEMA_VERSION",
