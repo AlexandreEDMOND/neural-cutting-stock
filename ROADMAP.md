@@ -58,7 +58,7 @@ reproductible avant tout apprentissage.
 - [x] **P2.09** — Tester la reproductibilité des instances, ordres d'exécution et résultats sérialisés.
 - [x] **P2.10** — Ajouter limites de ressources et statuts explicites aux campagnes de benchmark.
 - [x] **P2.11** — Profiler la baseline et identifier le goulot dominant avec des mesures persistées.
-- [ ] **P2.12** — Définir et versionner `SMALL`, `MEDIUM`, `LARGE`, `XL` à partir des profils réels.
+- [x] **P2.12** — Définir et versionner `SMALL`, `MEDIUM`, `LARGE`, `XL` à partir des profils réels.
 - [ ] **P2.13** — Auditer la Phase 2 et retirer code mort, doublons et instrumentation sans valeur mesurée.
 - [ ] **P2.14** — Publier `results/phase-2-summary.md` et les figures classiques justifiées par les données réelles.
 - [ ] **P2.15** — Mettre à jour le README avec le protocole, les profils et la clôture de Phase 2.

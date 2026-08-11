@@ -11,6 +11,7 @@ from typing import ClassVar
 from neural_cutting_stock.solver import ColumnGeneration, ColumnGenerationResult
 
 from .generator import SyntheticInstanceGenerator
+from .profile import classify_runtime
 from .schema import (
     BenchmarkRunRecord,
     EnvironmentMetadata,
@@ -154,6 +155,11 @@ class ClassicalBenchmarkRunner:
             pricing_status=_component_status(pricing.status if pricing else None),
             integer_master_status=_component_status(integer.status if integer else None),
             termination_reason=result.termination_reason,
+            size_class=(
+                classify_runtime(result.total_runtime_seconds)
+                if result.total_runtime_seconds is not None
+                else None
+            ),
             objective_value=integer.objective_value if integer else None,
             number_of_stock_bars=verification.number_of_stock_bars if verification else None,
             lp_objective_value=rmp.objective_value if rmp else None,

@@ -9,8 +9,10 @@ from neural_cutting_stock.benchmarks import (
     ClassicalBenchmarkRunner,
     EnvironmentMetadata,
     RunStatus,
+    SizeClass,
     SolverMode,
     SyntheticInstanceGenerator,
+    classify_runtime,
     profile_classical_runs,
 )
 
@@ -97,3 +99,23 @@ def test_runner_profile_is_reproducible_in_shape_and_status() -> None:
     assert first["status_counts"] == second["status_counts"]
     assert first["runs"][0]["run_id"] == second["runs"][0]["run_id"]
     assert first["dominant_component"] == second["dominant_component"]
+
+
+def test_size_class_uses_frozen_runtime_boundaries() -> None:
+    assert classify_runtime(0.01) is SizeClass.SMALL
+    assert classify_runtime(0.015997) is SizeClass.MEDIUM
+    assert classify_runtime(0.06385) is SizeClass.LARGE
+    assert classify_runtime(0.1433) is SizeClass.XL
+
+
+def test_runner_assigns_size_class_from_measured_total_runtime() -> None:
+    configuration = ClassicalBenchmarkConfig(
+        generators=(SyntheticInstanceGenerator(seed=11),),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+    )
+
+    record = ClassicalBenchmarkRunner(configuration).run()[0]
+
+    assert record.total_runtime_seconds is not None
+    assert record.size_class is not None
+    assert record.size_class == classify_runtime(record.total_runtime_seconds).value

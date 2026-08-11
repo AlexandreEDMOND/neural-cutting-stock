@@ -6,7 +6,12 @@ Le benchmark doit répondre à une question end-to-end : à qualité comparable,
 
 Chaque comparaison est appariée par `instance_id`. Les deux modes partagent la représentation du problème, le RMP, le pricing exact, le maître entier, le vérificateur et les limites de ressources. Seule la politique de proposition/sélection des colonnes varie.
 
-Les catégories de taille ne sont pas encore définies. Elles seront fixées et versionnées après le profilage de la Phase 2 ; une demande totale élevée ne sera pas utilisée comme synonyme automatique de difficulté.
+Les catégories de difficulté sont versionnées par `size-class-v1`. Elles utilisent le temps
+mur-à-mur classique mesuré, et non la demande seule : `SMALL` est strictement inférieur à
+`0.015997 s`, `MEDIUM` à partir de cette valeur et strictement inférieur à `0.06385 s`, `LARGE`
+à partir de cette valeur et strictement inférieur à `0.1433 s`, puis `XL`. Ces seuils sont les
+milieux des trois plus grands écarts observés dans `results/phase-2-baseline-profile.json`.
+Une exécution sans temps total (échec ou timeout avant mesure) conserve `size_class = null`.
 
 ## 2. Reproductibilité de l’instance
 
@@ -36,7 +41,7 @@ Les noms suivants sont le contrat commun des futurs fichiers tabulaires. Les cha
 | `solver_mode` | enum | `classical` ou `neural`. |
 | `solver_version` | chaîne | Version/configuration de l’algorithme. |
 | `seed` | entier | Graine de génération ; graines d’exécution séparées si nécessaire. |
-| `size_class` | chaîne nullable | `SMALL`/`MEDIUM`/`LARGE`/`XL` après définition versionnée. |
+| `size_class` | chaîne nullable | Catégorie `size-class-v1` issue du temps total classique mesuré. |
 | `config_id` | chaîne | Hash ou identifiant de la configuration complète. |
 | `code_commit` | chaîne | Commit Git mesuré. |
 | `python_version` | chaîne | Version Python. |

@@ -90,7 +90,7 @@ Ces commandes seront ajoutées avec les solveurs ; elles ne sont pas encore disp
 
 ## Méthodologie de benchmark
 
-Les instances synthétiques seront reproductibles par graine explicite. La difficulté sera étudiée selon plusieurs dimensions indépendantes : nombre de types, demande totale, longueur de barre, distributions des longueurs et demandes, et kerf. Les catégories `SMALL`, `MEDIUM`, `LARGE` et `XL` ne seront figées qu’après profilage du solveur classique.
+Les instances synthétiques seront reproductibles par graine explicite. La difficulté sera étudiée selon plusieurs dimensions indépendantes : nombre de types, demande totale, longueur de barre, distributions des longueurs et demandes, et kerf. Les catégories `SMALL`, `MEDIUM`, `LARGE` et `XL` sont désormais figées par `size-class-v1` à partir du temps mur-à-mur classique mesuré ; les seuils et leur justification sont détaillés dans [docs/benchmark_protocol.md](docs/benchmark_protocol.md).
 
 Les exécutions classique et neuronale seront appariées sur exactement les mêmes instances, configurations et conditions matérielles. Le temps principal est le temps mur-à-mur de résolution. Les décompositions RMP, pricing, maître entier, gestion des colonnes et, plus tard, inférence neuronale servent à expliquer ce temps, jamais à le remplacer.
 

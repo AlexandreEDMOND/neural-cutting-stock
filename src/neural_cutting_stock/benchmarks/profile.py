@@ -2,12 +2,14 @@
 
 import json
 import math
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
 from .schema import BenchmarkRunRecord, RunStatus, SolverMode
 
 PROFILE_SCHEMA_VERSION = "baseline-profile-v1"
+SIZE_CLASS_SCHEMA_VERSION = "size-class-v1"
 PROFILE_COMPONENTS = (
     "master_problem_runtime",
     "pricing_runtime",
@@ -16,6 +18,31 @@ PROFILE_COMPONENTS = (
     "verification_runtime",
     "unattributed_runtime",
 )
+SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS = (0.015997, 0.06385, 0.1433)
+
+
+class SizeClass(StrEnum):
+    """Ordered difficulty categories used by benchmark reports."""
+
+    SMALL = "SMALL"
+    MEDIUM = "MEDIUM"
+    LARGE = "LARGE"
+    XL = "XL"
+
+
+def classify_runtime(runtime_seconds: float) -> SizeClass:
+    """Classify a completed run using the frozen phase-2 runtime cut points."""
+
+    if not math.isfinite(runtime_seconds) or runtime_seconds < 0:
+        raise ValueError("runtime_seconds must be finite and non-negative")
+    for size_class, threshold in zip(
+        (SizeClass.SMALL, SizeClass.MEDIUM, SizeClass.LARGE),
+        SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS,
+        strict=True,
+    ):
+        if runtime_seconds < threshold:
+            return size_class
+    return SizeClass.XL
 
 
 def profile_classical_runs(
@@ -56,12 +83,14 @@ def profile_classical_runs(
     )
     profile = {
         "profile_schema_version": PROFILE_SCHEMA_VERSION,
+        "size_class_schema_version": SIZE_CLASS_SCHEMA_VERSION,
         "run_count": len(records),
         "successful_run_count": len(successful),
         "status_counts": dict(sorted(status_counts.items())),
         "dominant_component": dominant_component,
         "component_totals_seconds": component_totals,
         "component_shares": component_shares,
+        "size_class_counts": _size_class_counts(successful),
         "runs": [record.to_dict() for record in sorted(records, key=lambda item: item.run_id)],
     }
     if output_path is not None:
@@ -74,6 +103,14 @@ def _finite_sum(values: Any) -> float:
     if not math.isfinite(total):
         raise ValueError("profile timing values must be finite")
     return total
+
+
+def _size_class_counts(records: list[BenchmarkRunRecord]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for record in records:
+        if record.size_class is not None:
+            counts[record.size_class] = counts.get(record.size_class, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 def _write_profile(path: str | Path, profile: dict[str, Any]) -> None:
