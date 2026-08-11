@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Le dépôt est dans sa phase de fondation. La formulation, les garde-fous, le protocole de benchmark et le squelette Python sont définis. Le prochain jalon est l’implémentation et la validation du solveur classique par génération de colonnes. Aucun résultat de performance ni composant neuronal n’existe encore.
+La baseline classique de génération de colonnes est implémentée : validation des instances et du kerf, RMP linéaire, pricing entier exact, boucle de génération de colonnes, maître entier restreint, vérification indépendante et CLI structurée. La Phase 1 entre dans ses trois étapes de clôture : nettoyage, bilan réel, puis mise à jour documentaire. Aucun résultat de performance Neural CG ni composant neuronal n’existe encore.
 
 ## Motivation
 
@@ -98,7 +98,9 @@ Le schéma de données, les règles de chronométrage, les statuts et le protoco
 
 ## Résultats
 
-**En attente d’expériences réelles.** Aucun nombre ni graphique n’est publié à ce stade.
+La validation locale actuelle de la baseline classique comporte **68 tests réussis** et un contrôle Ruff réussi. Ce nombre décrit la correction testée du code au commit courant ; il ne constitue pas un résultat de performance. Le bilan reproductible de Phase 1 doit encore être publié dans `results/phase-1-summary.md`.
+
+**Les expériences de performance sont encore en attente.** Aucun speedup ni graphique comparatif n’est publié à ce stade.
 
 Le pipeline de visualisation produira à partir des mesures brutes validées :
 
@@ -150,7 +152,7 @@ Le socle de résolution prévu repose sur NumPy et SciPy/HiGHS, sans licence com
 
 ## Feuille de route
 
-La progression, les critères de sortie de chaque phase et les risques sont décrits dans [ROADMAP.md](ROADMAP.md). Le prochain jalon exact est : **implémenter et valider la baseline classique de génération de colonnes**.
+La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six phases contiennent chacune quinze étapes initiales et peuvent recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération exacte est **P1.13 : auditer et nettoyer la baseline classique**.
 
 ## Périmètre
 

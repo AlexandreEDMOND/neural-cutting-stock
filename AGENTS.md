@@ -49,12 +49,14 @@ Répondre expérimentalement à la question suivante :
 
 ## Processus attendu pour chaque changement
 
-1. Relier le changement à un jalon de [ROADMAP.md](ROADMAP.md) et à l’hypothèse centrale.
+1. Lire [ROADMAP.md](ROADMAP.md) et traiter uniquement sa première case non cochée.
 2. Ajouter ou adapter les tests de correction et de reproductibilité pertinents.
 3. Mesurer avant d’optimiser ; ne pas ajouter une complexité dont le profilage ne montre pas le besoin.
 4. Documenter toute modification de formulation, métrique, tolérance ou protocole.
 5. Ne jamais incorporer de faux résultats, même à titre décoratif.
+6. Une itération correspond à une case, un changement borné et un commit ; ne jamais commencer la case suivante dans le même cycle.
+7. Cocher uniquement la case terminée après validation. Une étape nouvellement découverte peut être ajoutée non cochée avec un identifiant suffixé, sans être réalisée immédiatement.
 
-## Phase courante
+## Progression autorisée
 
-La Phase 0 établit les fondations. Le prochain changement fonctionnel attendu est la **Phase 1 : implémentation et validation du solveur classique de génération de colonnes**. Aucun modèle ML/RL ne doit être implémenté avant que la baseline et son instrumentation soient fiables.
+La première case non cochée de [ROADMAP.md](ROADMAP.md) est l’unique source de vérité sur la phase et le travail autorisés. Quand toutes les cases d’une phase sont cochées, la première case de la phase suivante devient automatiquement autorisée. Aucun texte de ce fichier ne doit figer manuellement une « phase courante » susceptible de devenir obsolète.
