@@ -127,7 +127,7 @@ séquentielle plus complexe est justifiée.
 - [x] **P5.06** — Implémenter la plus petite optimisation conforme à la décision P5.03.
 - [x] **P5.07** — Conserver des budgets explicites, un fallback exact et des limites de ressources.
 - [x] **P5.08** — Mesurer puis optimiser, si utile, batching, cache ou réutilisation d'état solveur.
-- [ ] **P5.09** — Tester les cas limites, timeouts, erreurs modèle et indisponibilités d'artefact.
+- [x] **P5.09** — Tester les cas limites, timeouts, erreurs modèle et indisponibilités d'artefact.
 - [ ] **P5.10** — Ajouter des tests de non-régression sur qualité, convergence et reproductibilité.
 - [ ] **P5.11** — Mesurer mémoire, appels exacts, candidats, colonnes retenues et coût d'inférence.
 - [ ] **P5.12** — Geler le candidat optimisé uniquement s'il améliore le temps total sur validation.

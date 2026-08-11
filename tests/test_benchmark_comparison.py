@@ -129,3 +129,27 @@ def test_paired_runner_executes_both_modes_on_the_same_instance() -> None:
     assert neural.neural_inference_runtime is not None
     assert neural.number_of_candidates is not None
     assert neural.exact_fallback_calls is not None
+
+
+def test_paired_runner_retains_neural_model_errors_as_raw_failures() -> None:
+    class FailingPolicy:
+        def select(self, state, candidates):
+            del state, candidates
+            raise RuntimeError("model inference failed")
+
+    configuration = PairedBenchmarkConfig(
+        generators=(SyntheticInstanceGenerator(seed=12, number_of_types=2),),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+        policy=FailingPolicy(),
+        model_id="unavailable-model-v1",
+    )
+
+    records = PairedBenchmarkRunner(configuration).run()
+
+    neural = next(record for record in records if record.solver_mode is SolverMode.NEURAL)
+    assert neural.run_status is RunStatus.SOLVER_ERROR
+    assert neural.termination_reason == "solver_exception"
+    assert neural.error_message == "model inference failed"
+    assert neural.model_id == "unavailable-model-v1"
+    assert neural.objective_difference_vs_classical is None
+    assert neural.speedup_vs_classical is None

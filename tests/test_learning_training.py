@@ -89,6 +89,13 @@ def test_loading_artifact_rejects_incompatible_schema(tmp_path) -> None:
         load_training_artifact(path)
 
 
+def test_loading_artifact_rejects_unavailable_path(tmp_path) -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="invalid training artifact"):
+        load_training_artifact(tmp_path / "missing-model.json")
+
+
 def test_loading_artifact_rejects_inconsistent_model_shape(tmp_path) -> None:
     artifact = {
         "schema_version": TRAINING_ARTIFACT_SCHEMA_VERSION,

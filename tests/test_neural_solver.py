@@ -59,3 +59,17 @@ def test_neural_solver_rejects_invalid_resource_limits() -> None:
         NeuralColumnGeneration(instance, policy, max_runtime_seconds=0)
     with pytest.raises(ValueError, match="max_iterations must be a positive integer"):
         NeuralColumnGeneration(instance, policy, max_iterations=True)
+
+
+def test_neural_solver_retains_iteration_timeout_without_claiming_convergence() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+    result = NeuralColumnGeneration(
+        instance,
+        LearnedColumnSelectionPolicy(MisleadingScorer()),
+        max_iterations=1,
+    ).solve()
+
+    assert result.status == "limit_reached"
+    assert result.termination_reason == "resource_limit"
+    assert result.integer_master_result is None
+    assert result.verification is None
