@@ -109,7 +109,7 @@ exact de convergence.
 - [x] **P4.12** — Comparer Classical CG et Neural CG sur validation avec temps et qualité appariés.
 - [x] **P4.13** — Auditer la Phase 4 et retirer code mort, doublons et expérimentations non retenues.
 - [x] **P4.14** — Publier `results/phase-4-summary.md` et les figures neuronales issues de mesures réelles.
-- [ ] **P4.15** — Mettre à jour le README avec le modèle, les garanties, les résultats et la clôture de Phase 4.
+- [x] **P4.15** — Mettre à jour le README avec le modèle, les garanties, les résultats et la clôture de Phase 4.
 
 Critère de sortie : le mode neural produit des solutions vérifiées, ne termine qu'après contrôle
 exact et réduit sur validation un coût pertinent sans dégrader la qualité au-delà du seuil déclaré.

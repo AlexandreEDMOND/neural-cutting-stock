@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Les Phases 1, 2 et 3 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 fournit maintenant un runner de validation apparié et le recalcul des différences de qualité et de runtime ; aucun résultat de performance Neural CG n’est publié sans exécution réelle.
+Les Phases 1, 2, 3 et 4 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes.
 
 ## Motivation
 
@@ -78,7 +78,7 @@ et [`data/phase-3-corpus/README.md`](data/phase-3-corpus/README.md).
 
 ## Accélération apprise proposée
 
-À partir de la Phase 4, un modèle simple recevra l’état courant du RMP, les duales et un ensemble de motifs candidats. Il classera les colonnes à ajouter. Une passe de pricing exacte restera obligatoire avant toute déclaration de convergence.
+Le modèle de Phase 4 est `linear-scorer-v1` : une régression linéaire déterministe sur les features `pricing-features-v1`. Il reçoit l’état courant du RMP et chaque motif candidat fourni par le pricing classique, puis produit uniquement un score. La politique `LearnedColumnSelectionPolicy` classe ces scores et applique un budget explicite ; elle ne génère pas de motif et ne déclare jamais la convergence. Une passe de pricing exacte reste obligatoire avant toute déclaration de convergence.
 
 L'évaluation hors entraînement utilise les partitions `validation` ou `test`, en regroupant les
 candidats par itération de pricing. Les métriques fixées dans `ranking-evaluation-v1` sont `Hit@1`,
@@ -127,9 +127,10 @@ uv run python -m neural_cutting_stock ... --solver classical
 uv run python -m neural_cutting_stock ... --solver neural --model model.json
 ```
 
-Le mode neural charge un artefact d'entraînement compatible et accepte `--candidate-budget`. Il
-conserve le pricing exact final et la vérification indépendante du plan. Le chemin d'import du mode
-classique ne charge pas le paquet `learning`, et PyTorch n'est donc pas requis pour ce mode.
+Le mode neural charge un artefact compatible et accepte `--candidate-budget`. Il conserve le pricing
+exact final, le fallback exact et la vérification indépendante du plan. Les contraintes de demande et
+de capacité ne dépendent jamais du score appris. Le chemin d'import du mode classique ne charge pas le
+paquet `learning`, et PyTorch n'est donc pas requis pour ce mode.
 
 ## Protocole et profils de benchmark
 
@@ -194,19 +195,48 @@ uv run python scripts/plot_phase3_corpus.py \
 
 La Phase 3 est clôturée : les trajectoires sont versionnées, validées et rejouables, les partitions
 sont fixées sans fuite connue, et la collecte n’altère pas les décisions du solveur classique dans
-les tolérances déclarées. La Phase 4 pourra maintenant introduire la couche apprise, sans remplacer
-le pricing exact ni le contrôle exact de convergence.
+les tolérances déclarées.
 
-Le pipeline de visualisation produira à partir des mesures brutes validées :
+## Résultats et clôture de Phase 4
+
+La publication de Phase 4 repose sur [`results/phase-4-benchmark-runs.csv`](results/phase-4-benchmark-runs.csv),
+au schéma `benchmark-run-v1`, et sur son [bilan détaillé](results/phase-4-summary.md). Elle contient
+8 exécutions formant 4 paires Classical CG/Neural CG sur les mêmes instances. Les 4 paires sont
+comparables, faisables, convergées et à différence d’objectif nulle ; les différences et speedups ont
+été recalculés depuis les enregistrements bruts. Les médianes publiées sont :
+
+| Taille | Paires admissibles | Classical (s) | Neural (s) | Speedup médian |
+|---|---:|---:|---:|---:|
+| SMALL | 3 | 0.006379 | 0.007853 | 1.029572 |
+| MEDIUM | 1 | 0.006240 | 0.018792 | 0.332036 |
+| LARGE | 0 | n/a | n/a | n/a |
+| XL | 0 | n/a | n/a | n/a |
+
+Ces mesures montrent une qualité préservée sur les paires publiées, mais ne démontrent pas un gain
+de temps mur-à-mur généralisable : la couverture ne contient aucune paire `LARGE` ou `XL`, et le mode
+neural est plus lent sur la paire `MEDIUM`. Le corpus Phase 3 ne contient par ailleurs aucun candidat
+sélectionné ; ces résultats décrivent donc l’artefact `linear-scorer-v1-zero-weight` enregistré, et
+ne constituent pas une évaluation d'un modèle appris entraîné sur ce corpus.
+
+Le pricing exact reste le garde-fou de convergence et certifie l’optimalité de la relaxation linéaire
+du maître complet à la tolérance déclarée lorsqu’aucune colonne améliorante n’est trouvée. Le maître
+entier final est résolu sur les colonnes générées uniquement et reste qualifié
+`optimal_over_generated_columns_only`, sans preuve d’optimalité entière globale. Chaque plan est
+vérifié indépendamment pour la demande, la capacité, le kerf et l’objectif. Les figures issues des
+mesures brutes sont [`runtime_comparison.png`](results/runtime_comparison.png) et
+[`speedup_by_size.png`](results/speedup_by_size.png).
+
+Le pipeline de visualisation produit à partir des mesures brutes validées :
 
 - `results/runtime_comparison.png` — temps mur-à-mur de Classical CG et Neural CG par difficulté ;
 - `results/speedup_by_size.png` — accélération appariée par catégorie de taille.
 
-Les courbes de runtime ne seront présentées comme succès que pour les paires dont la qualité de solution respecte le seuil déclaré, par défaut une différence de zéro barre.
-
-<!-- À activer uniquement lorsque le fichier provient de mesures réelles :
 ![Runtime comparison](results/runtime_comparison.png)
--->
+![Speedup by size](results/speedup_by_size.png)
+
+Les courbes de runtime incluent uniquement les paires dont la qualité de solution respecte le seuil
+déclaré, par défaut une différence de zéro barre ; les paires non admissibles restent conservées dans
+les données brutes.
 
 ## Organisation du dépôt
 
@@ -227,11 +257,11 @@ neural-cutting-stock/
 │   ├── problem/                    # modèle et validation d’instance
 │   ├── solver/                     # RMP, pricing et orchestration CG
 │   ├── benchmarks/                 # génération, exécution et enregistrement
+│   ├── learning/                   # features, modèle et sélection bornée
 │   └── visualization/              # figures issues des résultats validés
 └── tests/
 ```
 
-Le paquet `learning` ne sera créé qu’au début de la Phase 4, lorsque les profils et le format de trajectoire justifieront son interface.
 
 ## Installation de développement
 
