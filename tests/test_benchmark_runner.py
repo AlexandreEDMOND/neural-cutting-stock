@@ -1,5 +1,7 @@
 import csv
 
+import pytest
+
 from neural_cutting_stock.benchmarks import (
     ClassicalBenchmarkConfig,
     ClassicalBenchmarkRunner,
@@ -32,6 +34,30 @@ def test_classical_runner_executes_configured_matrix_in_stable_order() -> None:
     assert all(record.run_status is RunStatus.OPTIMAL_LP_RESTRICTED_IP for record in records)
     assert all(record.solver_mode.value == "classical" for record in records)
     assert all(record.config_id == configuration.config_id for record in records)
+
+
+def test_classical_runner_persists_component_runtimes() -> None:
+    configuration = ClassicalBenchmarkConfig(
+        generators=(SyntheticInstanceGenerator(seed=11),),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+    )
+
+    record = ClassicalBenchmarkRunner(configuration).run()[0]
+
+    assert record.total_runtime_seconds is not None
+    assert record.master_problem_runtime is not None
+    assert record.pricing_runtime is not None
+    assert record.integer_master_runtime is not None
+    assert record.column_management_runtime is not None
+    assert record.unattributed_runtime is not None
+    assert record.total_runtime_seconds == pytest.approx(
+        record.master_problem_runtime
+        + record.pricing_runtime
+        + record.integer_master_runtime
+        + record.column_management_runtime
+        + record.verification_runtime
+        + record.unattributed_runtime
+    )
 
 
 def test_classical_runner_keeps_solver_failures_as_records(monkeypatch) -> None:

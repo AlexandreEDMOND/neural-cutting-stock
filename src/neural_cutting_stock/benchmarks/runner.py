@@ -159,6 +159,13 @@ class ClassicalBenchmarkRunner:
             final_column_count=len(result.patterns),
             duplicate_column_count=result.duplicate_columns,
             final_reduced_cost=pricing.reduced_cost if pricing else None,
+            total_runtime_seconds=result.total_runtime_seconds,
+            master_problem_runtime=result.master_problem_runtime,
+            pricing_runtime=result.pricing_runtime,
+            integer_master_runtime=result.integer_master_runtime,
+            column_management_runtime=result.column_management_runtime,
+            verification_runtime=result.verification_runtime,
+            unattributed_runtime=result.unattributed_runtime,
             error_message=error_message,
         )
 

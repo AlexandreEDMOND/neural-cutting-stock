@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import dataclass
+from time import perf_counter
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
@@ -25,6 +26,13 @@ class ColumnGenerationResult:
     duplicate_columns: int
     termination_reason: str
     verification: PlanVerification | None = None
+    total_runtime_seconds: float = 0.0
+    master_problem_runtime: float = 0.0
+    pricing_runtime: float = 0.0
+    integer_master_runtime: float = 0.0
+    column_management_runtime: float = 0.0
+    verification_runtime: float = 0.0
+    unattributed_runtime: float = 0.0
 
     @property
     def integrality_gap(self) -> float | None:
@@ -61,7 +69,49 @@ class ColumnGeneration:
     def solve(self) -> ColumnGenerationResult:
         """Return the generated patterns once exact pricing finds no improvement."""
 
+        started = perf_counter()
+        master_problem_runtime = 0.0
+        pricing_runtime = 0.0
+        integer_master_runtime = 0.0
+        column_management_runtime = 0.0
+        verification_runtime = 0.0
+
+        def make_result(
+            status: str,
+            termination_reason: str,
+            verification: PlanVerification | None = None,
+        ) -> ColumnGenerationResult:
+            total_runtime = perf_counter() - started
+            instrumented_runtime = (
+                master_problem_runtime
+                + pricing_runtime
+                + integer_master_runtime
+                + column_management_runtime
+                + verification_runtime
+            )
+            return ColumnGenerationResult(
+                status,
+                tuple(patterns),
+                rmp_result,
+                pricing_result,
+                integer_master_result,
+                iterations,
+                columns_added,
+                duplicate_columns,
+                termination_reason,
+                verification,
+                total_runtime,
+                master_problem_runtime,
+                pricing_runtime,
+                integer_master_runtime,
+                column_management_runtime,
+                verification_runtime,
+                total_runtime - instrumented_runtime,
+            )
+
+        management_started = perf_counter()
         patterns = list(self.instance.initial_patterns())
+        column_management_runtime += perf_counter() - management_started
         columns_added = 0
         duplicate_columns = 0
         iterations = 0
@@ -71,109 +121,52 @@ class ColumnGeneration:
 
         while True:
             iterations += 1
+            component_started = perf_counter()
             rmp_result = RestrictedMasterProblem(self.instance, tuple(patterns)).solve()
+            master_problem_runtime += perf_counter() - component_started
             if rmp_result.status != 0:
-                return ColumnGenerationResult(
-                    _failure_status(rmp_result.status),
-                    tuple(patterns),
-                    rmp_result,
-                    pricing_result,
-                    integer_master_result,
-                    iterations,
-                    columns_added,
-                    duplicate_columns,
-                    "rmp_failed",
-                )
+                return make_result(_failure_status(rmp_result.status), "rmp_failed")
 
+            component_started = perf_counter()
             pricing_result = ExactPricing(self.instance).solve(rmp_result.dual_values)
+            pricing_runtime += perf_counter() - component_started
             if pricing_result.status != 0:
-                return ColumnGenerationResult(
-                    _failure_status(pricing_result.status),
-                    tuple(patterns),
-                    rmp_result,
-                    pricing_result,
-                    integer_master_result,
-                    iterations,
-                    columns_added,
-                    duplicate_columns,
-                    "pricing_failed",
-                )
+                return make_result(_failure_status(pricing_result.status), "pricing_failed")
             if pricing_result.reduced_cost is None or pricing_result.pattern == ():
-                return ColumnGenerationResult(
-                    "solver_error",
-                    tuple(patterns),
-                    rmp_result,
-                    pricing_result,
-                    integer_master_result,
-                    iterations,
-                    columns_added,
-                    duplicate_columns,
-                    "pricing_returned_no_pattern",
-                )
-            if pricing_result.pattern in patterns:
+                return make_result("solver_error", "pricing_returned_no_pattern")
+            management_started = perf_counter()
+            is_duplicate = pricing_result.pattern in patterns
+            if is_duplicate:
                 duplicate_columns += 1
-                if pricing_result.reduced_cost < -self.reduced_cost_tolerance:
-                    return ColumnGenerationResult(
-                        "solver_error",
-                        tuple(patterns),
-                        rmp_result,
-                        pricing_result,
-                        integer_master_result,
-                        iterations,
-                        columns_added,
-                        duplicate_columns,
-                        "improving_duplicate_column",
-                    )
+            column_management_runtime += perf_counter() - management_started
+            if is_duplicate and pricing_result.reduced_cost < -self.reduced_cost_tolerance:
+                return make_result("solver_error", "improving_duplicate_column")
             if pricing_result.reduced_cost >= -self.reduced_cost_tolerance:
+                component_started = perf_counter()
                 integer_master_result = IntegerRestrictedMasterProblem(
                     self.instance, tuple(patterns)
                 ).solve()
+                integer_master_runtime += perf_counter() - component_started
                 if integer_master_result.status != 0:
-                    return ColumnGenerationResult(
-                        _failure_status(integer_master_result.status),
-                        tuple(patterns),
-                        rmp_result,
-                        pricing_result,
-                        integer_master_result,
-                        iterations,
-                        columns_added,
-                        duplicate_columns,
-                        "integer_master_failed",
+                    return make_result(
+                        _failure_status(integer_master_result.status), "integer_master_failed"
                     )
+                component_started = perf_counter()
                 verification = verify_plan(
                     self.instance, tuple(patterns), integer_master_result.column_values
                 )
+                verification_runtime += perf_counter() - component_started
                 if (
                     not verification.feasible
                     or verification.number_of_stock_bars
                     != integer_master_result.objective_value
                 ):
-                    return ColumnGenerationResult(
-                        "invalid_plan",
-                        tuple(patterns),
-                        rmp_result,
-                        pricing_result,
-                        integer_master_result,
-                        iterations,
-                        columns_added,
-                        duplicate_columns,
-                        "invalid_plan",
-                        verification,
-                    )
-                return ColumnGenerationResult(
-                    "converged",
-                    tuple(patterns),
-                    rmp_result,
-                    pricing_result,
-                    integer_master_result,
-                    iterations,
-                    columns_added,
-                    duplicate_columns,
-                    "no_improving_column",
-                    verification,
-                )
+                    return make_result("invalid_plan", "invalid_plan", verification)
+                return make_result("converged", "no_improving_column", verification)
+            management_started = perf_counter()
             patterns.append(pricing_result.pattern)
             columns_added += 1
+            column_management_runtime += perf_counter() - management_started
 
 
 def _failure_status(solver_status: int) -> str:

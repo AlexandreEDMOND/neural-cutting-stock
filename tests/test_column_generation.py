@@ -34,6 +34,26 @@ def test_column_generation_adds_shared_pattern_and_converges_exactly() -> None:
     assert result.duplicate_columns == 1
 
 
+def test_column_generation_reports_component_runtimes() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+
+    result = ColumnGeneration(instance).solve()
+
+    components = (
+        result.master_problem_runtime,
+        result.pricing_runtime,
+        result.integer_master_runtime,
+        result.column_management_runtime,
+        result.verification_runtime,
+    )
+    assert result.total_runtime_seconds > 0
+    assert all(runtime > 0 for runtime in components)
+    assert result.unattributed_runtime >= 0
+    assert result.total_runtime_seconds == pytest.approx(
+        sum(components) + result.unattributed_runtime
+    )
+
+
 def test_column_generation_converges_for_single_type_with_kerf() -> None:
     instance = CuttingStockInstance(10, 1, [6], [2])
 
@@ -133,7 +153,18 @@ def test_column_generation_is_reproducible_for_same_instance() -> None:
     first = ColumnGeneration(instance).solve()
     second = ColumnGeneration(instance).solve()
 
-    assert first == second
+    assert first.status == second.status
+    assert first.patterns == second.patterns
+    assert first.rmp_result == second.rmp_result
+    assert first.pricing_result == second.pricing_result
+    assert first.integer_master_result == second.integer_master_result
+    assert first.iterations == second.iterations
+    assert first.columns_added == second.columns_added
+    assert first.duplicate_columns == second.duplicate_columns
+    assert first.termination_reason == second.termination_reason
+    assert first.verification == second.verification
+    assert first.total_runtime_seconds > 0
+    assert second.total_runtime_seconds > 0
 
 
 @pytest.mark.parametrize(

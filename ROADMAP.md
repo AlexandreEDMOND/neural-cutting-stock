@@ -53,7 +53,7 @@ reproductible avant tout apprentissage.
 - [x] **P2.04** — Définir le schéma versionné des résultats bruts, statuts et métadonnées d'environnement.
 - [x] **P2.05** — Implémenter un runner classique sur une matrice d'instances configurée.
 - [x] **P2.06** — Persister toutes les exécutions brutes sans filtrer échecs, violations ni timeouts.
-- [ ] **P2.07** — Mesurer temps total, RMP, pricing, maître entier et gestion des colonnes.
+- [x] **P2.07** — Mesurer temps total, RMP, pricing, maître entier et gestion des colonnes.
 - [ ] **P2.08** — Construire une matrice séparant types, demande, longueur de barre, distributions et kerf.
 - [ ] **P2.09** — Tester la reproductibilité des instances, ordres d'exécution et résultats sérialisés.
 - [ ] **P2.10** — Ajouter limites de ressources et statuts explicites aux campagnes de benchmark.
