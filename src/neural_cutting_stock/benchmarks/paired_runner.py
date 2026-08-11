@@ -55,9 +55,8 @@ class PairedBenchmarkRunner:
         self.configuration = configuration
 
     def run(self, output_path: str | Path | None = None) -> tuple[BenchmarkRunRecord, ...]:
-        classical_config = self.configuration
         classical = ClassicalBenchmarkRunner(
-            _classical_config(classical_config)
+            _classical_config(self.configuration)
         )
         records: list[BenchmarkRunRecord] = []
         for generator in self.configuration.generators:

@@ -9,8 +9,6 @@ from neural_cutting_stock.problem import CuttingStockInstance
 
 from .interfaces import PatternCandidate
 
-CANDIDATE_POOL_SCHEMA_VERSION = "candidate-pool-v1"
-
 
 def deterministic_candidate_pool(
     instance: CuttingStockInstance,

@@ -103,17 +103,13 @@ class LearningInterfaceTests(unittest.TestCase):
         self.assertEqual(original, reordered)
 
     def test_candidate_pool_is_deterministic_and_excludes_existing_patterns(self) -> None:
-        from neural_cutting_stock.learning import (
-            CANDIDATE_POOL_SCHEMA_VERSION,
-            deterministic_candidate_pool,
-        )
+        from neural_cutting_stock.learning import deterministic_candidate_pool
         from neural_cutting_stock.problem import CuttingStockInstance
 
         instance = CuttingStockInstance(10, 0, [2, 3], [2, 2])
         first = deterministic_candidate_pool(instance, (0.4, 0.7), ((2, 0),))
         second = deterministic_candidate_pool(instance, (0.4, 0.7), ((2, 0),))
 
-        self.assertEqual(CANDIDATE_POOL_SCHEMA_VERSION, "candidate-pool-v1")
         self.assertEqual(first, second)
         self.assertNotIn((2, 0), [candidate.pattern for candidate in first])
         self.assertEqual(
