@@ -1,7 +1,7 @@
 """Reproducible instance generation and benchmark execution."""
 
 from .generator import SyntheticInstanceGenerator
-from .runner import ClassicalBenchmarkConfig, ClassicalBenchmarkRunner
+from .runner import ClassicalBenchmarkConfig, ClassicalBenchmarkRunner, write_raw_runs
 from .schema import (
     SCHEMA_VERSION,
     BenchmarkRunRecord,
@@ -19,4 +19,5 @@ __all__ = [
     "SyntheticInstanceGenerator",
     "ClassicalBenchmarkConfig",
     "ClassicalBenchmarkRunner",
+    "write_raw_runs",
 ]

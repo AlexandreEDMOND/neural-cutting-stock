@@ -1,8 +1,10 @@
-"""Execution of configured classical benchmark matrices."""
+"""Execution and persistence of configured classical benchmark matrices."""
 
+import csv
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
+from pathlib import Path
 from typing import ClassVar
 
 from neural_cutting_stock.solver import ColumnGeneration, ColumnGenerationResult
@@ -71,14 +73,16 @@ class ClassicalBenchmarkRunner:
     def __init__(self, configuration: ClassicalBenchmarkConfig) -> None:
         self.configuration = configuration
 
-    def run(self) -> tuple[BenchmarkRunRecord, ...]:
-        """Return one raw in-memory record for every matrix cell."""
+    def run(self, output_path: str | Path | None = None) -> tuple[BenchmarkRunRecord, ...]:
+        """Return and optionally persist one raw record for every matrix cell."""
 
         records: list[BenchmarkRunRecord] = []
         for generator in self.configuration.generators:
             instance = generator.generate()
             for repetition in range(self.configuration.repetitions):
                 records.append(self._run_one(generator, instance, repetition))
+        if output_path is not None:
+            write_raw_runs(output_path, records)
         return tuple(records)
 
     def _run_one(
@@ -198,6 +202,27 @@ def _run_status(status: str) -> RunStatus:
         return RunStatus.OPTIMAL_LP_RESTRICTED_IP
     if status == "infeasible":
         return RunStatus.INFEASIBLE
+    if status == "limit_reached":
+        return RunStatus.TIMEOUT
     if status == "invalid_plan":
         return RunStatus.INVALID_PLAN
     return RunStatus.SOLVER_ERROR
+
+
+def write_raw_runs(path: str | Path, records: tuple[BenchmarkRunRecord, ...]) -> None:
+    """Write every supplied raw run to a versioned CSV table without filtering."""
+
+    fieldnames = tuple(records[0].to_dict()) if records else _raw_run_fieldnames()
+    with Path(path).open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(record.to_dict() for record in records)
+
+
+def _raw_run_fieldnames() -> tuple[str, ...]:
+    """Return the complete flat schema for an empty raw-run table."""
+
+    record_fields = tuple(
+        field.name for field in fields(BenchmarkRunRecord) if field.name != "environment"
+    )
+    return record_fields + tuple(field.name for field in fields(EnvironmentMetadata))
