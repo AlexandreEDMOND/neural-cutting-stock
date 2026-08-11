@@ -1,5 +1,6 @@
 """Stable interfaces between classical column generation and learned policies."""
 
+from .features import FEATURE_SCHEMA_VERSION, pricing_features
 from .interfaces import (
     LEARNING_INTERFACE_SCHEMA_VERSION,
     ColumnScoringModel,
@@ -18,4 +19,6 @@ __all__ = [
     "PatternCandidate",
     "PatternScore",
     "PricingState",
+    "FEATURE_SCHEMA_VERSION",
+    "pricing_features",
 ]

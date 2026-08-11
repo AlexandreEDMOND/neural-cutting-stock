@@ -96,7 +96,7 @@ Objectif : ajouter la plus petite politique apprise utile, sans remplacer le sol
 exact de convergence.
 
 - [x] **P4.01** — Figer l'interface état, motif, score et décision entre solveur classique et couche apprise.
-- [ ] **P4.02** — Construire des features compatibles avec un nombre variable et une permutation des types.
+- [x] **P4.02** — Construire des features compatibles avec un nombre variable et une permutation des types.
 - [ ] **P4.03** — Exposer un pool déterministe de candidats sans modifier le pricing exact final.
 - [ ] **P4.04** — Implémenter le chargement reproductible des exemples et partitions de Phase 3.
 - [ ] **P4.05** — Implémenter le plus petit modèle supervisé capable de scorer état et motif.

@@ -80,6 +80,13 @@ et [`data/phase-3-corpus/README.md`](data/phase-3-corpus/README.md).
 
 À partir de la Phase 4, un modèle simple recevra l’état courant du RMP, les duales et un ensemble de motifs candidats. Il classera les colonnes à ajouter. Une passe de pricing exacte restera obligatoire avant toute déclaration de convergence.
 
+Les features `pricing-features-v1` sont produites par
+[`learning/features.py`](src/neural_cutting_stock/learning/features.py). Elles ont une largeur fixe
+indépendante du nombre de types : les longueurs, demandes, duales, usages courants et comptes du
+motif candidat sont résumés par des statistiques symétriques. Une permutation conjointe des types,
+des motifs et des duales produit donc le même vecteur. Ces features décrivent une observation du
+pricing classique ; elles ne sélectionnent aucune colonne et ne remplacent pas le contrôle exact.
+
 L'interface versionnée `learning-interface-v1` est définie dans
 [`src/neural_cutting_stock/learning/interfaces.py`](src/neural_cutting_stock/learning/interfaces.py).
 Elle transporte un `PricingState` (instance, ordre des types, état du RMP et duales), des
