@@ -56,6 +56,8 @@ class ClassicalBenchmarkConfig:
                     "number_of_types": generator.number_of_types,
                     "piece_length_range": generator.piece_length_range,
                     "demand_range": generator.demand_range,
+                    "length_distribution": generator.length_distribution,
+                    "demand_distribution": generator.demand_distribution,
                 }
                 for generator in self.generators
             ],
@@ -136,8 +138,8 @@ class ClassicalBenchmarkRunner:
                 length * demand
                 for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
             ),
-            length_distribution=generator.name,
-            demand_distribution=generator.name,
+            length_distribution=generator.length_distribution,
+            demand_distribution=generator.demand_distribution,
             run_status=status,
             master_status=_component_status(rmp.status if rmp else None),
             pricing_status=_component_status(pricing.status if pricing else None),
@@ -187,8 +189,8 @@ class ClassicalBenchmarkRunner:
                 length * demand
                 for length, demand in zip(instance.piece_lengths, instance.demands, strict=True)
             ),
-            length_distribution=generator.name,
-            demand_distribution=generator.name,
+            length_distribution=generator.length_distribution,
+            demand_distribution=generator.demand_distribution,
             run_status=RunStatus.SOLVER_ERROR,
             master_status="not_run",
             pricing_status="not_run",

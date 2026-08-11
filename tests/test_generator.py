@@ -29,6 +29,17 @@ def test_synthetic_generator_instance_id_is_stable_for_normalized_data() -> None
     ).instance_id
 
 
+def test_synthetic_generator_keeps_length_and_demand_distribution_metadata() -> None:
+    generator = SyntheticInstanceGenerator(
+        seed=17,
+        length_distribution="short_uniform_v1",
+        demand_distribution="high_uniform_v1",
+    )
+
+    assert generator.length_distribution == "short_uniform_v1"
+    assert generator.demand_distribution == "high_uniform_v1"
+
+
 @pytest.mark.parametrize(
     "kwargs",
     [

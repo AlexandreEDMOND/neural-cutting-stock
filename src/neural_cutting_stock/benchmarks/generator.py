@@ -20,6 +20,8 @@ class SyntheticInstanceGenerator:
     number_of_types: int = 3
     piece_length_range: tuple[int, int] = (10, 90)
     demand_range: tuple[int, int] = (1, 10)
+    length_distribution: str = "uniform_integer_v1"
+    demand_distribution: str = "uniform_integer_v1"
 
     name = "uniform_integer_v1"
     version = "1"
@@ -49,6 +51,8 @@ class SyntheticInstanceGenerator:
             raise ValueError("number_of_types must be a positive integer")
         _validate_range(self.piece_length_range, "piece_length_range")
         _validate_range(self.demand_range, "demand_range")
+        _validate_text(self.length_distribution, "length_distribution")
+        _validate_text(self.demand_distribution, "demand_distribution")
         if self.piece_length_range[1] > self.stock_length - self.kerf:
             raise ValueError("piece_length_range contains pieces that do not fit")
 
@@ -92,3 +96,8 @@ def _validate_range(value: tuple[int, int], name: str) -> None:
         or value[0] > value[1]
     ):
         raise ValueError(f"{name} must be an increasing pair of positive integers")
+
+
+def _validate_text(value: str, name: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{name} must be a non-empty string")

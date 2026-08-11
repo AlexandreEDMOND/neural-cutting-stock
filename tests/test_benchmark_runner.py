@@ -36,6 +36,23 @@ def test_classical_runner_executes_configured_matrix_in_stable_order() -> None:
     assert all(record.config_id == configuration.config_id for record in records)
 
 
+def test_runner_persists_separate_distribution_dimensions() -> None:
+    generator = SyntheticInstanceGenerator(
+        seed=11,
+        length_distribution="short_uniform_v1",
+        demand_distribution="high_uniform_v1",
+    )
+    configuration = ClassicalBenchmarkConfig(
+        generators=(generator,),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+    )
+
+    record = ClassicalBenchmarkRunner(configuration).run()[0]
+
+    assert record.length_distribution == "short_uniform_v1"
+    assert record.demand_distribution == "high_uniform_v1"
+
+
 def test_classical_runner_persists_component_runtimes() -> None:
     configuration = ClassicalBenchmarkConfig(
         generators=(SyntheticInstanceGenerator(seed=11),),
