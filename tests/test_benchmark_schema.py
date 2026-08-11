@@ -1,6 +1,7 @@
 import pytest
 
 from neural_cutting_stock.benchmarks import (
+    DUAL_SIGN_CONVENTION,
     SCHEMA_VERSION,
     TRAJECTORY_SCHEMA_VERSION,
     BenchmarkRunRecord,
@@ -29,6 +30,8 @@ def _trajectory_metadata(**changes: object) -> TrajectoryMetadata:
         "reduced_cost_tolerance": 1e-9,
         "integrality_tolerance": 1e-9,
         "feasibility_tolerance": 1e-9,
+        "dual_type_order": (20.0, 40.0),
+        "dual_tolerance": 1e-9,
     }
     values.update(changes)
     return TrajectoryMetadata(**values)
@@ -116,6 +119,20 @@ def test_trajectory_schema_is_versioned_and_json_ready() -> None:
     assert output["metadata"]["code_commit"] == "abc123"
     assert output["iterations"][0]["iteration_index"] == 1
     assert output["status"] == "converged"
+    assert output["metadata"]["dual_type_order"] == (20.0, 40.0)
+    assert output["metadata"]["dual_tolerance"] == 1e-9
+    assert output["metadata"]["dual_sign_convention"] == DUAL_SIGN_CONVENTION
+
+
+def test_trajectory_records_duals_in_the_declared_type_order() -> None:
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(),
+        (TrajectoryIteration(1, "optimal", dual_values=(0.5, 0.25)),),
+        TrajectoryStatus.CONVERGED,
+        "no_improving_column",
+    )
+
+    assert trajectory.to_dict()["iterations"][0]["dual_values"] == (0.5, 0.25)
 
 
 def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
@@ -141,10 +158,27 @@ def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
     ("factory", "message"),
     [
         (
-            lambda: _trajectory_metadata(schema_version="cg-trajectory-v2"),
+            lambda: _trajectory_metadata(schema_version="cg-trajectory-v1"),
             "unsupported schema_version",
         ),
         (lambda: _trajectory_metadata(piece_lengths=(20.0,)), "same non-zero length"),
+        (
+            lambda: _trajectory_metadata(dual_type_order=(40.0, 20.0)),
+            "dual_type_order",
+        ),
+        (
+            lambda: ColumnGenerationTrajectory(
+                _trajectory_metadata(),
+                (TrajectoryIteration(1, "optimal", dual_values=(0.5,)),),
+                TrajectoryStatus.CONVERGED,
+                "no_improving_column",
+            ),
+            "dual_values must follow",
+        ),
+        (
+            lambda: TrajectoryIteration(1, "optimal", dual_values=(0.5, -0.1)),
+            "non-negative",
+        ),
         (lambda: TrajectoryIteration(0, "optimal"), "start at 1"),
         (
             lambda: ColumnGenerationTrajectory(

@@ -7,7 +7,8 @@ from typing import Any
 
 from .schema import EnvironmentMetadata
 
-TRAJECTORY_SCHEMA_VERSION = "cg-trajectory-v1"
+TRAJECTORY_SCHEMA_VERSION = "cg-trajectory-v2"
+DUAL_SIGN_CONVENTION = "nonnegative_covering_dual"
 
 
 class TrajectoryStatus(StrEnum):
@@ -35,6 +36,9 @@ class TrajectoryMetadata:
     reduced_cost_tolerance: float
     integrality_tolerance: float
     feasibility_tolerance: float
+    dual_type_order: tuple[float, ...]
+    dual_tolerance: float
+    dual_sign_convention: str = DUAL_SIGN_CONVENTION
     schema_version: str = TRAJECTORY_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -46,6 +50,8 @@ class TrajectoryMetadata:
             raise ValueError("seed must be an integer")
         if len(self.piece_lengths) == 0 or len(self.piece_lengths) != len(self.demands):
             raise ValueError("piece_lengths and demands must have the same non-zero length")
+        if self.dual_type_order != self.piece_lengths:
+            raise ValueError("dual_type_order must match piece_lengths exactly")
         if any(length <= 0 or not math.isfinite(length) for length in self.piece_lengths):
             raise ValueError("piece_lengths must contain finite positive values")
         if any(
@@ -57,11 +63,18 @@ class TrajectoryMetadata:
             _require_finite(name, getattr(self, name))
         if self.stock_length <= 0 or self.kerf < 0:
             raise ValueError("stock_length must be positive and kerf must be non-negative")
-        for name in ("reduced_cost_tolerance", "integrality_tolerance", "feasibility_tolerance"):
+        for name in (
+            "reduced_cost_tolerance",
+            "integrality_tolerance",
+            "feasibility_tolerance",
+            "dual_tolerance",
+        ):
             value = getattr(self, name)
             _require_finite(name, value)
             if value < 0:
                 raise ValueError(f"{name} must be non-negative")
+        if self.dual_sign_convention != DUAL_SIGN_CONVENTION:
+            raise ValueError(f"unsupported dual_sign_convention: {self.dual_sign_convention!r}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,6 +118,11 @@ class TrajectoryIteration:
             and len(self.candidate_reduced_costs) != len(self.candidate_patterns)
         ):
             raise ValueError("candidate patterns and reduced costs must have the same length")
+        if self.dual_values is not None:
+            if len(self.dual_values) == 0:
+                raise ValueError("dual_values must not be empty when present")
+            if any(value < 0 for value in self.dual_values):
+                raise ValueError("dual_values must be non-negative under the covering convention")
         for field in fields(self):
             value = getattr(self, field.name)
             if isinstance(value, float):
@@ -138,6 +156,11 @@ class ColumnGenerationTrajectory:
         expected = tuple(range(1, len(self.iterations) + 1))
         if tuple(item.iteration_index for item in self.iterations) != expected:
             raise ValueError("iteration_index values must be contiguous and start at 1")
+        for iteration in self.iterations:
+            if iteration.dual_values is not None and len(iteration.dual_values) != len(
+                self.metadata.dual_type_order
+            ):
+                raise ValueError("dual_values must follow metadata.dual_type_order")
         _require_text("termination_reason", self.termination_reason)
         if self.status is not TrajectoryStatus.CONVERGED and not self.error_message:
             raise ValueError("error_message is required for a non-converged trajectory")

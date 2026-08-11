@@ -19,6 +19,7 @@ from .schema import (
     SolverMode,
 )
 from .trajectory import (
+    DUAL_SIGN_CONVENTION,
     TRAJECTORY_SCHEMA_VERSION,
     ColumnGenerationTrajectory,
     TrajectoryIteration,
@@ -45,6 +46,7 @@ __all__ = [
     "SizeClass",
     "classify_runtime",
     "TRAJECTORY_SCHEMA_VERSION",
+    "DUAL_SIGN_CONVENTION",
     "ColumnGenerationTrajectory",
     "TrajectoryIteration",
     "TrajectoryMetadata",
