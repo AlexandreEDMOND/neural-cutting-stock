@@ -1,0 +1,53 @@
+{
+  "config": {
+    "candidate_budget": 1,
+    "source": "results/phase-4-benchmark-runs.csv"
+  },
+  "dataset_schema_version": "trajectory-dataset-v1",
+  "feature_schema_version": "pricing-features-v1",
+  "metadata": {
+    "candidate_status": "retained_phase_4_policy",
+    "training_examples": 0
+  },
+  "model": {
+    "bias": 0.0,
+    "feature_width": 32,
+    "weights": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "model_schema_version": "linear-scorer-v1",
+  "schema_version": "linear-training-artifact-v1",
+  "seed": 0
+}
