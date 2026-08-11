@@ -6,7 +6,13 @@ from .corpus import (
     read_corpus_manifest,
     trajectory_sha256,
 )
-from .dataset import DATASET_SCHEMA_VERSION, DatasetExample, TrajectoryDataset, build_dataset
+from .dataset import (
+    DATASET_SCHEMA_VERSION,
+    DatasetExample,
+    TrajectoryDataset,
+    build_dataset,
+    load_phase3_dataset,
+)
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
 from .partitions import (
@@ -62,6 +68,7 @@ __all__ = [
     "DatasetExample",
     "TrajectoryDataset",
     "build_dataset",
+    "load_phase3_dataset",
     "CORPUS_SCHEMA_VERSION",
     "corpus_statistics",
     "read_corpus_manifest",

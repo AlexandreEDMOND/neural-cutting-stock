@@ -2,10 +2,12 @@
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
-from .partitions import DatasetPartition
-from .trajectory import ColumnGenerationTrajectory, replay_trajectory
+from .corpus import corpus_statistics, read_corpus_manifest, trajectory_sha256
+from .partitions import DatasetPartition, PartitionPlan
+from .trajectory import ColumnGenerationTrajectory, read_trajectory, replay_trajectory
 
 DATASET_SCHEMA_VERSION = "trajectory-dataset-v1"
 
@@ -122,3 +124,90 @@ def build_dataset(
                     )
                 )
     return TrajectoryDataset(tuple(examples), trajectory_ids)
+
+
+def load_phase3_dataset(manifest_path: str | Path) -> TrajectoryDataset:
+    """Load and validate the reproducible Phase 3 examples from a corpus manifest.
+
+    The manifest is the source of partition assignments and file identities. Every trajectory is
+    hash-checked before :func:`build_dataset` replays it through the exact classical solver.
+    """
+
+    manifest_path = Path(manifest_path)
+    manifest = read_corpus_manifest(manifest_path)
+    partition_plan_value = manifest.get("partition_plan")
+    if not isinstance(partition_plan_value, dict):
+        raise ValueError("corpus manifest must contain a partition_plan")
+    try:
+        plan = PartitionPlan(
+            **{
+                name: tuple(partition_plan_value[name])
+                for name in (
+                    "train_seeds",
+                    "validation_seeds",
+                    "test_seeds",
+                    "train_families",
+                    "validation_families",
+                    "test_families",
+                )
+            },
+            schema_version=partition_plan_value.get("schema_version"),
+        )
+    except (KeyError, TypeError) as error:
+        raise ValueError("invalid partition_plan") from error
+
+    root = manifest_path.parent.resolve()
+    trajectories: list[ColumnGenerationTrajectory] = []
+    partitions: dict[str, DatasetPartition] = {}
+    for entry in manifest["trajectories"]:
+        if not isinstance(entry, dict):
+            raise ValueError("trajectory manifest entries must be objects")
+        try:
+            trajectory_id = entry["trajectory_id"]
+            relative_path = Path(entry["path"])
+            partition = DatasetPartition(entry["partition"])
+            seed = entry["seed"]
+            family_id = entry["family_id"]
+            expected_hash = entry["sha256"]
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError("invalid trajectory manifest entry") from error
+        if not isinstance(trajectory_id, str) or not isinstance(expected_hash, str):
+            raise ValueError("trajectory manifest identity fields must be strings")
+        path = (root / relative_path).resolve()
+        if root not in path.parents:
+            raise ValueError(f"trajectory path escapes corpus directory: {relative_path}")
+        trajectory = read_trajectory(path)
+        if trajectory.metadata.trajectory_id != trajectory_id:
+            raise ValueError(f"trajectory identity differs for {relative_path}")
+        if trajectory.metadata.seed != seed:
+            raise ValueError(f"trajectory seed differs for {trajectory_id!r}")
+        if trajectory_sha256(trajectory) != expected_hash:
+            raise ValueError(f"trajectory hash differs for {trajectory_id!r}")
+        if not _partition_plan_contains(plan, partition, seed, family_id):
+            raise ValueError(f"trajectory {trajectory_id!r} does not match partition plan")
+        if trajectory_id in partitions:
+            raise ValueError(f"duplicate trajectory_id: {trajectory_id!r}")
+        trajectories.append(trajectory)
+        partitions[trajectory_id] = partition
+
+    dataset = build_dataset(tuple(trajectories), partitions)
+    actual_statistics = corpus_statistics(tuple(trajectories), partitions)
+    if actual_statistics != manifest["statistics"]:
+        raise ValueError("corpus statistics differ from manifest")
+    return dataset
+
+
+def _partition_plan_contains(
+    plan: PartitionPlan, partition: DatasetPartition, seed: int, family_id: str
+) -> bool:
+    seed_values = {
+        DatasetPartition.TRAIN: plan.train_seeds,
+        DatasetPartition.VALIDATION: plan.validation_seeds,
+        DatasetPartition.TEST: plan.test_seeds,
+    }[partition]
+    family_values = {
+        DatasetPartition.TRAIN: plan.train_families,
+        DatasetPartition.VALIDATION: plan.validation_families,
+        DatasetPartition.TEST: plan.test_families,
+    }[partition]
+    return seed in seed_values and family_id in family_values

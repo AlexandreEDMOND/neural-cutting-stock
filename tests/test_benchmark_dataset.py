@@ -8,6 +8,7 @@ from neural_cutting_stock.benchmarks import (
     TrajectoryIteration,
     TrajectoryStatus,
     build_dataset,
+    load_phase3_dataset,
 )
 
 
@@ -112,3 +113,46 @@ def test_dataset_rejects_missing_partition_or_missing_duals(monkeypatch) -> None
     )
     with pytest.raises(ValueError, match="without dual values"):
         build_dataset((no_duals,), {"trajectory-1": "test"})
+
+
+def test_phase3_loader_reconstructs_examples_and_partitions() -> None:
+    dataset = load_phase3_dataset("data/phase-3-corpus/manifest.json")
+
+    assert dataset.trajectory_ids == tuple(sorted(dataset.trajectory_ids))
+    assert dataset.examples == ()
+
+
+def test_phase3_loader_is_invariant_to_manifest_trajectory_order(tmp_path) -> None:
+    import json
+    from pathlib import Path
+
+    source = Path("data/phase-3-corpus/manifest.json")
+    manifest = json.loads(source.read_text(encoding="utf-8"))
+    manifest["trajectories"] = list(reversed(manifest["trajectories"]))
+    copied = tmp_path / "manifest.json"
+    for entry in manifest["trajectories"]:
+        source_trajectory = source.parent / entry["path"]
+        target = tmp_path / entry["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(source_trajectory.read_bytes())
+    copied.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert load_phase3_dataset(copied) == load_phase3_dataset(source)
+
+
+def test_phase3_loader_rejects_hash_mismatch(tmp_path) -> None:
+    import json
+    from pathlib import Path
+
+    source = Path("data/phase-3-corpus/manifest.json")
+    manifest = json.loads(source.read_text(encoding="utf-8"))
+    entry = manifest["trajectories"][0]
+    entry["sha256"] = "0" * 64
+    target_manifest = tmp_path / "manifest.json"
+    target_manifest.write_text(json.dumps(manifest), encoding="utf-8")
+    target = tmp_path / entry["path"]
+    target.parent.mkdir()
+    target.write_bytes((source.parent / entry["path"]).read_bytes())
+
+    with pytest.raises(ValueError, match="hash differs"):
+        load_phase3_dataset(target_manifest)

@@ -98,7 +98,7 @@ exact de convergence.
 - [x] **P4.01** — Figer l'interface état, motif, score et décision entre solveur classique et couche apprise.
 - [x] **P4.02** — Construire des features compatibles avec un nombre variable et une permutation des types.
 - [x] **P4.03** — Exposer un pool déterministe de candidats sans modifier le pricing exact final.
-- [ ] **P4.04** — Implémenter le chargement reproductible des exemples et partitions de Phase 3.
+- [x] **P4.04** — Implémenter le chargement reproductible des exemples et partitions de Phase 3.
 - [ ] **P4.05** — Implémenter le plus petit modèle supervisé capable de scorer état et motif.
 - [ ] **P4.06** — Ajouter une commande d'entraînement avec graines, configuration et métadonnées persistées.
 - [ ] **P4.07** — Évaluer hors entraînement le classement des colonnes avec des métriques définies à l'avance.
