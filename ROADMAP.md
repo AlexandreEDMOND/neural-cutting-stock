@@ -95,7 +95,7 @@ partitions et la collecte respecte les décisions classiques dans les tolérance
 Objectif : ajouter la plus petite politique apprise utile, sans remplacer le solveur ni son contrôle
 exact de convergence.
 
-- [ ] **P4.01** — Figer l'interface état, motif, score et décision entre solveur classique et couche apprise.
+- [x] **P4.01** — Figer l'interface état, motif, score et décision entre solveur classique et couche apprise.
 - [ ] **P4.02** — Construire des features compatibles avec un nombre variable et une permutation des types.
 - [ ] **P4.03** — Exposer un pool déterministe de candidats sans modifier le pricing exact final.
 - [ ] **P4.04** — Implémenter le chargement reproductible des exemples et partitions de Phase 3.
