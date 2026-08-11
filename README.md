@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Les Phases 1, 2 et 3 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. Aucun composant neuronal ni résultat de performance Neural CG n’existe encore.
+Les Phases 1, 2 et 3 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 fournit maintenant un runner de validation apparié et le recalcul des différences de qualité et de runtime ; aucun résultat de performance Neural CG n’est publié sans exécution réelle.
 
 ## Motivation
 
@@ -136,6 +136,8 @@ classique ne charge pas le paquet `learning`, et PyTorch n'est donc pas requis p
 Les instances synthétiques sont reproductibles par graine explicite, paramètres de génération et identifiant dérivé des données normalisées. La difficulté est étudiée selon plusieurs dimensions indépendantes : nombre de types, demande totale, longueur de barre, distributions des longueurs et demandes, et kerf. Les catégories `SMALL`, `MEDIUM`, `LARGE` et `XL` sont figées par `size-class-v1` à partir du temps mur-à-mur classique mesuré, et non de la demande seule : `SMALL < 0.015997 s`, `MEDIUM < 0.06385 s`, `LARGE < 0.1433 s`, puis `XL`.
 
 Les exécutions classique et neuronale seront appariées par `instance_id`, avec les mêmes configurations, ressources et conditions matérielles. Le temps principal est le temps mur-à-mur de l’entrée dans `solve` jusqu’au plan vérifié. Les décompositions RMP, pricing, maître entier, gestion des colonnes, vérification et, plus tard, inférence neuronale servent à expliquer ce temps, jamais à le remplacer. Chaque tentative, y compris échec et timeout, reste dans les données ; `objective_difference_vs_classical` est vérifié avant toute agrégation de runtime.
+
+`PairedBenchmarkRunner` exécute les deux modes sur chaque instance et répétition identiques. `compare_paired_runs` recalcule `objective_difference_vs_classical` et `speedup_vs_classical` depuis les enregistrements bruts ; `quality_preserved` exige deux plans faisables convergés et une différence d’objectif dans la tolérance déclarée. Les paires non admissibles restent conservées mais ne doivent pas alimenter une agrégation de speedup.
 
 Le schéma `benchmark-run-v1`, les règles de chronométrage, les statuts et le protocole de comparaison sont spécifiés dans [docs/benchmark_protocol.md](docs/benchmark_protocol.md). Le profil classique publié est [baseline-profile-v1](results/phase-2-baseline-profile.json), avec son [bilan détaillé](results/phase-2-summary.md).
 

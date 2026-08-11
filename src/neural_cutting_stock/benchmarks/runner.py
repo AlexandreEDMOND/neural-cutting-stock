@@ -119,6 +119,9 @@ class ClassicalBenchmarkRunner:
         repetition: int,
         run_id: str,
         result: ColumnGenerationResult,
+        solver_mode: SolverMode = SolverMode.CLASSICAL,
+        solver_version: str | None = None,
+        model_id: str | None = None,
     ) -> BenchmarkRunRecord:
         verification = result.verification
         integer = result.integer_master_result
@@ -131,7 +134,10 @@ class ClassicalBenchmarkRunner:
             else result.termination_reason
         )
         return BenchmarkRunRecord(
-            **self._record_identity(generator, instance, repetition, run_id),
+            **self._record_identity(
+                generator, instance, repetition, run_id, solver_mode=solver_mode,
+                solver_version=solver_version,
+            ),
             run_status=status,
             master_status=_component_status(rmp.status if rmp else None),
             pricing_status=_component_status(pricing.status if pricing else None),
@@ -166,25 +172,54 @@ class ClassicalBenchmarkRunner:
             verification_runtime=result.verification_runtime,
             unattributed_runtime=result.unattributed_runtime,
             error_message=error_message,
+            model_id=model_id,
         )
 
-    def _failed_record(self, generator, instance, repetition, run_id, message):
+    def _failed_record(
+        self,
+        generator,
+        instance,
+        repetition,
+        run_id,
+        message,
+        *,
+        solver_mode: SolverMode = SolverMode.CLASSICAL,
+        solver_version: str | None = None,
+        model_id: str | None = None,
+    ):
         return BenchmarkRunRecord(
-            **self._record_identity(generator, instance, repetition, run_id),
+            **self._record_identity(
+                generator,
+                instance,
+                repetition,
+                run_id,
+                solver_mode=solver_mode,
+                solver_version=solver_version,
+            ),
             run_status=RunStatus.SOLVER_ERROR,
             master_status="not_run",
             pricing_status="not_run",
             integer_master_status="not_run",
             termination_reason="solver_exception",
             error_message=message or "solver call failed",
+            model_id=model_id,
         )
 
-    def _record_identity(self, generator, instance, repetition, run_id):
+    def _record_identity(
+        self,
+        generator,
+        instance,
+        repetition,
+        run_id,
+        *,
+        solver_mode: SolverMode = SolverMode.CLASSICAL,
+        solver_version: str | None = None,
+    ):
         return {
             "run_id": run_id,
             "instance_id": generator.instance_id,
-            "solver_mode": SolverMode.CLASSICAL,
-            "solver_version": self.configuration.solver_version,
+            "solver_mode": solver_mode,
+            "solver_version": solver_version or self.configuration.solver_version,
             "seed": generator.seed,
             "config_id": self.configuration.config_id,
             "repetition": repetition,

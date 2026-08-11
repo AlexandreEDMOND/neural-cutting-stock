@@ -1,5 +1,6 @@
 """Reproducible instance generation and benchmark execution."""
 
+from .comparison import PairedRunComparison, compare_paired_runs
 from .corpus import (
     CORPUS_SCHEMA_VERSION,
     corpus_statistics,
@@ -15,6 +16,7 @@ from .dataset import (
 )
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
+from .paired_runner import PairedBenchmarkConfig, PairedBenchmarkRunner
 from .partitions import (
     PARTITION_SCHEMA_VERSION,
     DatasetPartition,
@@ -80,6 +82,10 @@ __all__ = [
     "ClassicalBenchmarkConfig",
     "ClassicalBenchmarkRunner",
     "write_raw_runs",
+    "PairedRunComparison",
+    "compare_paired_runs",
+    "PairedBenchmarkConfig",
+    "PairedBenchmarkRunner",
     "PROFILE_SCHEMA_VERSION",
     "profile_classical_runs",
     "SIZE_CLASS_SCHEMA_VERSION",
