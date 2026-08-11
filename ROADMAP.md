@@ -36,7 +36,7 @@ Objectif : disposer d'un solveur classique correct, vérifié et honnête sur se
 - [x] **P1.12** — Exposer le solveur classique, ses diagnostics et ses statuts via la CLI structurée.
 - [x] **P1.13** — Auditer la Phase 1 et retirer code mort, doublons et abstractions devenues inutiles.
 - [x] **P1.14** — Exécuter la validation de Phase 1 et publier `results/phase-1-summary.md` avec les résultats réels.
-- [ ] **P1.15** — Mettre à jour le README avec l'état, les garanties, les résultats et la clôture de Phase 1.
+- [x] **P1.15** — Mettre à jour le README avec l'état, les garanties, les résultats et la clôture de Phase 1.
 
 Critère de sortie : tous les tests passent ; sur le corpus exhaustif, la relaxation de Column
 Generation atteint la même valeur que le maître complet ; la solution entière restreinte est
@@ -175,5 +175,6 @@ succès.
 
 ## Prochaine itération
 
-La prochaine itération est toujours la première case `- [ ]` de ce fichier. À la date de cette
-réorganisation, il s'agit de **P1.13**, l'audit et le nettoyage de la baseline classique.
+La prochaine itération est toujours la première case `- [ ]` de ce fichier. Après la clôture de la
+Phase 1, il s'agit de **P2.04**, la définition du schéma versionné des résultats bruts, statuts et
+métadonnées d'environnement.

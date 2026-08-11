@@ -4,7 +4,7 @@
 
 ## État du projet
 
-La baseline classique de génération de colonnes est implémentée : validation des instances et du kerf, RMP linéaire, pricing entier exact, boucle de génération de colonnes, maître entier restreint, vérification indépendante et CLI structurée. La Phase 1 entre dans ses trois étapes de clôture : nettoyage, bilan réel, puis mise à jour documentaire. Aucun résultat de performance Neural CG ni composant neuronal n’existe encore.
+La Phase 1 est clôturée. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. Aucun composant neuronal ni résultat de performance Neural CG n’existe encore.
 
 ## Motivation
 
@@ -55,7 +55,7 @@ Le socle est une génération de colonnes pour le Cutting Stock 1D :
 5. ajouter tout motif de coût réduit négatif et recommencer ;
 6. lorsque le pricing exact ne trouve plus d’amélioration, résoudre le RMP entier sur les motifs générés.
 
-Le pricing exact certifie la convergence de la relaxation linéaire. En revanche, résoudre le maître entier restreint ne constitue pas, à lui seul, une preuve d’optimalité entière globale : une telle preuve demanderait une méthode de type branch-and-price. Les statuts et rapports ne devront jamais confondre ces garanties.
+Le pricing exact certifie, à la tolérance numérique déclarée, l’optimalité de la relaxation linéaire du maître complet lorsque aucune colonne améliorante n’est trouvée. Le maître entier final est résolu uniquement sur les colonnes générées : son statut est donc `optimal_over_generated_columns_only`, et ne constitue pas une preuve d’optimalité entière globale sans branch-and-price ou preuve additionnelle. Les contraintes de capacité et de demande sont vérifiées indépendamment du solveur.
 
 ## Accélération apprise proposée
 
@@ -98,7 +98,7 @@ Le schéma de données, les règles de chronométrage, les statuts et le protoco
 
 ## Résultats
 
-La validation locale actuelle de la baseline classique comporte **68 tests réussis** et un contrôle Ruff réussi. Ce nombre décrit la correction testée du code au commit courant ; il ne constitue pas un résultat de performance. Le bilan reproductible de Phase 1 doit encore être publié dans `results/phase-1-summary.md`.
+La validation de Phase 1 comporte **68 tests réussis** et un contrôle Ruff réussi, exécutés avec les dépendances verrouillées. Le bilan reproductible, les commandes, l’environnement et les critères vérifiés sont publiés dans [`results/phase-1-summary.md`](results/phase-1-summary.md). Ce nombre décrit la correction testée du code ; il ne constitue pas un résultat de performance.
 
 **Les expériences de performance sont encore en attente.** Aucun speedup ni graphique comparatif n’est publié à ce stade.
 
@@ -152,7 +152,7 @@ Le socle de résolution prévu repose sur NumPy et SciPy/HiGHS, sans licence com
 
 ## Feuille de route
 
-La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six phases contiennent chacune quinze étapes initiales et peuvent recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération exacte est **P1.13 : auditer et nettoyer la baseline classique**.
+La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six phases contiennent chacune quinze étapes initiales et peuvent recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération exacte est **P2.04 : définir le schéma versionné des résultats bruts, statuts et métadonnées d’environnement**.
 
 ## Périmètre
 
