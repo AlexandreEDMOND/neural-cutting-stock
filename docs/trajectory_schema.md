@@ -69,3 +69,7 @@ La colonne est `useful = true` seulement si cette réduction est strictement sup
 tolérance déclarée. Les deux trajectoires doivent fournir toutes les durées ; une mesure absente
 n'est jamais remplacée par zéro. La cible ne porte donc ni sur le seul temps d'inférence ni sur la
 qualité finale, qui reste vérifiée séparément par le solveur classique.
+
+Les partitions train, validation et test sont fixées avant cette collecte selon
+[le protocole dédié](partition_protocol.md). Elles séparent simultanément les graines et les
+familles de générateurs ; une combinaison qui croise deux partitions est rejetée.

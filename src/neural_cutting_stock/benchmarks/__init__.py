@@ -2,6 +2,12 @@
 
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
+from .partitions import (
+    PARTITION_SCHEMA_VERSION,
+    DatasetPartition,
+    PartitionAssignment,
+    PartitionPlan,
+)
 from .profile import (
     PROFILE_SCHEMA_VERSION,
     SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS,
@@ -45,6 +51,10 @@ __all__ = [
     "SyntheticInstanceGenerator",
     "BenchmarkMatrix",
     "DistributionSpec",
+    "PARTITION_SCHEMA_VERSION",
+    "DatasetPartition",
+    "PartitionAssignment",
+    "PartitionPlan",
     "ClassicalBenchmarkConfig",
     "ClassicalBenchmarkRunner",
     "write_raw_runs",

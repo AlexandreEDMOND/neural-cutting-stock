@@ -86,6 +86,27 @@ class SyntheticInstanceGenerator:
         ).encode("ascii")
         return sha256(payload).hexdigest()
 
+    @property
+    def family_id(self) -> str:
+        """Return a stable identifier for the generator family, excluding its seed."""
+
+        payload = json.dumps(
+            {
+                "generator_name": self.name,
+                "generator_version": self.version,
+                "stock_length": self.stock_length,
+                "kerf": self.kerf,
+                "number_of_types": self.number_of_types,
+                "piece_length_range": self.piece_length_range,
+                "demand_range": self.demand_range,
+                "length_distribution": self.length_distribution,
+                "demand_distribution": self.demand_distribution,
+            },
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("ascii")
+        return sha256(payload).hexdigest()
+
 
 def _validate_range(value: tuple[int, int], name: str) -> None:
     if (
