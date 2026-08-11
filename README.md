@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Les Phases 1 et 2 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. Aucun composant neuronal ni résultat de performance Neural CG n’existe encore.
+Les Phases 1, 2 et 3 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. Aucun composant neuronal ni résultat de performance Neural CG n’existe encore.
 
 ## Motivation
 
@@ -56,6 +56,25 @@ Le socle est une génération de colonnes pour le Cutting Stock 1D :
 6. lorsque le pricing exact ne trouve plus d’amélioration, résoudre le RMP entier sur les motifs générés.
 
 Le pricing exact certifie, à la tolérance numérique déclarée, l’optimalité de la relaxation linéaire du maître complet lorsque aucune colonne améliorante n’est trouvée. Le maître entier final est résolu uniquement sur les colonnes générées : son statut est donc `optimal_over_generated_columns_only`, et ne constitue pas une preuve d’optimalité entière globale sans branch-and-price ou preuve additionnelle. Les contraintes de capacité et de demande sont vérifiées indépendamment du solveur.
+
+## Schéma des trajectoires
+
+La Phase 3 persiste chaque exécution classique dans le schéma versionné `cg-trajectory-v2`. Une
+trajectoire contient des métadonnées d’identité et d’environnement (`trajectory_id`,
+`instance_id`, graine, configuration, commit, versions et matériel), les dimensions de l’instance,
+les tolérances numériques, l’ordre des types dans les duales et la convention
+`nonnegative_covering_dual`. Elle contient ensuite une séquence contiguë d’itérations avec l’état du
+RMP, les duales, les valeurs de colonnes, les comptes de colonnes, les motifs candidats et
+sélectionnés lorsqu’ils sont disponibles, le fallback exact, le meilleur coût réduit et les durées
+RMP, pricing et gestion des colonnes. Le statut terminal est `converged`, `resource_limit` ou
+`failed`, avec une raison de terminaison.
+
+Le corpus et son manifeste utilisent `phase-3-corpus-v1`. Le manifeste associe chaque trajectoire à
+son instance, sa graine, sa famille, sa partition, son chemin et son hash SHA-256. Le lecteur valide
+le schéma, vérifie les hashes et rejoue chaque trajectoire avec le solveur classique exact avant de
+l’accepter. Les détails de l’implémentation sont dans
+[`src/neural_cutting_stock/benchmarks/trajectory.py`](src/neural_cutting_stock/benchmarks/trajectory.py)
+et [`data/phase-3-corpus/README.md`](data/phase-3-corpus/README.md).
 
 ## Accélération apprise proposée
 
@@ -112,6 +131,46 @@ uv run python scripts/plot_phase2_profile.py \
 
 La Phase 2 est clôturée : le corpus, le protocole, les seuils de taille et le goulot sont versionnés et traçables. Les résultats neuronaux restent hors périmètre jusqu’aux phases suivantes.
 
+## Résultats et clôture de Phase 3
+
+Le corpus publié est `phase-3-small-v1`, au schéma `phase-3-corpus-v1`. Son plan de partitions,
+figé avant la collecte sous `trajectory-partitions-v1`, sépare les graines et les familles : la
+graine 11 et sa famille sont réservées à `train`, 12 à `validation`, et 13 à `test`. Les ensembles
+de graines et de familles sont disjoints et une instance n’est acceptée que lorsque les deux
+identifiants désignent la même partition.
+
+Le corpus contient trois trajectoires et trois instances, une par partition, toutes au statut
+`converged`. Il contient trois itérations, zéro colonne ajoutée et zéro motif sélectionné. La
+répartition publiée est :
+
+| Partition | Trajectoires | Itérations | Types de pièces |
+|---|---:|---:|---:|
+| train | 1 | 1 | 2 |
+| validation | 1 | 1 | 3 |
+| test | 1 | 1 | 4 |
+
+Chaque hash du manifeste correspond au fichier persistant et chaque trajectoire a été rejouée sans
+erreur par le solveur classique exact. Ce corpus est une collecte validée, pas un benchmark de temps :
+ses durées ne sont pas agrégées ni interprétées comme une performance. Il ne permet pas encore
+d’évaluer un modèle appris, un classement de colonnes ou un speedup. Les résultats et les deux
+figures descriptives sont publiés dans [`results/phase-3-summary.md`](results/phase-3-summary.md),
+[`results/phase3_corpus_structure.png`](results/phase3_corpus_structure.png) et
+[`results/phase3_instance_dimensions.png`](results/phase3_instance_dimensions.png).
+
+Le corpus peut être régénéré puis visualisé avec :
+
+```bash
+uv run python scripts/build_phase3_corpus.py --output-dir data/phase-3-corpus
+uv run python scripts/plot_phase3_corpus.py \
+  --manifest data/phase-3-corpus/manifest.json \
+  --output-dir results
+```
+
+La Phase 3 est clôturée : les trajectoires sont versionnées, validées et rejouables, les partitions
+sont fixées sans fuite connue, et la collecte n’altère pas les décisions du solveur classique dans
+les tolérances déclarées. La Phase 4 pourra maintenant introduire la couche apprise, sans remplacer
+le pricing exact ni le contrôle exact de convergence.
+
 Le pipeline de visualisation produira à partir des mesures brutes validées :
 
 - `results/runtime_comparison.png` — temps mur-à-mur de Classical CG et Neural CG par difficulté ;
@@ -135,6 +194,7 @@ neural-cutting-stock/
 ├── docs/
 │   ├── benchmark_protocol.md
 │   └── formulation.md
+├── data/phase-3-corpus/             # trajectoires, manifeste et partitions validés
 ├── results/                        # résultats et figures réellement mesurés
 ├── scripts/                        # points d’entrée fins, sans logique métier
 ├── src/neural_cutting_stock/
