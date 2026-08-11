@@ -135,6 +135,37 @@ class LearningInterfaceTests(unittest.TestCase):
         self.assertEqual(exact.pattern, (2, 2))
         self.assertAlmostEqual(exact.reduced_cost, -1.2)
 
+    def test_linear_model_learns_and_scores_state_candidates(self) -> None:
+        from neural_cutting_stock.learning import (
+            LinearColumnScoringModel,
+            PatternCandidate,
+            PricingState,
+            pricing_features,
+        )
+
+        state = PricingState(
+            "instance-1", 1, 100.0, 1.0, (20.0, 40.0), (3, 2), (0.5, 0.25), ()
+        )
+        candidates = (PatternCandidate((1, 0), 0.2), PatternCandidate((0, 1), 0.4))
+        rows = tuple(pricing_features(state, candidate) for candidate in candidates)
+        model = LinearColumnScoringModel.fit(rows, (0.0, 1.0))
+
+        scores = model.score(state, candidates)
+
+        assert model.feature_width == len(rows[0])
+        assert [score.pattern for score in scores] == [(1, 0), (0, 1)]
+        assert scores[0].score < scores[1].score
+
+    def test_linear_model_rejects_invalid_training_data(self) -> None:
+        import pytest
+
+        from neural_cutting_stock.learning import LinearColumnScoringModel
+
+        with pytest.raises(ValueError, match="must not be empty"):
+            LinearColumnScoringModel.fit((), ())
+        with pytest.raises(ValueError, match="one value per feature row"):
+            LinearColumnScoringModel.fit(((1.0,),), ())
+
 
 if __name__ == "__main__":
     unittest.main()

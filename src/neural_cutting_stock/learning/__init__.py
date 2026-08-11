@@ -11,6 +11,7 @@ from .interfaces import (
     PatternScore,
     PricingState,
 )
+from .model import MODEL_SCHEMA_VERSION, LinearColumnScoringModel
 
 __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
@@ -22,6 +23,8 @@ __all__ = [
     "PricingState",
     "FEATURE_SCHEMA_VERSION",
     "pricing_features",
+    "MODEL_SCHEMA_VERSION",
+    "LinearColumnScoringModel",
     "CANDIDATE_POOL_SCHEMA_VERSION",
     "deterministic_candidate_pool",
 ]
