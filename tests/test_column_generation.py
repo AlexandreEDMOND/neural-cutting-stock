@@ -160,6 +160,49 @@ def test_column_generation_rejects_an_invalid_integer_plan(
     assert not result.verification.feasible
 
 
+def test_column_generation_selector_is_followed_by_exact_pricing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+    calls = 0
+    from neural_cutting_stock.solver.column_generation import ExactPricing
+
+    original = ExactPricing.solve
+
+    def select_nothing(instance, patterns, dual_values):
+        del instance, patterns, dual_values
+        return ()
+
+    def count_exact(self, dual_values):
+        nonlocal calls
+        calls += 1
+        return original(self, dual_values)
+
+    monkeypatch.setattr(ExactPricing, "solve", count_exact)
+    result = ColumnGeneration(instance, candidate_selector=select_nothing).solve()
+
+    assert result.status == "converged"
+    assert calls == result.iterations
+    assert result.verification is not None and result.verification.feasible
+
+
+def test_column_generation_recomputes_duals_after_selected_columns() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+    selections = [((1, 1),), ()]
+
+    def select_one_then_stop(instance, patterns, dual_values):
+        del instance, patterns, dual_values
+        return selections.pop(0)
+
+    result = ColumnGeneration(instance, candidate_selector=select_one_then_stop).solve()
+
+    assert result.status == "converged"
+    assert result.columns_added == 1
+    assert result.iterations == 2
+    assert result.pricing_result is not None
+    assert result.pricing_result.reduced_cost >= -1e-9
+
+
 def test_column_generation_is_reproducible_for_same_instance() -> None:
     instance = CuttingStockInstance(11, 1, [2, 3, 5], [2, 2, 1])
 

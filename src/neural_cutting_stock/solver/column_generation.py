@@ -1,6 +1,7 @@
 """Classical LP column generation for one-dimensional Cutting Stock."""
 
 import math
+from collections.abc import Callable
 from dataclasses import dataclass
 from time import perf_counter
 
@@ -10,6 +11,11 @@ from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
 from .rmp import RestrictedMasterProblem, RMPResult, RMPState
 from .verification import PlanVerification, verify_plan
+
+ColumnSelector = Callable[
+    [CuttingStockInstance, tuple[tuple[int, ...], ...], tuple[float, ...]],
+    tuple[tuple[int, ...], ...],
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,6 +72,7 @@ class ColumnGeneration:
         max_runtime_seconds: float | None = None,
         max_iterations: int | None = None,
         instance_id: str | None = None,
+        candidate_selector: ColumnSelector | None = None,
     ) -> None:
         if not math.isfinite(reduced_cost_tolerance) or reduced_cost_tolerance < 0:
             raise ValueError("reduced_cost_tolerance must be finite and non-negative")
@@ -86,6 +93,7 @@ class ColumnGeneration:
         if instance_id is not None and not instance_id.strip():
             raise ValueError("instance_id must be non-empty when present")
         self.instance_id = instance_id
+        self.candidate_selector = candidate_selector
 
     def solve(self) -> ColumnGenerationResult:
         """Return the generated patterns once exact pricing finds no improvement."""
@@ -158,6 +166,25 @@ class ColumnGeneration:
             )
             if rmp_result.status != 0:
                 return make_result(_failure_status(rmp_result.status), "rmp_failed")
+
+            if self.candidate_selector is not None:
+                management_started = perf_counter()
+                selected_patterns = self.candidate_selector(
+                    self.instance, tuple(patterns), rmp_result.dual_values
+                )
+                if selected_patterns:
+                    from ._patterns import validate_patterns
+
+                    validate_patterns(self.instance, selected_patterns)
+                selected_column_added = False
+                for pattern in selected_patterns:
+                    if pattern not in patterns:
+                        patterns.append(pattern)
+                        columns_added += 1
+                        selected_column_added = True
+                column_management_runtime += perf_counter() - management_started
+                if selected_column_added:
+                    continue
 
             component_started = perf_counter()
             pricing_result = ExactPricing(self.instance).solve(rmp_result.dual_values)
