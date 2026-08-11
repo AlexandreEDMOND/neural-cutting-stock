@@ -1,9 +1,13 @@
 """Versioned, replay-oriented schema for column-generation trajectories."""
 
+import json
 import math
 from dataclasses import dataclass, fields
 from enum import StrEnum
+from pathlib import Path
 from typing import Any
+
+from neural_cutting_stock.problem import CuttingStockInstance
 
 from .schema import EnvironmentMetadata
 
@@ -215,6 +219,237 @@ class ColumnGenerationTrajectory:
             "error_message": self.error_message,
         }
         return output
+
+    @classmethod
+    def from_dict(cls, value: object) -> "ColumnGenerationTrajectory":
+        """Build a trajectory from the persisted JSON representation."""
+
+        if not isinstance(value, dict):
+            raise ValueError("trajectory must be a JSON object")
+        if value.get("schema_version") != TRAJECTORY_SCHEMA_VERSION:
+            raise ValueError("unsupported schema_version")
+        metadata_value = value.get("metadata")
+        iterations_value = value.get("iterations")
+        if not isinstance(metadata_value, dict):
+            raise ValueError("metadata must be a JSON object")
+        if not isinstance(iterations_value, list):
+            raise ValueError("iterations must be a JSON array")
+
+        metadata_value = dict(metadata_value)
+        environment_fields = {
+            "code_commit": metadata_value.pop("code_commit", None),
+            "python_version": metadata_value.pop("python_version", None),
+            "dependency_versions": metadata_value.pop("dependency_versions", None),
+            "hardware_id": metadata_value.pop("hardware_id", None),
+        }
+        if any(value is None for value in environment_fields.values()):
+            raise ValueError("metadata must contain complete environment fields")
+        metadata = TrajectoryMetadata(
+            **_tuple_fields(metadata_value, {"piece_lengths", "demands", "dual_type_order"}),
+            environment=EnvironmentMetadata(**environment_fields),
+        )
+        iterations = tuple(
+            TrajectoryIteration(
+                **_tuple_fields(
+                    item,
+                    {
+                        "dual_values",
+                        "candidate_reduced_costs",
+                        "selected_patterns",
+                        "rmp_column_values",
+                    },
+                    nested_patterns={"candidate_patterns", "selected_patterns"},
+                )
+            )
+            for item in iterations_value
+        )
+        return cls(
+            metadata,
+            iterations,
+            TrajectoryStatus(value.get("status")),
+            value.get("termination_reason"),
+            value.get("error_message"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class TrajectoryValidation:
+    """Result of validating a trajectory and replaying its exact classical solve."""
+
+    replayed_result: Any | None
+    errors: tuple[str, ...]
+
+    @property
+    def valid(self) -> bool:
+        return not self.errors
+
+    def raise_if_invalid(self) -> None:
+        if self.errors:
+            raise ValueError("invalid trajectory: " + "; ".join(self.errors))
+
+
+class TrajectoryReader:
+    """Read and replay JSON trajectories without changing solver decisions."""
+
+    @staticmethod
+    def read(path: str | Path) -> ColumnGenerationTrajectory:
+        """Read one UTF-8 trajectory and validate its persisted schema."""
+
+        with Path(path).open(encoding="utf-8") as stream:
+            return ColumnGenerationTrajectory.from_dict(json.load(stream))
+
+    @staticmethod
+    def replay(trajectory: ColumnGenerationTrajectory) -> TrajectoryValidation:
+        """Replay exact pricing and compare every recorded observation available."""
+
+        from neural_cutting_stock.solver import ColumnGeneration
+
+        metadata = trajectory.metadata
+        instance = CuttingStockInstance(
+            metadata.stock_length,
+            metadata.kerf,
+            metadata.piece_lengths,
+            metadata.demands,
+        )
+        result = ColumnGeneration(
+            instance,
+            reduced_cost_tolerance=metadata.reduced_cost_tolerance,
+            instance_id=metadata.instance_id,
+        ).solve()
+        errors: list[str] = []
+        expected_statuses = {
+            TrajectoryStatus.CONVERGED: {"converged"},
+            TrajectoryStatus.RESOURCE_LIMIT: {"limit_reached"},
+            TrajectoryStatus.FAILED: {"infeasible", "solver_error", "invalid_plan"},
+        }
+        if result.status not in expected_statuses[trajectory.status]:
+            errors.append(
+                f"status differs: recorded={trajectory.status.value}, replayed={result.status}"
+            )
+        if result.termination_reason != trajectory.termination_reason:
+            errors.append("termination_reason differs")
+        if len(result.rmp_states) != len(trajectory.iterations):
+            errors.append("iteration count differs")
+        for index, (recorded, state) in enumerate(
+            zip(trajectory.iterations, result.rmp_states, strict=False)
+        ):
+            next_patterns = (
+                result.rmp_states[index + 1].patterns
+                if index + 1 < len(result.rmp_states)
+                else result.patterns
+            )
+            _compare_iteration(
+                recorded,
+                state,
+                next_patterns,
+                result,
+                index == len(trajectory.iterations) - 1,
+                errors,
+                metadata.dual_tolerance,
+            )
+        return TrajectoryValidation(result, tuple(errors))
+
+
+def write_trajectory(path: str | Path, trajectory: ColumnGenerationTrajectory) -> None:
+    """Write a trajectory as deterministic, human-readable UTF-8 JSON."""
+
+    with Path(path).open("w", encoding="utf-8") as stream:
+        json.dump(trajectory.to_dict(), stream, ensure_ascii=True, indent=2, sort_keys=True)
+        stream.write("\n")
+
+
+def read_trajectory(path: str | Path) -> ColumnGenerationTrajectory:
+    """Read one trajectory from disk."""
+
+    return TrajectoryReader.read(path)
+
+
+def replay_trajectory(trajectory: ColumnGenerationTrajectory) -> TrajectoryValidation:
+    """Replay one trajectory through the exact classical solver."""
+
+    return TrajectoryReader.replay(trajectory)
+
+
+def _tuple_fields(
+    value: object,
+    fields_to_convert: set[str],
+    nested_patterns: set[str] | None = None,
+) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError("trajectory fields must be JSON objects")
+    output = dict(value)
+    for name in fields_to_convert:
+        if output.get(name) is not None:
+            output[name] = tuple(output[name])
+    for name in nested_patterns or set():
+        if output.get(name) is not None:
+            output[name] = tuple(tuple(pattern) for pattern in output[name])
+    return output
+
+
+def _compare_iteration(
+    recorded: TrajectoryIteration,
+    state: Any,
+    next_patterns: tuple[tuple[int, ...], ...],
+    result: Any,
+    is_final: bool,
+    errors: list[str],
+    tolerance: float,
+) -> None:
+    rmp_result = state.result
+    if recorded.instance_id is not None and recorded.instance_id != state.instance_id:
+        errors.append(f"iteration {recorded.iteration_index}: instance_id differs")
+    if recorded.rmp_status == "optimal" and rmp_result.status != 0:
+        errors.append(f"iteration {recorded.iteration_index}: RMP status differs")
+    if recorded.rmp_objective_value is not None and not _close(
+        recorded.rmp_objective_value, rmp_result.objective_value, tolerance
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: RMP objective differs")
+    if recorded.dual_values is not None and not _close_sequence(
+        recorded.dual_values, rmp_result.dual_values, tolerance
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: dual values differ")
+    if recorded.rmp_column_values is not None and not _close_sequence(
+        recorded.rmp_column_values, rmp_result.column_values, tolerance
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: RMP column values differ")
+    if recorded.rmp_pattern_count is not None and recorded.rmp_pattern_count != len(state.patterns):
+        errors.append(f"iteration {recorded.iteration_index}: RMP pattern count differs")
+    if recorded.initial_column_count is not None and recorded.initial_column_count != len(
+        state.patterns
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: initial column count differs")
+    if recorded.final_column_count is not None and recorded.final_column_count != len(
+        next_patterns
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: final column count differs")
+    if recorded.columns_added is not None:
+        actual_added = len(next_patterns) - len(state.patterns)
+        if recorded.columns_added != actual_added:
+            errors.append(f"iteration {recorded.iteration_index}: columns added differs")
+    if recorded.selected_patterns is not None:
+        actual_selected = next_patterns[len(state.patterns) :]
+        if recorded.selected_patterns != actual_selected:
+            errors.append(f"iteration {recorded.iteration_index}: selected patterns differ")
+    if recorded.pricing_status == "optimal" and (
+        result.pricing_result is None or result.pricing_result.status != 0
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: pricing status differs")
+    if is_final and recorded.best_reduced_cost is not None and (
+        result.pricing_result is None
+        or not _close(recorded.best_reduced_cost, result.pricing_result.reduced_cost, tolerance)
+    ):
+        errors.append(f"iteration {recorded.iteration_index}: best reduced cost differs")
+
+
+def _close(left: float, right: float | None, tolerance: float) -> bool:
+    return right is not None and math.isclose(left, right, rel_tol=0.0, abs_tol=tolerance)
+
+
+def _close_sequence(left: tuple[float, ...], right: tuple[float, ...], tolerance: float) -> bool:
+    return len(left) == len(right) and all(
+        math.isclose(a, b, rel_tol=0.0, abs_tol=tolerance) for a, b in zip(left, right, strict=True)
+    )
 
 
 def _as_json_ready(item: TrajectoryIteration) -> dict[str, Any]:

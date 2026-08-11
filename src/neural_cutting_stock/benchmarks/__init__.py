@@ -24,7 +24,12 @@ from .trajectory import (
     ColumnGenerationTrajectory,
     TrajectoryIteration,
     TrajectoryMetadata,
+    TrajectoryReader,
     TrajectoryStatus,
+    TrajectoryValidation,
+    read_trajectory,
+    replay_trajectory,
+    write_trajectory,
 )
 
 __all__ = [
@@ -48,7 +53,12 @@ __all__ = [
     "TRAJECTORY_SCHEMA_VERSION",
     "DUAL_SIGN_CONVENTION",
     "ColumnGenerationTrajectory",
+    "TrajectoryReader",
     "TrajectoryIteration",
     "TrajectoryMetadata",
     "TrajectoryStatus",
+    "TrajectoryValidation",
+    "read_trajectory",
+    "replay_trajectory",
+    "write_trajectory",
 ]

@@ -12,7 +12,12 @@ from neural_cutting_stock.benchmarks import (
     TrajectoryIteration,
     TrajectoryMetadata,
     TrajectoryStatus,
+    read_trajectory,
+    replay_trajectory,
+    write_trajectory,
 )
+from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.solver import ColumnGeneration
 
 
 def _trajectory_metadata(**changes: object) -> TrajectoryMetadata:
@@ -286,3 +291,67 @@ def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
 def test_trajectory_schema_rejects_invalid_contract(factory: object, message: str) -> None:
     with pytest.raises(ValueError, match=message):
         factory()
+
+
+def test_trajectory_can_be_read_written_and_replayed(tmp_path) -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+    result = ColumnGeneration(instance, instance_id="instance-1").solve()
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(
+            stock_length=instance.stock_length,
+            kerf=instance.kerf,
+            piece_lengths=instance.piece_lengths,
+            demands=instance.demands,
+            dual_type_order=instance.piece_lengths,
+        ),
+        tuple(
+            TrajectoryIteration(
+                state.iteration_index,
+                "optimal",
+                rmp_objective_value=state.result.objective_value,
+                dual_values=state.result.dual_values,
+                instance_id=state.instance_id,
+                rmp_column_values=state.result.column_values,
+                rmp_pattern_count=len(state.patterns),
+            )
+            for state in result.rmp_states
+        ),
+        TrajectoryStatus.CONVERGED,
+        result.termination_reason,
+    )
+    path = tmp_path / "trajectory.json"
+    second_path = tmp_path / "trajectory-copy.json"
+
+    write_trajectory(path, trajectory)
+    write_trajectory(second_path, trajectory)
+    loaded = read_trajectory(path)
+    replay = replay_trajectory(loaded)
+
+    assert loaded == trajectory
+    assert replay.valid
+    assert replay.replayed_result is not None
+    assert replay.replayed_result.patterns == result.patterns
+    assert path.read_bytes() == second_path.read_bytes()
+
+
+def test_trajectory_replay_rejects_changed_dual() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+    result = ColumnGeneration(instance, instance_id="instance-1").solve()
+    state = result.rmp_states[0]
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(),
+        (
+            TrajectoryIteration(
+                1,
+                "optimal",
+                dual_values=(state.result.dual_values[0] + 0.5, *state.result.dual_values[1:]),
+            ),
+        ),
+        TrajectoryStatus.CONVERGED,
+        result.termination_reason,
+    )
+
+    replay = replay_trajectory(trajectory)
+
+    assert not replay.valid
+    assert any("dual values differ" in error for error in replay.errors)
