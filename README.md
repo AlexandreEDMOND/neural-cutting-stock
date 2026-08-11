@@ -120,14 +120,16 @@ flowchart TD
     K --> L[Plan de coupe et métriques]
 ```
 
-Le même cœur classique devra pouvoir exécuter, sur une même instance, les interfaces prévues :
+Le même cœur classique peut exécuter, sur une même instance, les deux interfaces :
 
 ```bash
 uv run python -m neural_cutting_stock ... --solver classical
-uv run python -m neural_cutting_stock ... --solver neural
+uv run python -m neural_cutting_stock ... --solver neural --model model.json
 ```
 
-Ces commandes seront ajoutées avec les solveurs ; elles ne sont pas encore disponibles dans la phase de fondation.
+Le mode neural charge un artefact d'entraînement compatible et accepte `--candidate-budget`. Il
+conserve le pricing exact final et la vérification indépendante du plan. Le chemin d'import du mode
+classique ne charge pas le paquet `learning`, et PyTorch n'est donc pas requis pour ce mode.
 
 ## Protocole et profils de benchmark
 
@@ -240,7 +242,9 @@ uv run pytest
 
 Le fichier `uv.lock` fixe l’environnement reproductible. Une installation editable avec `python -m pip install -e ".[dev]"` reste possible sans `uv`.
 
-Le socle de résolution prévu repose sur NumPy et SciPy/HiGHS, sans licence commerciale. PyTorch ne deviendra une dépendance que lorsque le travail d’apprentissage commencera.
+Le socle de résolution repose sur NumPy et SciPy/HiGHS, sans licence commerciale. Le modèle actuel
+utilise NumPy ; PyTorch n'est pas une dépendance obligatoire et le mode classique reste utilisable
+sans installer de composant d'apprentissage.
 
 ## Feuille de route
 

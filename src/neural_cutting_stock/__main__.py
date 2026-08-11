@@ -1,4 +1,4 @@
-"""Command-line entry point for the classical solver."""
+"""Command-line entry point for classical and learned column generation."""
 
 import argparse
 import json
@@ -7,7 +7,6 @@ from collections.abc import Sequence
 from dataclasses import asdict
 from pathlib import Path
 
-from neural_cutting_stock.learning import write_training_artifact
 from neural_cutting_stock.problem import CuttingStockInstance
 from neural_cutting_stock.solver import ColumnGeneration
 
@@ -25,7 +24,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         piece_lengths=_parse_values(args.piece_lengths, float),
         demands=_parse_values(args.demands, int),
     )
-    result = ColumnGeneration(instance, args.reduced_cost_tolerance).solve()
+    if args.solver == "classical":
+        result = ColumnGeneration(instance, args.reduced_cost_tolerance).solve()
+    else:
+        if args.model is None:
+            parser.error("--model is required when --solver is neural")
+        from neural_cutting_stock.learning import (
+            LearnedColumnSelectionPolicy,
+            NeuralColumnGeneration,
+            load_training_artifact,
+        )
+
+        model = load_training_artifact(args.model)
+        policy = LearnedColumnSelectionPolicy(model, candidate_budget=args.candidate_budget)
+        result = NeuralColumnGeneration(
+            instance,
+            policy,
+            candidate_budget=args.candidate_budget,
+            reduced_cost_tolerance=args.reduced_cost_tolerance,
+        ).solve()
     output: dict[str, object] = {
         "solver": args.solver,
         "reduced_cost_tolerance": args.reduced_cost_tolerance,
@@ -75,6 +92,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _train_main(argv: Sequence[str]) -> int:
+    from neural_cutting_stock.learning import write_training_artifact
+
     parser = argparse.ArgumentParser(description="Train the linear column scoring model.")
     parser.add_argument("--manifest", required=True, help="Phase 3 corpus manifest")
     parser.add_argument("--output", required=True, help="Training artifact JSON path")
@@ -103,13 +122,25 @@ def _parse_config(value: str) -> dict[str, object]:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Solve a 1D Cutting Stock instance.")
-    parser.add_argument("--solver", choices=("classical",), required=True)
+    parser.add_argument("--solver", choices=("classical", "neural"), required=True)
+    parser.add_argument("--model", help="Training artifact JSON path (required for neural mode)")
+    parser.add_argument("--candidate-budget", type=_positive_int, default=None)
     parser.add_argument("--stock-length", type=float, required=True)
     parser.add_argument("--kerf", type=float, default=0.0)
     parser.add_argument("--piece-lengths", required=True, help="Comma-separated lengths")
     parser.add_argument("--demands", required=True, help="Comma-separated positive integers")
     parser.add_argument("--reduced-cost-tolerance", type=float, default=1e-9)
     return parser
+
+
+def _positive_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("must be a positive integer") from error
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
 
 
 def _parse_values(

@@ -73,6 +73,61 @@ def test_classical_cli_preserves_integer_master_failure_status(
     assert "verification" not in output
 
 
+def test_neural_cli_loads_model_and_emits_verified_result(monkeypatch, capsys) -> None:
+    from neural_cutting_stock.learning import LinearColumnScoringModel
+
+    calls = {}
+
+    def load(path):
+        calls["model"] = path
+        return LinearColumnScoringModel((0.0,) * 32, 0.0)
+
+    monkeypatch.setattr("neural_cutting_stock.learning.load_training_artifact", load)
+
+    assert main(
+        [
+            "--solver",
+            "neural",
+            "--model",
+            "model.json",
+            "--candidate-budget",
+            "1",
+            "--stock-length",
+            "10",
+            "--piece-lengths",
+            "6,4",
+            "--demands",
+            "1,2",
+        ]
+    ) == 0
+
+    output = json.loads(capsys.readouterr().out)
+    assert calls == {"model": "model.json"}
+    assert output["solver"] == "neural"
+    assert output["status"] == "converged"
+    assert output["verification"]["feasible"] is True
+
+
+def test_neural_cli_requires_model(capsys) -> None:
+    import pytest
+
+    with pytest.raises(SystemExit):
+        main(
+            [
+                "--solver",
+                "neural",
+                "--stock-length",
+                "10",
+                "--piece-lengths",
+                "6",
+                "--demands",
+                "1",
+            ]
+        )
+
+    assert "--model is required" in capsys.readouterr().err
+
+
 def test_training_cli_writes_artifact(monkeypatch, tmp_path, capsys) -> None:
     artifact = {"metadata": {"example_count": 3}}
     calls = {}
@@ -81,7 +136,7 @@ def test_training_cli_writes_artifact(monkeypatch, tmp_path, capsys) -> None:
         calls.update(manifest=manifest, output=output, seed=seed, config=config)
         return artifact
 
-    monkeypatch.setattr("neural_cutting_stock.__main__.write_training_artifact", write)
+    monkeypatch.setattr("neural_cutting_stock.learning.write_training_artifact", write)
     output = tmp_path / "model.json"
 
     assert main(
