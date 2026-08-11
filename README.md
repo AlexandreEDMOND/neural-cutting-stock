@@ -80,6 +80,14 @@ et [`data/phase-3-corpus/README.md`](data/phase-3-corpus/README.md).
 
 À partir de la Phase 4, un modèle simple recevra l’état courant du RMP, les duales et un ensemble de motifs candidats. Il classera les colonnes à ajouter. Une passe de pricing exacte restera obligatoire avant toute déclaration de convergence.
 
+L'évaluation hors entraînement utilise les partitions `validation` ou `test`, en regroupant les
+candidats par itération de pricing. Les métriques fixées dans `ranking-evaluation-v1` sont `Hit@1`,
+`Hit@3`, `Hit@5`, le rang réciproque moyen (`MRR`) et `nDCG@5`. Un candidat est pertinent si la
+trajectoire classique l'a marqué comme sélectionné ; les itérations sans candidat pertinent sont
+conservées dans les comptes mais exclues des dénominateurs. Le classement par coût réduit croissant
+sert de référence déterministe. Aucune métrique n'est publiée lorsque la partition ne contient pas
+d'exemples candidats.
+
 Les features `pricing-features-v1` sont produites par
 [`learning/features.py`](src/neural_cutting_stock/learning/features.py). Elles ont une largeur fixe
 indépendante du nombre de types : les longueurs, demandes, duales, usages courants et comptes du
