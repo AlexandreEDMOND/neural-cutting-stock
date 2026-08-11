@@ -128,7 +128,7 @@ séquentielle plus complexe est justifiée.
 - [x] **P5.07** — Conserver des budgets explicites, un fallback exact et des limites de ressources.
 - [x] **P5.08** — Mesurer puis optimiser, si utile, batching, cache ou réutilisation d'état solveur.
 - [x] **P5.09** — Tester les cas limites, timeouts, erreurs modèle et indisponibilités d'artefact.
-- [ ] **P5.10** — Ajouter des tests de non-régression sur qualité, convergence et reproductibilité.
+- [x] **P5.10** — Ajouter des tests de non-régression sur qualité, convergence et reproductibilité.
 - [ ] **P5.11** — Mesurer mémoire, appels exacts, candidats, colonnes retenues et coût d'inférence.
 - [ ] **P5.12** — Geler le candidat optimisé uniquement s'il améliore le temps total sur validation.
 - [ ] **P5.13** — Auditer la Phase 5 et retirer code mort, doublons et branches expérimentales rejetées.
