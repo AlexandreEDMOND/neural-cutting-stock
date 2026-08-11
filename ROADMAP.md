@@ -102,7 +102,7 @@ exact de convergence.
 - [x] **P4.05** — Implémenter le plus petit modèle supervisé capable de scorer état et motif.
 - [x] **P4.06** — Ajouter une commande d'entraînement avec graines, configuration et métadonnées persistées.
 - [x] **P4.07** — Évaluer hors entraînement le classement des colonnes avec des métriques définies à l'avance.
-- [ ] **P4.08** — Versionner les artefacts du modèle et vérifier leur compatibilité au chargement.
+- [x] **P4.08** — Versionner les artefacts du modèle et vérifier leur compatibilité au chargement.
 - [ ] **P4.09** — Intégrer la politique de sélection avec budget de candidats configurable.
 - [ ] **P4.10** — Garantir le pricing exact final, le fallback exact et la vérification indépendante du plan.
 - [ ] **P4.11** — Exposer `--solver neural` sans rendre PyTorch obligatoire pour le mode classique.

@@ -9,6 +9,7 @@ from neural_cutting_stock.learning import (
     PatternCandidate,
     PricingState,
     evaluate_model,
+    load_training_artifact,
     pricing_features,
     train_artifact,
     write_training_artifact,
@@ -55,6 +56,54 @@ def test_training_persists_seed_config_and_model_metadata(monkeypatch, tmp_path)
     assert persisted["config"] == {"ridge": 0.0}
     assert persisted["metadata"]["example_count"] == 2
     assert persisted["model"]["feature_width"] > 0
+
+
+def test_loading_artifact_reconstructs_the_compatible_model(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(
+        "neural_cutting_stock.learning.training.load_phase3_dataset", lambda _: _dataset()
+    )
+
+    output = tmp_path / "model.json"
+    artifact = write_training_artifact("manifest.json", output, 42, {})
+    loaded = load_training_artifact(output)
+
+    assert loaded.weights == tuple(artifact["model"]["weights"])
+    assert loaded.bias == artifact["model"]["bias"]
+    assert loaded.feature_width == artifact["model"]["feature_width"]
+
+
+def test_loading_artifact_rejects_incompatible_schema(tmp_path) -> None:
+    artifact = {
+        "schema_version": "linear-training-artifact-v0",
+        "model_schema_version": "linear-scorer-v1",
+        "feature_schema_version": "pricing-features-v1",
+        "dataset_schema_version": "trajectory-dataset-v1",
+        "model": {"feature_width": 1, "weights": [1.0], "bias": 0.0},
+    }
+    path = tmp_path / "incompatible.json"
+    path.write_text(json.dumps(artifact), encoding="utf-8")
+
+    import pytest
+
+    with pytest.raises(ValueError, match="unsupported schema_version"):
+        load_training_artifact(path)
+
+
+def test_loading_artifact_rejects_inconsistent_model_shape(tmp_path) -> None:
+    artifact = {
+        "schema_version": TRAINING_ARTIFACT_SCHEMA_VERSION,
+        "model_schema_version": "linear-scorer-v1",
+        "feature_schema_version": "pricing-features-v1",
+        "dataset_schema_version": "trajectory-dataset-v1",
+        "model": {"feature_width": 2, "weights": [1.0], "bias": 0.0},
+    }
+    path = tmp_path / "invalid.json"
+    path.write_text(json.dumps(artifact), encoding="utf-8")
+
+    import pytest
+
+    with pytest.raises(ValueError, match="feature_width must match"):
+        load_training_artifact(path)
 
 
 def test_training_rejects_empty_training_partition(monkeypatch) -> None:

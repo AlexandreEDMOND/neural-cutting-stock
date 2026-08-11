@@ -3,6 +3,7 @@
 import json
 import platform
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -81,3 +82,48 @@ def write_training_artifact(
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return artifact
+
+
+def load_training_artifact(path: str | Path) -> LinearColumnScoringModel:
+    """Load a compatible training artifact and reconstruct its scoring model.
+
+    Artifacts are intentionally rejected when any interface version differs. This prevents a
+    model trained with a different feature or dataset contract from being used silently.
+    """
+
+    try:
+        artifact = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"invalid training artifact: {path}") from error
+    if not isinstance(artifact, dict):
+        raise ValueError("training artifact must be a JSON object")
+
+    expected_versions = {
+        "schema_version": TRAINING_ARTIFACT_SCHEMA_VERSION,
+        "model_schema_version": MODEL_SCHEMA_VERSION,
+        "feature_schema_version": FEATURE_SCHEMA_VERSION,
+        "dataset_schema_version": DATASET_SCHEMA_VERSION,
+    }
+    for field, expected in expected_versions.items():
+        actual = artifact.get(field)
+        if actual != expected:
+            raise ValueError(f"unsupported {field}: expected {expected!r}, got {actual!r}")
+
+    model_data = artifact.get("model")
+    if not isinstance(model_data, Mapping):
+        raise ValueError("training artifact model must be a JSON object")
+    weights = model_data.get("weights")
+    bias = model_data.get("bias")
+    feature_width = model_data.get("feature_width")
+    if (
+        isinstance(feature_width, bool)
+        or not isinstance(feature_width, int)
+        or feature_width <= 0
+    ):
+        raise ValueError("model feature_width must be a positive integer")
+    if not isinstance(weights, list) or len(weights) != feature_width:
+        raise ValueError("model feature_width must match the weights")
+    try:
+        return LinearColumnScoringModel(weights, bias)
+    except (TypeError, ValueError) as error:
+        raise ValueError("training artifact contains an invalid model") from error
