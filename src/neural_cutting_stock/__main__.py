@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 import sys
 from collections.abc import Sequence
 from dataclasses import asdict
@@ -25,7 +26,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         demands=_parse_values(args.demands, int),
     )
     if args.solver == "classical":
-        result = ColumnGeneration(instance, args.reduced_cost_tolerance).solve()
+        result = ColumnGeneration(
+            instance,
+            args.reduced_cost_tolerance,
+            max_runtime_seconds=args.max_runtime_seconds,
+            max_iterations=args.max_cg_iterations,
+        ).solve()
     else:
         if args.model is None:
             parser.error("--model is required when --solver is neural")
@@ -42,10 +48,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             policy,
             candidate_budget=args.candidate_budget,
             reduced_cost_tolerance=args.reduced_cost_tolerance,
+            max_runtime_seconds=args.max_runtime_seconds,
+            max_iterations=args.max_cg_iterations,
         ).solve()
     output: dict[str, object] = {
         "solver": args.solver,
         "reduced_cost_tolerance": args.reduced_cost_tolerance,
+        "resource_limits": {
+            "max_runtime_seconds": args.max_runtime_seconds,
+            "max_cg_iterations": args.max_cg_iterations,
+        },
         "status": result.status,
         "termination_reason": result.termination_reason,
         "instance": {
@@ -130,6 +142,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--piece-lengths", required=True, help="Comma-separated lengths")
     parser.add_argument("--demands", required=True, help="Comma-separated positive integers")
     parser.add_argument("--reduced-cost-tolerance", type=float, default=1e-9)
+    parser.add_argument("--max-runtime-seconds", type=_positive_float, default=None)
+    parser.add_argument("--max-cg-iterations", type=_positive_int, default=None)
     return parser
 
 
@@ -140,6 +154,16 @@ def _positive_int(value: str) -> int:
         raise argparse.ArgumentTypeError("must be a positive integer") from error
     if parsed < 1:
         raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
+
+
+def _positive_float(value: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("must be a positive finite number") from error
+    if not math.isfinite(parsed) or parsed <= 0:
+        raise argparse.ArgumentTypeError("must be a positive finite number")
     return parsed
 
 

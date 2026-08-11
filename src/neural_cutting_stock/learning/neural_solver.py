@@ -1,5 +1,6 @@
 """Neural column-generation orchestration with an exact convergence guard."""
 
+import math
 from dataclasses import dataclass
 from time import perf_counter
 
@@ -40,6 +41,18 @@ class NeuralColumnGeneration:
             or candidate_budget < 1
         ):
             raise ValueError("candidate_budget must be a positive integer when present")
+        if not math.isfinite(reduced_cost_tolerance) or reduced_cost_tolerance < 0:
+            raise ValueError("reduced_cost_tolerance must be finite and non-negative")
+        if max_runtime_seconds is not None and (
+            not math.isfinite(max_runtime_seconds) or max_runtime_seconds <= 0
+        ):
+            raise ValueError("max_runtime_seconds must be finite and positive when present")
+        if max_iterations is not None and (
+            not isinstance(max_iterations, int)
+            or isinstance(max_iterations, bool)
+            or max_iterations <= 0
+        ):
+            raise ValueError("max_iterations must be a positive integer when present")
         self.instance = instance
         self.policy = policy
         self.candidate_budget = candidate_budget

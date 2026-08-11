@@ -47,3 +47,15 @@ def test_neural_solver_records_preparation_inference_and_fallback_work() -> None
     assert profile.number_of_candidates > 0
     assert profile.number_of_selected_columns > 0
     assert profile.exact_fallback_calls > 0
+
+
+def test_neural_solver_rejects_invalid_resource_limits() -> None:
+    instance = CuttingStockInstance(10, 0, [6], [1])
+    policy = LearnedColumnSelectionPolicy(MisleadingScorer())
+
+    import pytest
+
+    with pytest.raises(ValueError, match="max_runtime_seconds must be finite and positive"):
+        NeuralColumnGeneration(instance, policy, max_runtime_seconds=0)
+    with pytest.raises(ValueError, match="max_iterations must be a positive integer"):
+        NeuralColumnGeneration(instance, policy, max_iterations=True)

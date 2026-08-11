@@ -1,6 +1,7 @@
 """Reproducible validation runner for paired Classical and Neural CG runs."""
 
 import hashlib
+import math
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -30,6 +31,24 @@ class PairedBenchmarkConfig:
             raise ValueError("generators must not be empty")
         if self.repetitions < 1:
             raise ValueError("repetitions must be positive")
+        if self.candidate_budget is not None and (
+            not isinstance(self.candidate_budget, int)
+            or isinstance(self.candidate_budget, bool)
+            or self.candidate_budget < 1
+        ):
+            raise ValueError("candidate_budget must be a positive integer when present")
+        if not math.isfinite(self.reduced_cost_tolerance) or self.reduced_cost_tolerance < 0:
+            raise ValueError("reduced_cost_tolerance must be finite and non-negative")
+        if self.max_runtime_seconds is not None and (
+            not math.isfinite(self.max_runtime_seconds) or self.max_runtime_seconds <= 0
+        ):
+            raise ValueError("max_runtime_seconds must be finite and positive when present")
+        if self.max_cg_iterations is not None and (
+            not isinstance(self.max_cg_iterations, int)
+            or isinstance(self.max_cg_iterations, bool)
+            or self.max_cg_iterations <= 0
+        ):
+            raise ValueError("max_cg_iterations must be a positive integer when present")
         if not self.model_id.strip():
             raise ValueError("model_id must not be empty")
 

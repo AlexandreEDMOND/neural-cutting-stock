@@ -127,10 +127,12 @@ uv run python -m neural_cutting_stock ... --solver classical
 uv run python -m neural_cutting_stock ... --solver neural --model model.json
 ```
 
-Le mode neural charge un artefact compatible et accepte `--candidate-budget`. Il conserve le pricing
-exact final, le fallback exact et la vérification indépendante du plan. Les contraintes de demande et
-de capacité ne dépendent jamais du score appris. Le chemin d'import du mode classique ne charge pas le
-paquet `learning`, et PyTorch n'est donc pas requis pour ce mode.
+Le mode neural charge un artefact compatible et accepte `--candidate-budget`, `--max-runtime-seconds`
+et `--max-cg-iterations`. Ces budgets et limites sont partagés par les deux modes CLI ; une limite
+atteinte produit `limit_reached`/`resource_limit` et n'est pas une convergence. Le pricing exact final,
+le fallback exact et la vérification indépendante du plan restent obligatoires. Les contraintes de
+demande et de capacité ne dépendent jamais du score appris. Le chemin d'import du mode classique ne
+charge pas le paquet `learning`, et PyTorch n'est donc pas requis pour ce mode.
 
 ## Protocole et profils de benchmark
 

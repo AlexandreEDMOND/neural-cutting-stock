@@ -222,6 +222,21 @@ def test_resource_limits_are_part_of_campaign_identity() -> None:
     assert unlimited.config_id != limited.config_id
 
 
+def test_paired_config_validates_shared_budget_and_resource_limits() -> None:
+    from neural_cutting_stock.benchmarks import PairedBenchmarkConfig
+
+    generator = SyntheticInstanceGenerator(seed=11)
+    environment = EnvironmentMetadata("commit", "3.11", "deps", "machine")
+    policy = object()
+
+    with pytest.raises(ValueError, match="candidate_budget must be a positive integer"):
+        PairedBenchmarkConfig((generator,), environment, policy, "model", candidate_budget=0)
+    with pytest.raises(ValueError, match="max_runtime_seconds must be finite and positive"):
+        PairedBenchmarkConfig((generator,), environment, policy, "model", max_runtime_seconds=0)
+    with pytest.raises(ValueError, match="max_cg_iterations must be a positive integer"):
+        PairedBenchmarkConfig((generator,), environment, policy, "model", max_cg_iterations=True)
+
+
 def test_write_raw_runs_writes_header_for_empty_table(tmp_path) -> None:
     output_path = tmp_path / "empty.csv"
 

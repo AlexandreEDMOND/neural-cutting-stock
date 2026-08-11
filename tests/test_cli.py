@@ -33,6 +33,47 @@ def test_classical_cli_emits_structured_verified_result(capsys) -> None:
     assert output["pricing"]["dual_value"] == 1.0
     assert output["integer_master"]["objective_value"] == 2
     assert output["verification"]["feasible"] is True
+    assert output["resource_limits"] == {
+        "max_runtime_seconds": None,
+        "max_cg_iterations": None,
+    }
+
+
+def test_cli_passes_explicit_resource_limits_to_classical_solver(monkeypatch, capsys) -> None:
+    calls = {}
+
+    def solve(self):
+        calls.update(
+            max_runtime_seconds=self.max_runtime_seconds,
+            max_iterations=self.max_iterations,
+        )
+        return ColumnGenerationResult(
+            status="limit_reached",
+            patterns=(),
+            rmp_result=None,
+            pricing_result=None,
+            integer_master_result=None,
+            iterations=1,
+            columns_added=0,
+            duplicate_columns=0,
+            termination_reason="resource_limit",
+        )
+
+    monkeypatch.setattr(ColumnGeneration, "solve", solve)
+    assert main(
+        [
+            "--solver", "classical", "--stock-length", "10", "--piece-lengths", "6",
+            "--demands", "1", "--max-runtime-seconds", "0.5", "--max-cg-iterations", "1",
+        ]
+    ) == 0
+
+    assert calls == {"max_runtime_seconds": 0.5, "max_iterations": 1}
+    output = json.loads(capsys.readouterr().out)
+    assert output["status"] == "limit_reached"
+    assert output["resource_limits"] == {
+        "max_runtime_seconds": 0.5,
+        "max_cg_iterations": 1,
+    }
 
 
 def test_classical_cli_preserves_integer_master_failure_status(
