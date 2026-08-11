@@ -11,6 +11,7 @@ from neural_cutting_stock.benchmarks import (
     SolverMode,
     SyntheticInstanceGenerator,
     compare_paired_runs,
+    quality_gated_speedup,
 )
 from neural_cutting_stock.learning import LearnedColumnSelectionPolicy, LinearColumnScoringModel
 
@@ -69,6 +70,35 @@ def test_quality_degradation_keeps_pair_but_excludes_speedup() -> None:
     assert comparison.objective_difference_vs_classical == 1.0
     assert comparison.speedup_vs_classical == 2.0
     assert not comparison.quality_preserved
+
+
+def test_quality_gated_speedup_rewards_only_admissible_end_to_end_gain() -> None:
+    comparison = compare_paired_runs(
+        (_record(SolverMode.CLASSICAL, "classical"), _record(SolverMode.NEURAL, "neural"))
+    )[0]
+
+    metric = quality_gated_speedup(comparison)
+
+    assert metric.schema_version == "quality-gated-speedup-v1"
+    assert metric.score == 2.0
+    assert metric.quality_preserved
+    assert metric.comparable
+
+
+def test_quality_gated_speedup_zeroes_quality_violation_but_keeps_diagnostics() -> None:
+    comparison = compare_paired_runs(
+        (
+            _record(SolverMode.CLASSICAL, "classical"),
+            _record(SolverMode.NEURAL, "neural", objective_value=6.0),
+        )
+    )[0]
+
+    metric = quality_gated_speedup(comparison)
+
+    assert metric.score == 0.0
+    assert metric.speedup_vs_classical == 2.0
+    assert metric.objective_difference_vs_classical == 1.0
+    assert not metric.quality_preserved
 
 
 def test_comparison_rejects_missing_or_duplicate_pair() -> None:

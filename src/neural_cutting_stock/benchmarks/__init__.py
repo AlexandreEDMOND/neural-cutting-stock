@@ -1,6 +1,12 @@
 """Reproducible instance generation and benchmark execution."""
 
-from .comparison import PairedRunComparison, compare_paired_runs
+from .comparison import (
+    OPTIMIZATION_METRIC_SCHEMA_VERSION,
+    OptimizationMetric,
+    PairedRunComparison,
+    compare_paired_runs,
+    quality_gated_speedup,
+)
 from .corpus import (
     CORPUS_SCHEMA_VERSION,
     corpus_statistics,
@@ -88,6 +94,9 @@ __all__ = [
     "write_raw_runs",
     "PairedRunComparison",
     "compare_paired_runs",
+    "OPTIMIZATION_METRIC_SCHEMA_VERSION",
+    "OptimizationMetric",
+    "quality_gated_speedup",
     "PairedBenchmarkConfig",
     "PairedBenchmarkRunner",
     "PROFILE_SCHEMA_VERSION",

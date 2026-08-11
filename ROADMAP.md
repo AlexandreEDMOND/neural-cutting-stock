@@ -123,7 +123,7 @@ séquentielle plus complexe est justifiée.
 - [x] **P5.02** — Comparer le profil neural au profil classique sur les mêmes instances et ressources.
 - [x] **P5.03** — Documenter la décision mesurée d'entreprendre ou non une optimisation séquentielle.
 - [x] **P5.04** — Définir état, action et horizon si justifié, sinon formaliser l'optimisation alternative retenue.
-- [ ] **P5.05** — Définir une récompense ou métrique d'optimisation alignée sur temps total et qualité.
+- [x] **P5.05** — Définir une récompense ou métrique d'optimisation alignée sur temps total et qualité.
 - [ ] **P5.06** — Implémenter la plus petite optimisation conforme à la décision P5.03.
 - [ ] **P5.07** — Conserver des budgets explicites, un fallback exact et des limites de ressources.
 - [ ] **P5.08** — Mesurer puis optimiser, si utile, batching, cache ou réutilisation d'état solveur.

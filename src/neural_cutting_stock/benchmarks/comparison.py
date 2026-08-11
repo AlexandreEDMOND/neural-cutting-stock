@@ -6,6 +6,8 @@ from math import isfinite
 
 from .schema import BenchmarkRunRecord, RunStatus, SolverMode
 
+OPTIMIZATION_METRIC_SCHEMA_VERSION = "quality-gated-speedup-v1"
+
 
 @dataclass(frozen=True, slots=True)
 class PairedRunComparison:
@@ -19,6 +21,37 @@ class PairedRunComparison:
     speedup_vs_classical: float | None
     quality_preserved: bool
     comparable: bool
+
+
+@dataclass(frozen=True, slots=True)
+class OptimizationMetric:
+    """End-to-end optimization score with quality as a hard gate."""
+
+    schema_version: str
+    score: float
+    speedup_vs_classical: float | None
+    objective_difference_vs_classical: float | None
+    quality_preserved: bool
+    comparable: bool
+
+
+def quality_gated_speedup(comparison: PairedRunComparison) -> OptimizationMetric:
+    """Return a score that cannot reward faster but lower-quality runs.
+
+    The score is the paired wall-clock speedup only for a comparable pair whose
+    independently verified quality is preserved. Missing measurements and
+    quality violations score zero while their diagnostics remain available.
+    """
+
+    eligible = comparison.comparable and comparison.quality_preserved
+    return OptimizationMetric(
+        schema_version=OPTIMIZATION_METRIC_SCHEMA_VERSION,
+        score=comparison.speedup_vs_classical if eligible else 0.0,
+        speedup_vs_classical=comparison.speedup_vs_classical,
+        objective_difference_vs_classical=comparison.objective_difference_vs_classical,
+        quality_preserved=comparison.quality_preserved,
+        comparable=comparison.comparable,
+    )
 
 
 def compare_paired_runs(
