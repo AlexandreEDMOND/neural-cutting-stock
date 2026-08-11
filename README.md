@@ -4,7 +4,7 @@
 
 ## État du projet
 
-La Phase 1 est clôturée. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. Aucun composant neuronal ni résultat de performance Neural CG n’existe encore.
+Les Phases 1 et 2 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. Aucun composant neuronal ni résultat de performance Neural CG n’existe encore.
 
 ## Motivation
 
@@ -88,19 +88,29 @@ uv run python -m neural_cutting_stock ... --solver neural
 
 Ces commandes seront ajoutées avec les solveurs ; elles ne sont pas encore disponibles dans la phase de fondation.
 
-## Méthodologie de benchmark
+## Protocole et profils de benchmark
 
-Les instances synthétiques seront reproductibles par graine explicite. La difficulté sera étudiée selon plusieurs dimensions indépendantes : nombre de types, demande totale, longueur de barre, distributions des longueurs et demandes, et kerf. Les catégories `SMALL`, `MEDIUM`, `LARGE` et `XL` sont désormais figées par `size-class-v1` à partir du temps mur-à-mur classique mesuré ; les seuils et leur justification sont détaillés dans [docs/benchmark_protocol.md](docs/benchmark_protocol.md).
+Les instances synthétiques sont reproductibles par graine explicite, paramètres de génération et identifiant dérivé des données normalisées. La difficulté est étudiée selon plusieurs dimensions indépendantes : nombre de types, demande totale, longueur de barre, distributions des longueurs et demandes, et kerf. Les catégories `SMALL`, `MEDIUM`, `LARGE` et `XL` sont figées par `size-class-v1` à partir du temps mur-à-mur classique mesuré, et non de la demande seule : `SMALL < 0.015997 s`, `MEDIUM < 0.06385 s`, `LARGE < 0.1433 s`, puis `XL`.
 
-Les exécutions classique et neuronale seront appariées sur exactement les mêmes instances, configurations et conditions matérielles. Le temps principal est le temps mur-à-mur de résolution. Les décompositions RMP, pricing, maître entier, gestion des colonnes et, plus tard, inférence neuronale servent à expliquer ce temps, jamais à le remplacer.
+Les exécutions classique et neuronale seront appariées par `instance_id`, avec les mêmes configurations, ressources et conditions matérielles. Le temps principal est le temps mur-à-mur de l’entrée dans `solve` jusqu’au plan vérifié. Les décompositions RMP, pricing, maître entier, gestion des colonnes, vérification et, plus tard, inférence neuronale servent à expliquer ce temps, jamais à le remplacer. Chaque tentative, y compris échec et timeout, reste dans les données ; `objective_difference_vs_classical` est vérifié avant toute agrégation de runtime.
 
-Le schéma de données, les règles de chronométrage, les statuts et le protocole de comparaison sont spécifiés dans [docs/benchmark_protocol.md](docs/benchmark_protocol.md).
+Le schéma `benchmark-run-v1`, les règles de chronométrage, les statuts et le protocole de comparaison sont spécifiés dans [docs/benchmark_protocol.md](docs/benchmark_protocol.md). Le profil classique publié est [baseline-profile-v1](results/phase-2-baseline-profile.json), avec son [bilan détaillé](results/phase-2-summary.md).
 
-## Résultats
+## Résultats de Phase 2
 
-La validation de Phase 1 comporte **68 tests réussis** et un contrôle Ruff réussi, exécutés avec les dépendances verrouillées. Le bilan reproductible, les commandes, l’environnement et les critères vérifiés sont publiés dans [`results/phase-1-summary.md`](results/phase-1-summary.md). Ce nombre décrit la correction testée du code ; il ne constitue pas un résultat de performance.
+La validation de Phase 1 comporte **68 tests réussis** et un contrôle Ruff réussi, exécutés avec les dépendances verrouillées. Le bilan et l’environnement sont publiés dans [`results/phase-1-summary.md`](results/phase-1-summary.md). Ce nombre décrit la correction testée du code ; il ne constitue pas un résultat de performance.
 
-**Les expériences de performance sont encore en attente.** Aucun speedup ni graphique comparatif n’est publié à ce stade.
+La Phase 2 a enregistré **8 exécutions classiques réussies** sur les graines `11` et `12`, avec plans faisables et statut `optimal_lp_restricted_ip`. Le profil contient 3 exécutions `SMALL`, 1 `MEDIUM`, 3 `LARGE` et 1 `XL`. Le temps médian observé va de `0.006309 s` (`SMALL`) à `0.171033 s` (`XL`). Le goulot mesuré est `pricing_runtime`, avec **65,32 %** du temps instrumenté cumulé. Ces mesures décrivent la baseline classique et ne constituent pas un speedup.
+
+Le profil et les figures ont été produits à partir des données persistées avec :
+
+```bash
+uv run python scripts/plot_phase2_profile.py \
+  --profile results/phase-2-baseline-profile.json \
+  --output-dir results
+```
+
+La Phase 2 est clôturée : le corpus, le protocole, les seuils de taille et le goulot sont versionnés et traçables. Les résultats neuronaux restent hors périmètre jusqu’aux phases suivantes.
 
 Le pipeline de visualisation produira à partir des mesures brutes validées :
 
