@@ -18,6 +18,13 @@ from .schema import (
     RunStatus,
     SolverMode,
 )
+from .trajectory import (
+    TRAJECTORY_SCHEMA_VERSION,
+    ColumnGenerationTrajectory,
+    TrajectoryIteration,
+    TrajectoryMetadata,
+    TrajectoryStatus,
+)
 
 __all__ = [
     "SCHEMA_VERSION",
@@ -37,4 +44,9 @@ __all__ = [
     "SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS",
     "SizeClass",
     "classify_runtime",
+    "TRAJECTORY_SCHEMA_VERSION",
+    "ColumnGenerationTrajectory",
+    "TrajectoryIteration",
+    "TrajectoryMetadata",
+    "TrajectoryStatus",
 ]

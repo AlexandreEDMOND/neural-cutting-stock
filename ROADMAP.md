@@ -71,7 +71,7 @@ goulot principal est mesuré et les catégories de taille sont justifiées par l
 Objectif : collecter des trajectoires rejouables sans modifier les décisions ni les garanties du
 solveur classique.
 
-- [ ] **P3.01** — Définir et versionner le schéma d'une trajectoire de génération de colonnes.
+- [x] **P3.01** — Définir et versionner le schéma d'une trajectoire de génération de colonnes.
 - [ ] **P3.02** — Enregistrer les états du RMP et les identifiants d'instance à chaque itération.
 - [ ] **P3.03** — Enregistrer les duales avec ordre des types, tolérances et conventions explicites.
 - [ ] **P3.04** — Enregistrer motifs candidats, coûts réduits et résultat du pricing exact.
