@@ -48,19 +48,10 @@ class ClassicalBenchmarkConfig:
         """Return the stable identifier of the complete solver matrix."""
 
         payload = {
-            "generators": [
-                {
-                    "seed": generator.seed,
-                    "stock_length": generator.stock_length,
-                    "kerf": generator.kerf,
-                    "number_of_types": generator.number_of_types,
-                    "piece_length_range": generator.piece_length_range,
-                    "demand_range": generator.demand_range,
-                    "length_distribution": generator.length_distribution,
-                    "demand_distribution": generator.demand_distribution,
-                }
-                for generator in self.generators
-            ],
+            "generators": sorted(
+                (_generator_payload(generator) for generator in self.generators),
+                key=lambda generator: json.dumps(generator, sort_keys=True, separators=(",", ":")),
+            ),
             "repetitions": self.repetitions,
             "reduced_cost_tolerance": self.reduced_cost_tolerance,
             "solver_version": self.solver_version,
@@ -219,13 +210,15 @@ def _run_status(status: str) -> RunStatus:
 
 
 def write_raw_runs(path: str | Path, records: tuple[BenchmarkRunRecord, ...]) -> None:
-    """Write every supplied raw run to a versioned CSV table without filtering."""
+    """Write every supplied raw run in canonical order without filtering."""
 
     fieldnames = tuple(records[0].to_dict()) if records else _raw_run_fieldnames()
     with Path(path).open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(record.to_dict() for record in records)
+        writer.writerows(
+            record.to_dict() for record in sorted(records, key=lambda item: item.run_id)
+        )
 
 
 def _raw_run_fieldnames() -> tuple[str, ...]:
@@ -235,3 +228,16 @@ def _raw_run_fieldnames() -> tuple[str, ...]:
         field.name for field in fields(BenchmarkRunRecord) if field.name != "environment"
     )
     return record_fields + tuple(field.name for field in fields(EnvironmentMetadata))
+
+
+def _generator_payload(generator: SyntheticInstanceGenerator) -> dict[str, object]:
+    return {
+        "seed": generator.seed,
+        "stock_length": generator.stock_length,
+        "kerf": generator.kerf,
+        "number_of_types": generator.number_of_types,
+        "piece_length_range": generator.piece_length_range,
+        "demand_range": generator.demand_range,
+        "length_distribution": generator.length_distribution,
+        "demand_distribution": generator.demand_distribution,
+    }

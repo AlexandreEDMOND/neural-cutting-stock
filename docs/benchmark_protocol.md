@@ -134,6 +134,10 @@ Ils sont nuls pour le mode classique, et obligatoires pour le mode neural.
 6. Conserver chaque tentative, y compris timeout et erreur.
 7. Valider le plan, le bilan matière, les statuts et la décomposition temporelle avant agrégation.
 
+L’ordre des générateurs dans une matrice ne change ni son `config_id` ni les `run_id`. Les fichiers
+bruts sont écrits dans l’ordre canonique des `run_id`, afin qu’une permutation de l’ordre d’exécution
+ne modifie pas leur sérialisation.
+
 Le nombre de répétitions ne sera fixé qu’après mesure de la variance. Les figures utiliseront au minimum une statistique centrale robuste (médiane) et une dispersion ou un intervalle de confiance défini dans la configuration de rapport.
 
 ## 5. Contrôle de qualité avant comparaison

@@ -36,6 +36,22 @@ def test_classical_runner_executes_configured_matrix_in_stable_order() -> None:
     assert all(record.config_id == configuration.config_id for record in records)
 
 
+def test_runner_identity_and_run_ids_do_not_depend_on_generator_order() -> None:
+    first = SyntheticInstanceGenerator(seed=11, number_of_types=2)
+    second = SyntheticInstanceGenerator(seed=12, number_of_types=2)
+    environment = EnvironmentMetadata("commit", "3.11", "deps", "machine")
+    forward = ClassicalBenchmarkConfig(generators=(first, second), environment=environment)
+    reverse = ClassicalBenchmarkConfig(generators=(second, first), environment=environment)
+
+    forward_records = ClassicalBenchmarkRunner(forward).run()
+    reverse_records = ClassicalBenchmarkRunner(reverse).run()
+
+    assert forward.config_id == reverse.config_id
+    assert {record.run_id for record in forward_records} == {
+        record.run_id for record in reverse_records
+    }
+
+
 def test_runner_persists_separate_distribution_dimensions() -> None:
     generator = SyntheticInstanceGenerator(
         seed=11,
@@ -168,3 +184,18 @@ def test_write_raw_runs_writes_header_for_empty_table(tmp_path) -> None:
         rows = list(reader)
     assert rows == []
     assert "run_status" in reader.fieldnames
+
+
+def test_write_raw_runs_is_independent_of_execution_order(tmp_path) -> None:
+    configuration = ClassicalBenchmarkConfig(
+        generators=(SyntheticInstanceGenerator(seed=11), SyntheticInstanceGenerator(seed=12)),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+    )
+    records = ClassicalBenchmarkRunner(configuration).run()
+    forward_path = tmp_path / "forward.csv"
+    reverse_path = tmp_path / "reverse.csv"
+
+    write_raw_runs(forward_path, records)
+    write_raw_runs(reverse_path, tuple(reversed(records)))
+
+    assert forward_path.read_bytes() == reverse_path.read_bytes()
