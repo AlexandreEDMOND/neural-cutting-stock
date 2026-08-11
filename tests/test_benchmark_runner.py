@@ -144,9 +144,12 @@ def test_runner_persists_successes_and_failures_without_filtering(tmp_path, monk
     with output_path.open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
     assert len(rows) == len(records) == 2
-    assert [row["run_status"] for row in rows] == ["invalid_plan", "solver_error"]
-    assert rows[0]["error_message"] == "invalid_plan"
-    assert rows[1]["error_message"] == "pricing unavailable"
+    assert [row["run_status"] for row in rows] == [
+        record.run_status.value for record in sorted(records, key=lambda item: item.run_id)
+    ]
+    rows_by_error = {row["error_message"]: row for row in rows}
+    assert rows_by_error["invalid_plan"]["run_status"] == "invalid_plan"
+    assert rows_by_error["pricing unavailable"]["run_status"] == "solver_error"
 
 
 def test_timeout_status_is_retained_as_timeout(monkeypatch) -> None:
@@ -172,6 +175,51 @@ def test_timeout_status_is_retained_as_timeout(monkeypatch) -> None:
     record = ClassicalBenchmarkRunner(configuration).run()[0]
 
     assert record.run_status is RunStatus.TIMEOUT
+
+
+def test_runner_passes_iteration_limit_and_persists_timeout(monkeypatch) -> None:
+    configuration = ClassicalBenchmarkConfig(
+        generators=(SyntheticInstanceGenerator(seed=11, number_of_types=3),),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+        max_cg_iterations=1,
+    )
+
+    def limited_solve(self):
+        assert self.max_iterations == 1
+        return ColumnGenerationResult(
+            status="limit_reached",
+            patterns=(),
+            rmp_result=None,
+            pricing_result=None,
+            integer_master_result=None,
+            iterations=1,
+            columns_added=0,
+            duplicate_columns=0,
+            termination_reason="resource_limit",
+        )
+
+    monkeypatch.setattr(
+        "neural_cutting_stock.benchmarks.runner.ColumnGeneration.solve", limited_solve
+    )
+
+    record = ClassicalBenchmarkRunner(configuration).run()[0]
+
+    assert record.run_status is RunStatus.TIMEOUT
+    assert record.termination_reason == "resource_limit"
+    assert record.error_message == "resource_limit"
+    assert record.number_of_cg_iterations == 1
+
+
+def test_resource_limits_are_part_of_campaign_identity() -> None:
+    generator = SyntheticInstanceGenerator(seed=11)
+    environment = EnvironmentMetadata("commit", "3.11", "deps", "machine")
+
+    unlimited = ClassicalBenchmarkConfig((generator,), environment=environment)
+    limited = ClassicalBenchmarkConfig(
+        (generator,), environment=environment, max_runtime_seconds=1.0
+    )
+
+    assert unlimited.config_id != limited.config_id
 
 
 def test_write_raw_runs_writes_header_for_empty_table(tmp_path) -> None:

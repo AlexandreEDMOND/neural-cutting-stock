@@ -59,12 +59,28 @@ class ColumnGeneration:
     """Iteratively solve the RMP and add exact pricing columns."""
 
     def __init__(
-        self, instance: CuttingStockInstance, reduced_cost_tolerance: float = 1e-9
+        self,
+        instance: CuttingStockInstance,
+        reduced_cost_tolerance: float = 1e-9,
+        max_runtime_seconds: float | None = None,
+        max_iterations: int | None = None,
     ) -> None:
         if not math.isfinite(reduced_cost_tolerance) or reduced_cost_tolerance < 0:
             raise ValueError("reduced_cost_tolerance must be finite and non-negative")
+        if max_runtime_seconds is not None and (
+            not math.isfinite(max_runtime_seconds) or max_runtime_seconds <= 0
+        ):
+            raise ValueError("max_runtime_seconds must be finite and positive when present")
+        if max_iterations is not None and (
+            not isinstance(max_iterations, int)
+            or isinstance(max_iterations, bool)
+            or max_iterations <= 0
+        ):
+            raise ValueError("max_iterations must be a positive integer when present")
         self.instance = instance
         self.reduced_cost_tolerance = reduced_cost_tolerance
+        self.max_runtime_seconds = max_runtime_seconds
+        self.max_iterations = max_iterations
 
     def solve(self) -> ColumnGenerationResult:
         """Return the generated patterns once exact pricing finds no improvement."""
@@ -120,6 +136,11 @@ class ColumnGeneration:
         integer_master_result: IntegerMasterResult | None = None
 
         while True:
+            if (
+                self.max_runtime_seconds is not None
+                and perf_counter() - started >= self.max_runtime_seconds
+            ) or (self.max_iterations is not None and iterations >= self.max_iterations):
+                return make_result("limit_reached", "resource_limit")
             iterations += 1
             component_started = perf_counter()
             rmp_result = RestrictedMasterProblem(self.instance, tuple(patterns)).solve()

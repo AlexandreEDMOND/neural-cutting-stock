@@ -134,6 +134,12 @@ Ils sont nuls pour le mode classique, et obligatoires pour le mode neural.
 6. Conserver chaque tentative, y compris timeout et erreur.
 7. Valider le plan, le bilan matière, les statuts et la décomposition temporelle avant agrégation.
 
+Les campagnes classiques acceptent deux limites coopératives, incluses dans `config_id` :
+`max_runtime_seconds` borne le temps mur-à-mur de la génération de colonnes et
+`max_cg_iterations` borne le nombre de résolutions du RMP. Une limite atteinte produit le statut
+solver `limit_reached`, le statut de campagne `timeout` et le motif `resource_limit`; la cellule
+reste persistée avec ses mesures partielles et n'est jamais traitée comme une convergence.
+
 L’ordre des générateurs dans une matrice ne change ni son `config_id` ni les `run_id`. Les fichiers
 bruts sont écrits dans l’ordre canonique des `run_id`, afin qu’une permutation de l’ordre d’exécution
 ne modifie pas leur sérialisation.

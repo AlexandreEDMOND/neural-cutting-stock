@@ -209,6 +209,31 @@ def test_column_generation_rejects_invalid_reduced_cost_tolerance() -> None:
             raise AssertionError("invalid reduced-cost tolerance was accepted")
 
 
+def test_column_generation_stops_at_iteration_resource_limit() -> None:
+    instance = CuttingStockInstance(10, 0, [6, 4], [1, 2])
+
+    result = ColumnGeneration(instance, max_iterations=1).solve()
+
+    assert result.status == "limit_reached"
+    assert result.termination_reason == "resource_limit"
+    assert result.iterations == 1
+    assert result.integer_master_result is None
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"max_runtime_seconds": 0},
+        {"max_runtime_seconds": float("inf")},
+        {"max_iterations": 0},
+        {"max_iterations": True},
+    ],
+)
+def test_column_generation_rejects_invalid_resource_limits(kwargs: dict[str, object]) -> None:
+    with pytest.raises(ValueError):
+        ColumnGeneration(CuttingStockInstance(10, 0, [6], [1]), **kwargs)
+
+
 @pytest.mark.parametrize(
     ("solver_status", "expected_status"),
     [(1, "limit_reached"), (2, "infeasible"), (4, "solver_error")],

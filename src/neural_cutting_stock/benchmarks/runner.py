@@ -3,6 +3,7 @@
 import csv
 import hashlib
 import json
+import math
 from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import ClassVar
@@ -26,6 +27,8 @@ class ClassicalBenchmarkConfig:
     environment: EnvironmentMetadata
     repetitions: int = 1
     reduced_cost_tolerance: float = 1e-9
+    max_runtime_seconds: float | None = None
+    max_cg_iterations: int | None = None
     solver_version: str = "classical-cg-v1"
     schema_version: ClassVar[str] = "benchmark-run-v1"
 
@@ -40,6 +43,16 @@ class ClassicalBenchmarkConfig:
             raise ValueError("repetitions must be a positive integer")
         if self.reduced_cost_tolerance < 0:
             raise ValueError("reduced_cost_tolerance must be non-negative")
+        if self.max_runtime_seconds is not None and (
+            not math.isfinite(self.max_runtime_seconds) or self.max_runtime_seconds <= 0
+        ):
+            raise ValueError("max_runtime_seconds must be finite and positive when present")
+        if self.max_cg_iterations is not None and (
+            not isinstance(self.max_cg_iterations, int)
+            or isinstance(self.max_cg_iterations, bool)
+            or self.max_cg_iterations <= 0
+        ):
+            raise ValueError("max_cg_iterations must be a positive integer when present")
         if not self.solver_version.strip():
             raise ValueError("solver_version must not be empty")
 
@@ -54,6 +67,8 @@ class ClassicalBenchmarkConfig:
             ),
             "repetitions": self.repetitions,
             "reduced_cost_tolerance": self.reduced_cost_tolerance,
+            "max_runtime_seconds": self.max_runtime_seconds,
+            "max_cg_iterations": self.max_cg_iterations,
             "solver_version": self.solver_version,
         }
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("ascii")
@@ -88,7 +103,10 @@ class ClassicalBenchmarkRunner:
         run_id = hashlib.sha256(run_key.encode("ascii")).hexdigest()
         try:
             result = ColumnGeneration(
-                instance, self.configuration.reduced_cost_tolerance
+                instance,
+                self.configuration.reduced_cost_tolerance,
+                self.configuration.max_runtime_seconds,
+                self.configuration.max_cg_iterations,
             ).solve()
         except Exception as error:  # Keep a matrix cell visible when a solver call fails.
             return self._failed_record(generator, instance, repetition, run_id, str(error))
