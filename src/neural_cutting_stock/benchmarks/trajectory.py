@@ -118,28 +118,46 @@ class TrajectoryIteration:
             if len(self.candidate_patterns) != len(self.candidate_reduced_costs):
                 raise ValueError("candidate patterns and reduced costs must have the same length")
             for pattern in self.candidate_patterns:
-                if any(
-                    not isinstance(count, int) or isinstance(count, bool) or count < 0
-                    for count in pattern
-                ):
-                    raise ValueError("candidate patterns must contain non-negative integers")
+                _require_pattern("candidate_patterns", pattern)
             for reduced_cost in self.candidate_reduced_costs:
                 _require_finite("candidate_reduced_costs", reduced_cost)
+        if self.selected_patterns is not None:
+            for pattern in self.selected_patterns:
+                _require_pattern("selected_patterns", pattern)
+        if self.exact_fallback is not None and not isinstance(self.exact_fallback, bool):
+            raise ValueError("exact_fallback must be a boolean when present")
         if self.dual_values is not None:
             if len(self.dual_values) == 0:
                 raise ValueError("dual_values must not be empty when present")
             if any(value < 0 for value in self.dual_values):
                 raise ValueError("dual_values must be non-negative under the covering convention")
+        progress_fields = (
+            "initial_column_count",
+            "final_column_count",
+            "columns_added",
+            "duplicate_column_count",
+        )
+        for name in progress_fields:
+            value = getattr(self, name)
+            if value is not None and (
+                not isinstance(value, int) or isinstance(value, bool) or value < 0
+            ):
+                raise ValueError(f"{name} must be a non-negative integer")
+        if (
+            self.initial_column_count is not None
+            and self.final_column_count is not None
+            and self.columns_added is not None
+            and self.final_column_count != self.initial_column_count + self.columns_added
+        ):
+            raise ValueError(
+                "final_column_count must equal initial_column_count plus columns_added"
+            )
         for field in fields(self):
             value = getattr(self, field.name)
             if isinstance(value, float):
                 _require_finite(field.name, value)
-            if (
-                field.name.endswith("_count")
-                and value is not None
-                and (not isinstance(value, int) or isinstance(value, bool) or value < 0)
-            ):
-                raise ValueError(f"{field.name} must be a non-negative integer")
+            if field.name.endswith("_runtime_seconds") and value is not None and value < 0:
+                raise ValueError(f"{field.name} must be non-negative")
 
 
 @dataclass(frozen=True, slots=True)
@@ -201,6 +219,13 @@ class ColumnGenerationTrajectory:
 
 def _as_json_ready(item: TrajectoryIteration) -> dict[str, Any]:
     return {field.name: getattr(item, field.name) for field in fields(item)}
+
+
+def _require_pattern(name: str, pattern: tuple[int, ...]) -> None:
+    if any(
+        not isinstance(count, int) or isinstance(count, bool) or count < 0 for count in pattern
+    ):
+        raise ValueError(f"{name} must contain non-negative integers")
 
 
 def _require_text(name: str, value: object) -> None:

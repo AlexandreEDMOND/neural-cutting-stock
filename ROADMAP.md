@@ -75,7 +75,7 @@ solveur classique.
 - [x] **P3.02** — Enregistrer les états du RMP et les identifiants d'instance à chaque itération.
 - [x] **P3.03** — Enregistrer les duales avec ordre des types, tolérances et conventions explicites.
 - [x] **P3.04** — Enregistrer motifs candidats, coûts réduits et résultat du pricing exact.
-- [ ] **P3.05** — Enregistrer colonnes retenues, progrès, durées et décisions de fallback.
+- [x] **P3.05** — Enregistrer colonnes retenues, progrès, durées et décisions de fallback.
 - [ ] **P3.06** — Implémenter un validateur et un lecteur capables de rejouer une trajectoire.
 - [ ] **P3.07** — Mesurer le surcoût de collecte et vérifier qu'il n'altère pas les décisions classiques.
 - [ ] **P3.08** — Définir une cible de colonne utile liée à une réduction mesurable du travail total.

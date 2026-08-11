@@ -1,6 +1,6 @@
 # Schéma de trajectoire de génération de colonnes
 
-Le contrat `cg-trajectory-v1` décrit une exécution classique complète du Cutting Stock 1D,
+Le contrat `cg-trajectory-v2` décrit une exécution classique complète du Cutting Stock 1D,
 depuis les conventions numériques jusqu'à son statut terminal. Il est défini dans
 `neural_cutting_stock.benchmarks.trajectory` et sérialisé par `ColumnGenerationTrajectory.to_dict()`.
 
@@ -8,7 +8,7 @@ depuis les conventions numériques jusqu'à son statut terminal. Il est défini 
 
 Un document contient :
 
-- `schema_version` : valeur fixe `cg-trajectory-v1` ;
+- `schema_version` : valeur fixe `cg-trajectory-v2` ;
 - `metadata` : `trajectory_id`, `instance_id`, version du solveur, graine, configuration,
   environnement, données de l'instance et tolérances ;
 - `iterations` : liste ordonnée et contiguë d'observations indexées à partir de 1 ; chaque
@@ -32,7 +32,14 @@ des types de l'instance.
 - chaque résolution du RMP produit un `RMPState` dans le résultat de `ColumnGeneration`, avec son
   index, ses motifs, son résultat et sa durée ; le runner transmet l'`instance_id` stable à chaque
   état.
+- `selected_patterns` contient les motifs retenus à cette itération, `columns_added` et les autres
+  compteurs décrivent le progrès observé ; lorsqu'ils sont tous présents,
+  `final_column_count = initial_column_count + columns_added`.
+- `rmp_runtime_seconds`, `pricing_runtime_seconds` et `column_management_runtime_seconds` sont des
+  durées mur-à-mur non négatives, et `exact_fallback` indique explicitement si le garde-fou exact a
+  été utilisé. Une décision indisponible reste `null`.
 
-La collecte des états du RMP et des identifiants d'instance est réalisée par P3.02. Les champs
-relatifs aux duales, candidats, colonnes retenues et fallbacks seront remplis dans les étapes
-suivantes.
+La collecte des états du RMP et des identifiants d'instance est réalisée par P3.02. Les champs de
+duales et de pricing sont définis par P3.03 et P3.04 ; P3.05 complète le contrat des colonnes
+retenues, du progrès, des durées et du fallback. La construction d'un lecteur et le rejeu sont
+réservés à P3.06.

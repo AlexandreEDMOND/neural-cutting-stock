@@ -156,6 +156,53 @@ def test_trajectory_records_candidate_patterns_and_exact_pricing_result() -> Non
     assert output["best_reduced_cost"] == -0.1
 
 
+def test_trajectory_records_selected_columns_progress_durations_and_fallback() -> None:
+    iteration = TrajectoryIteration(
+        1,
+        "optimal",
+        pricing_status="optimal",
+        initial_column_count=2,
+        final_column_count=3,
+        columns_added=1,
+        duplicate_column_count=0,
+        selected_patterns=((1, 1),),
+        exact_fallback=True,
+        rmp_runtime_seconds=0.01,
+        pricing_runtime_seconds=0.02,
+        column_management_runtime_seconds=0.003,
+    )
+
+    trajectory = ColumnGenerationTrajectory(
+        _trajectory_metadata(), (iteration,), TrajectoryStatus.CONVERGED, "no_improving_column"
+    )
+
+    output = trajectory.to_dict()["iterations"][0]
+    assert output["selected_patterns"] == ((1, 1),)
+    assert output["columns_added"] == 1
+    assert output["final_column_count"] == 3
+    assert output["pricing_runtime_seconds"] == 0.02
+    assert output["exact_fallback"] is True
+
+
+@pytest.mark.parametrize(
+    ("changes", "message"),
+    [
+        ({"selected_patterns": ((1.5,),)}, "selected_patterns"),
+        ({"exact_fallback": "yes"}, "exact_fallback"),
+        ({"pricing_runtime_seconds": -0.1}, "pricing_runtime_seconds"),
+        (
+            {"initial_column_count": 2, "final_column_count": 4, "columns_added": 1},
+            "final_column_count",
+        ),
+    ],
+)
+def test_trajectory_rejects_invalid_progress_measurements(
+    changes: dict[str, object], message: str
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        TrajectoryIteration(1, "optimal", **changes)
+
+
 def test_trajectory_iteration_can_persist_instance_and_rmp_state() -> None:
     iteration = TrajectoryIteration(
         1,
