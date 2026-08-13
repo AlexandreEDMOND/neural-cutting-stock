@@ -145,7 +145,7 @@ Objectif : répondre sans ambiguïté à la question de recherche sur des instan
 - [x] **P6.01** — Geler code, dépendances, modèles, configurations, partitions et protocole final.
 - [x] **P6.02** — Générer et valider le manifeste final des instances non vues et des catégories de taille.
 - [x] **P6.03** — Exécuter la baseline classique finale avec données brutes et environnement tracés.
-- [ ] **P6.04** — Exécuter le mode neural final sur exactement les mêmes instances et ressources.
+- [x] **P6.04** — Exécuter le mode neural final sur exactement les mêmes instances et ressources.
 - [ ] **P6.05** — Vérifier chaque paire et calculer les différences d'objectif avant toute agrégation.
 - [ ] **P6.06** — Répéter les mesures selon la variabilité observée et reporter l'incertitude.
 - [ ] **P6.07** — Tester la généralisation vers des tailles supérieures à celles d'entraînement.

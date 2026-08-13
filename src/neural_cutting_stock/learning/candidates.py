@@ -34,7 +34,19 @@ def deterministic_candidate_pool(
         _validate_pattern(pattern, number_of_types, "current_patterns")
 
     def candidate_patterns():
-        for pattern in product(*(range(demand + 1) for demand in instance.demands)):
+        max_counts = tuple(
+            min(
+                demand,
+                math.floor(
+                    instance.stock_length
+                    / (piece_length + instance.kerf)
+                ),
+            )
+            for piece_length, demand in zip(
+                instance.piece_lengths, instance.demands, strict=True
+            )
+        )
+        for pattern in product(*(range(max_count + 1) for max_count in max_counts)):
             if not any(pattern) or pattern in excluded:
                 continue
             if instance.capacity_used(pattern) > instance.stock_length:

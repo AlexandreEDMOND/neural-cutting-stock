@@ -105,6 +105,49 @@ def write_campaign_metadata(
     output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def write_neural_campaign_metadata(
+    path: str | Path,
+    *,
+    config: dict[str, Any],
+    manifest: dict[str, Any],
+    environment: EnvironmentMetadata,
+    benchmark_config_id: str,
+    run_count: int,
+    candidate_budget: int | None,
+) -> None:
+    """Persist inputs and environment for the final neural-only campaign."""
+
+    payload = {
+        "schema_version": "phase-6-neural-campaign-v1",
+        "config_schema_version": config["schema_version"],
+        "config_id": benchmark_config_id,
+        "final_manifest_id": manifest["manifest_id"],
+        "final_manifest_sha256": _file_sha256(config["files"]["final_instance_manifest"]),
+        "environment": {
+            "code_commit": environment.code_commit,
+            "python_version": environment.python_version,
+            "dependency_versions": environment.dependency_versions,
+            "hardware_id": environment.hardware_id,
+        },
+        "solver": {
+            "mode": "neural",
+            "solver_version": "paired-cg-v1",
+            "model_id": config["model"]["model_id"],
+            "model_artifact": config["model"]["artifact"],
+            "model_artifact_sha256": _file_sha256(config["model"]["artifact"]),
+            "policy": config["model"]["policy"],
+            "candidate_budget": candidate_budget,
+            "repetitions": config["protocol"]["repetitions"],
+            "reduced_cost_tolerance": config["protocol"]["reduced_cost_tolerance"],
+            "max_runtime_seconds": config["protocol"]["max_runtime_seconds"],
+            "max_cg_iterations": config["protocol"]["max_cg_iterations"],
+        },
+        "run_count": run_count,
+    }
+    output = Path(path)
+    output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def _generator_from_entry(entry: dict[str, Any]) -> SyntheticInstanceGenerator:
     config = entry["generator"]
     return SyntheticInstanceGenerator(

@@ -103,6 +103,23 @@ class PairedBenchmarkRunner:
             write_raw_runs(output_path, result)
         return result
 
+    def run_neural(self, output_path: str | Path | None = None) -> tuple[BenchmarkRunRecord, ...]:
+        """Run only the neural side of the frozen matrix.
+
+        The paired runner retains this path so the final neural campaign does not
+        rerun or overwrite the already persisted classical baseline.
+        """
+
+        records: list[BenchmarkRunRecord] = []
+        for generator in self.configuration.generators:
+            instance = generator.generate()
+            for repetition in range(self.configuration.repetitions):
+                records.append(self._run_neural(generator, instance, repetition))
+        result = tuple(records)
+        if output_path is not None:
+            write_raw_runs(output_path, result)
+        return result
+
     def _run_neural(self, generator, instance, repetition) -> BenchmarkRunRecord:
         from neural_cutting_stock.learning import NeuralColumnGeneration
 

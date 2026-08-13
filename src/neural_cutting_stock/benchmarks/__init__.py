@@ -27,6 +27,7 @@ from .final_baseline import (
     collect_environment,
     generators_from_final_manifest,
     write_campaign_metadata,
+    write_neural_campaign_metadata,
 )
 from .final_manifest import (
     FINAL_MANIFEST_SCHEMA_VERSION,
@@ -97,6 +98,7 @@ __all__ = [
     "collect_environment",
     "generators_from_final_manifest",
     "write_campaign_metadata",
+    "write_neural_campaign_metadata",
     "BenchmarkMatrix",
     "DistributionSpec",
     "DATASET_SCHEMA_VERSION",
