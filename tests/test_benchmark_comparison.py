@@ -169,6 +169,30 @@ def test_comparison_rejects_missing_or_duplicate_pair() -> None:
         compare_paired_runs((classical, neural, replace(neural, run_id="neural-2")))
 
 
+def test_comparison_rejects_pairs_with_different_resources_or_instance_data() -> None:
+    classical = _record(SolverMode.CLASSICAL, "classical")
+
+    with pytest.raises(ValueError, match="same config_id"):
+        compare_paired_runs(
+            (classical, _record(SolverMode.NEURAL, "neural", config_id="other"))
+        )
+    with pytest.raises(ValueError, match="same environment"):
+        compare_paired_runs(
+            (
+                classical,
+                _record(
+                    SolverMode.NEURAL,
+                    "neural",
+                    environment=EnvironmentMetadata("other", "3.11", "deps", "machine"),
+                ),
+            )
+        )
+    with pytest.raises(ValueError, match="same instance data: stock_length"):
+        compare_paired_runs(
+            (classical, _record(SolverMode.NEURAL, "neural", stock_length=101.0))
+        )
+
+
 def test_paired_runner_executes_both_modes_on_the_same_instance() -> None:
     configuration = PairedBenchmarkConfig(
         generators=(SyntheticInstanceGenerator(seed=12, number_of_types=2),),

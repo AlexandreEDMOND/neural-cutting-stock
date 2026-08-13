@@ -146,6 +146,7 @@ def compare_paired_runs(
         neural = modes.get(SolverMode.NEURAL)
         if classical is None or neural is None:
             raise ValueError(f"missing paired run for {(instance_id, repetition)}")
+        _validate_pair_identity(classical, neural)
         objectives = (
             neural.objective_value - classical.objective_value
             if neural.objective_value is not None and classical.objective_value is not None
@@ -180,3 +181,28 @@ def compare_paired_runs(
             )
         )
     return tuple(comparisons)
+
+
+def _validate_pair_identity(
+    classical: BenchmarkRunRecord, neural: BenchmarkRunRecord
+) -> None:
+    """Reject pairs that were not measured on the same instance and resources."""
+
+    if classical.config_id != neural.config_id:
+        raise ValueError("paired runs must use the same config_id")
+    if classical.environment != neural.environment:
+        raise ValueError("paired runs must use the same environment")
+    if classical.seed != neural.seed:
+        raise ValueError("paired runs must use the same seed")
+    instance_fields = (
+        "stock_length",
+        "kerf",
+        "number_of_piece_types",
+        "total_demand",
+        "requested_length",
+        "length_distribution",
+        "demand_distribution",
+    )
+    for field in instance_fields:
+        if getattr(classical, field) != getattr(neural, field):
+            raise ValueError(f"paired runs must use the same instance data: {field}")
