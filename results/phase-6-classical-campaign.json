@@ -1,0 +1,22 @@
+{
+  "config_id": "c949bd61f8ff279f2e3e871b79cdb258334686b60513f2c2cb1743da2c05a952",
+  "config_schema_version": "phase-6-final-freeze-v1",
+  "environment": {
+    "code_commit": "0062917245e5e42c16853a1bd08b18b70a8d4df0",
+    "dependency_versions": "numpy==2.4.6,scipy==1.17.1",
+    "hardware_id": "platform=macOS-26.4.1-arm64-arm-64bit;machine=arm64;processor=arm;cpu_count=10;threads=OMP_NUM_THREADS=unset,OPENBLAS_NUM_THREADS=unset,MKL_NUM_THREADS=unset",
+    "python_version": "3.11.15"
+  },
+  "final_manifest_id": "cc139868f3500f38b74dc0c3db41dc93582593a08bc4ff90dafa102f30e4d1f7",
+  "final_manifest_sha256": "e99a8ddaac12c20794d4d63ef28227beb5211bbc301736dae6d88a4a5768ab6c",
+  "run_count": 12,
+  "schema_version": "phase-6-classical-baseline-v1",
+  "solver": {
+    "max_cg_iterations": null,
+    "max_runtime_seconds": null,
+    "mode": "classical",
+    "reduced_cost_tolerance": 1e-09,
+    "repetitions": 1,
+    "solver_version": "classical-cg-v1"
+  }
+}

@@ -23,6 +23,11 @@ from .dataset import (
     build_dataset,
     load_phase3_dataset,
 )
+from .final_baseline import (
+    collect_environment,
+    generators_from_final_manifest,
+    write_campaign_metadata,
+)
 from .final_manifest import (
     FINAL_MANIFEST_SCHEMA_VERSION,
     SIZE_CLASSES,
@@ -89,6 +94,9 @@ __all__ = [
     "build_final_manifest",
     "validate_final_manifest",
     "write_final_manifest",
+    "collect_environment",
+    "generators_from_final_manifest",
+    "write_campaign_metadata",
     "BenchmarkMatrix",
     "DistributionSpec",
     "DATASET_SCHEMA_VERSION",
