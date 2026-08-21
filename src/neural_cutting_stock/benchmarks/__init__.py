@@ -48,6 +48,7 @@ from .generalization import (
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
 from .paired_runner import PairedBenchmarkConfig, PairedBenchmarkRunner
+from .paired_tables import PAIRED_TABLES_SCHEMA_VERSION, build_paired_tables
 from .partitions import (
     PARTITION_SCHEMA_VERSION,
     DatasetPartition,
@@ -150,6 +151,8 @@ __all__ = [
     "freeze_candidate_on_validation",
     "PairedBenchmarkConfig",
     "PairedBenchmarkRunner",
+    "PAIRED_TABLES_SCHEMA_VERSION",
+    "build_paired_tables",
     "PROFILE_SCHEMA_VERSION",
     "NEURAL_PROFILE_SCHEMA_VERSION",
     "PAIRED_PROFILE_SCHEMA_VERSION",
