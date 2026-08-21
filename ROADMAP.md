@@ -149,7 +149,7 @@ Objectif : répondre sans ambiguïté à la question de recherche sur des instan
 - [x] **P6.05** — Vérifier chaque paire et calculer les différences d'objectif avant toute agrégation.
 - [x] **P6.06** — Répéter les mesures selon la variabilité observée et reporter l'incertitude.
 - [x] **P6.07** — Tester la généralisation vers des tailles supérieures à celles d'entraînement.
-- [ ] **P6.08** — Conserver et analyser échecs, violations, fallbacks et timeouts des deux modes.
+- [x] **P6.08** — Conserver et analyser échecs, violations, fallbacks et timeouts des deux modes.
 - [ ] **P6.09** — Produire les tableaux appariés de qualité, runtime, mémoire, itérations et colonnes.
 - [ ] **P6.10** — Générer `results/runtime_comparison.png` uniquement depuis les résultats finaux validés.
 - [ ] **P6.11** — Générer `results/speedup_by_size.png` uniquement depuis les paires de qualité admissible.

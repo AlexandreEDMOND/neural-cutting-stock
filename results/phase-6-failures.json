@@ -1,0 +1,48 @@
+{
+  "modes": {
+    "classical": {
+      "exact_pricing_calls_total": 126,
+      "failure_count": 0,
+      "failure_runs": [],
+      "plan_violation_count": 0,
+      "plan_violation_runs": [],
+      "run_count": 36,
+      "status_counts": {
+        "infeasible": 0,
+        "invalid_plan": 0,
+        "optimal_lp_restricted_ip": 36,
+        "solver_error": 0,
+        "timeout": 0
+      },
+      "timeout_count": 0
+    },
+    "neural": {
+      "exact_fallback_calls_total": 36,
+      "exact_pricing_calls_total": 36,
+      "failure_count": 0,
+      "failure_runs": [],
+      "plan_violation_count": 0,
+      "plan_violation_runs": [],
+      "run_count": 36,
+      "runs_with_exact_fallback": 36,
+      "status_counts": {
+        "infeasible": 0,
+        "invalid_plan": 0,
+        "optimal_lp_restricted_ip": 36,
+        "solver_error": 0,
+        "timeout": 0
+      },
+      "timeout_count": 0
+    }
+  },
+  "pair_count": 36,
+  "pairs": {
+    "admissible_pair_count": 36,
+    "pair_count": 36,
+    "quality_violation_pair_count": 0,
+    "quality_violation_pairs": []
+  },
+  "quality_tolerance_bars": 0.0,
+  "run_count": 72,
+  "schema_version": "campaign-failure-analysis-v1"
+}

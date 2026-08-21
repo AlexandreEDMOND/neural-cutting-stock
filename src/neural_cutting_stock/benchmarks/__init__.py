@@ -25,6 +25,7 @@ from .dataset import (
     build_dataset,
     load_phase3_dataset,
 )
+from .failures import FAILURE_ANALYSIS_SCHEMA_VERSION, analyze_campaign_failures
 from .final_baseline import (
     collect_environment,
     generators_from_final_manifest,
@@ -117,6 +118,8 @@ __all__ = [
     "evaluate_size_generalization",
     "pair_campaign_records",
     "training_size_frontier",
+    "FAILURE_ANALYSIS_SCHEMA_VERSION",
+    "analyze_campaign_failures",
     "BenchmarkMatrix",
     "DistributionSpec",
     "DATASET_SCHEMA_VERSION",
