@@ -265,3 +265,16 @@ def test_write_raw_runs_is_independent_of_execution_order(tmp_path) -> None:
     write_raw_runs(reverse_path, tuple(reversed(records)))
 
     assert forward_path.read_bytes() == reverse_path.read_bytes()
+
+
+def test_write_raw_runs_uses_lf_line_endings_only(tmp_path) -> None:
+    configuration = ClassicalBenchmarkConfig(
+        generators=(SyntheticInstanceGenerator(seed=11),),
+        environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+    )
+    records = ClassicalBenchmarkRunner(configuration).run()
+    output_path = tmp_path / "benchmark_runs.csv"
+
+    write_raw_runs(output_path, records)
+
+    assert b"\r" not in output_path.read_bytes()

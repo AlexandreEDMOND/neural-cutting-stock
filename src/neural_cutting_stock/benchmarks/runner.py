@@ -292,7 +292,7 @@ def write_raw_runs(path: str | Path, records: tuple[BenchmarkRunRecord, ...]) ->
 
     fieldnames = tuple(records[0].to_dict()) if records else _raw_run_fieldnames()
     with Path(path).open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fieldnames)
+        writer = csv.DictWriter(stream, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(
             record.to_dict() for record in sorted(records, key=lambda item: item.run_id)
