@@ -1,0 +1,243 @@
+{
+  "campaign_config_ids": {
+    "classical": [
+      "721fcb829c617d9efe9e1929e2d2db0e4a7564de32154ef6ad7eefce35691663"
+    ],
+    "neural": [
+      "56133429d0aa1300c6fdb35f94c9057a4151766730cf3745d9a37f011e411b15"
+    ]
+  },
+  "coverage": {
+    "admissible_pair_count_above_training": 18,
+    "admissible_pair_count_within_training": 18,
+    "instance_count_above_training": 6,
+    "instance_count_within_training": 6,
+    "objective_differences_vs_classical_above_training": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "instances": [
+    {
+      "above_training_size": false,
+      "admissible_repetition_count": 3,
+      "instance_id": "2e8d6ecbaa342a376ff4bf4c2261c4dc9641091f94c4aebbb8364b9e2584f6af",
+      "number_of_piece_types": 2,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": false,
+      "admissible_repetition_count": 3,
+      "instance_id": "3eb804881591494848f167ba7b26a2b9267a3ba54e1727e6932ff3b14cd58e50",
+      "number_of_piece_types": 2,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": false,
+      "admissible_repetition_count": 3,
+      "instance_id": "e89f36850422c2316a18c0e5c220f81c1d6ab1fbeb7c500622d6d755ac5409b2",
+      "number_of_piece_types": 2,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": false,
+      "admissible_repetition_count": 3,
+      "instance_id": "a0828ac52b3d58f01bfdadbd2eee43a27a4dc2fb83b298eb885be71d25ab31a2",
+      "number_of_piece_types": 4,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": false,
+      "admissible_repetition_count": 3,
+      "instance_id": "b09c9bbfd876bc77c5440191ebfb1a02f5aa41b774b446ae71d1f3ca862891e9",
+      "number_of_piece_types": 4,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": false,
+      "admissible_repetition_count": 3,
+      "instance_id": "d98437a9e4d1ee8f330f95435351e503b39e6dc899a005394a24ce46ef0bfc7d",
+      "number_of_piece_types": 4,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": true,
+      "admissible_repetition_count": 3,
+      "instance_id": "2db8f04b0672b4e39578ab96c31e1989f5e93a806b484a143f83761c7a1f4c50",
+      "number_of_piece_types": 6,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": true,
+      "admissible_repetition_count": 3,
+      "instance_id": "35714b99e7af814094a2bd53d0a82a4c33fb1c3bcdedddf861740c744140d125",
+      "number_of_piece_types": 6,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": true,
+      "admissible_repetition_count": 3,
+      "instance_id": "d71a500910a2039d84f38704af75d2036160060c50841a11b3d98be280d6f7fd",
+      "number_of_piece_types": 6,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": true,
+      "admissible_repetition_count": 3,
+      "instance_id": "5d7cde942f6f9a9811561fb1c16bb97f0f197f7fd567dcb7f41c33103c0406a0",
+      "number_of_piece_types": 8,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": true,
+      "admissible_repetition_count": 3,
+      "instance_id": "6a97075552eaa33fc90b205108ea38eed24df5e00e18099237a5924d12beab13",
+      "number_of_piece_types": 8,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    },
+    {
+      "above_training_size": true,
+      "admissible_repetition_count": 3,
+      "instance_id": "b7dc915107b5020410fb5597772f3b4a18c1dc4ded8e114a35d3dc5e895e96cc",
+      "number_of_piece_types": 8,
+      "objective_differences_vs_classical": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "repetition_count": 3,
+      "status_counts": {
+        "classical:optimal_lp_restricted_ip": 3,
+        "neural:optimal_lp_restricted_ip": 3
+      }
+    }
+  ],
+  "pair_count": 36,
+  "quality_tolerance_bars": 0.0,
+  "run_count": 72,
+  "schema_version": "size-generalization-v1",
+  "training_frontier": {
+    "maximum_training_piece_types": 4,
+    "piece_types_by_partition": {
+      "test": 4,
+      "train": 2,
+      "validation": 3
+    },
+    "source_schema_version": "phase-3-corpus-v1"
+  }
+}

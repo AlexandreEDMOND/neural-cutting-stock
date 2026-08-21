@@ -8,6 +8,15 @@ from .schema import BenchmarkRunRecord, RunStatus, SolverMode
 
 OPTIMIZATION_METRIC_SCHEMA_VERSION = "quality-gated-speedup-v1"
 FREEZE_DECISION_SCHEMA_VERSION = "validation-freeze-decision-v1"
+INSTANCE_IDENTITY_FIELDS = (
+    "stock_length",
+    "kerf",
+    "number_of_piece_types",
+    "total_demand",
+    "requested_length",
+    "length_distribution",
+    "demand_distribution",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,40 +156,50 @@ def compare_paired_runs(
         if classical is None or neural is None:
             raise ValueError(f"missing paired run for {(instance_id, repetition)}")
         _validate_pair_identity(classical, neural)
-        objectives = (
-            neural.objective_value - classical.objective_value
-            if neural.objective_value is not None and classical.objective_value is not None
-            else None
-        )
-        speedup = (
-            classical.total_runtime_seconds / neural.total_runtime_seconds
-            if classical.total_runtime_seconds is not None
-            and neural.total_runtime_seconds is not None
-            and classical.total_runtime_seconds > 0
-            and neural.total_runtime_seconds > 0
-            else None
-        )
-        quality_preserved = (
-            objectives is not None
-            and abs(objectives) <= quality_tolerance
-            and classical.run_status is RunStatus.OPTIMAL_LP_RESTRICTED_IP
-            and neural.run_status is RunStatus.OPTIMAL_LP_RESTRICTED_IP
-            and classical.plan_feasible is True
-            and neural.plan_feasible is True
-        )
-        comparisons.append(
-            PairedRunComparison(
-                instance_id,
-                repetition,
-                classical.run_id,
-                neural.run_id,
-                objectives,
-                speedup,
-                quality_preserved,
-                objectives is not None and speedup is not None,
-            )
-        )
+        comparisons.append(build_paired_comparison(classical, neural, quality_tolerance))
     return tuple(comparisons)
+
+
+def build_paired_comparison(
+    classical: BenchmarkRunRecord,
+    neural: BenchmarkRunRecord,
+    quality_tolerance: float = 0.0,
+) -> PairedRunComparison:
+    """Recompute quality and speedup for one already identity-checked pair."""
+
+    if not isfinite(quality_tolerance) or quality_tolerance < 0:
+        raise ValueError("quality_tolerance must be finite and non-negative")
+    objectives = (
+        neural.objective_value - classical.objective_value
+        if neural.objective_value is not None and classical.objective_value is not None
+        else None
+    )
+    speedup = (
+        classical.total_runtime_seconds / neural.total_runtime_seconds
+        if classical.total_runtime_seconds is not None
+        and neural.total_runtime_seconds is not None
+        and classical.total_runtime_seconds > 0
+        and neural.total_runtime_seconds > 0
+        else None
+    )
+    quality_preserved = (
+        objectives is not None
+        and abs(objectives) <= quality_tolerance
+        and classical.run_status is RunStatus.OPTIMAL_LP_RESTRICTED_IP
+        and neural.run_status is RunStatus.OPTIMAL_LP_RESTRICTED_IP
+        and classical.plan_feasible is True
+        and neural.plan_feasible is True
+    )
+    return PairedRunComparison(
+        classical.instance_id,
+        classical.repetition,
+        classical.run_id,
+        neural.run_id,
+        objectives,
+        speedup,
+        quality_preserved,
+        objectives is not None and speedup is not None,
+    )
 
 
 def _validate_pair_identity(
@@ -194,15 +213,6 @@ def _validate_pair_identity(
         raise ValueError("paired runs must use the same environment")
     if classical.seed != neural.seed:
         raise ValueError("paired runs must use the same seed")
-    instance_fields = (
-        "stock_length",
-        "kerf",
-        "number_of_piece_types",
-        "total_demand",
-        "requested_length",
-        "length_distribution",
-        "demand_distribution",
-    )
-    for field in instance_fields:
+    for field in INSTANCE_IDENTITY_FIELDS:
         if getattr(classical, field) != getattr(neural, field):
             raise ValueError(f"paired runs must use the same instance data: {field}")

@@ -2,10 +2,12 @@
 
 from .comparison import (
     FREEZE_DECISION_SCHEMA_VERSION,
+    INSTANCE_IDENTITY_FIELDS,
     OPTIMIZATION_METRIC_SCHEMA_VERSION,
     CandidateFreezeDecision,
     OptimizationMetric,
     PairedRunComparison,
+    build_paired_comparison,
     compare_paired_runs,
     freeze_candidate_on_validation,
     quality_gated_speedup,
@@ -35,6 +37,12 @@ from .final_manifest import (
     build_final_manifest,
     validate_final_manifest,
     write_final_manifest,
+)
+from .generalization import (
+    GENERALIZATION_SCHEMA_VERSION,
+    evaluate_size_generalization,
+    pair_campaign_records,
+    training_size_frontier,
 )
 from .generator import SyntheticInstanceGenerator
 from .matrix import BenchmarkMatrix, DistributionSpec
@@ -105,6 +113,10 @@ __all__ = [
     "generators_from_final_manifest",
     "write_campaign_metadata",
     "write_neural_campaign_metadata",
+    "GENERALIZATION_SCHEMA_VERSION",
+    "evaluate_size_generalization",
+    "pair_campaign_records",
+    "training_size_frontier",
     "BenchmarkMatrix",
     "DistributionSpec",
     "DATASET_SCHEMA_VERSION",
@@ -125,6 +137,8 @@ __all__ = [
     "write_raw_runs",
     "PairedRunComparison",
     "compare_paired_runs",
+    "build_paired_comparison",
+    "INSTANCE_IDENTITY_FIELDS",
     "OPTIMIZATION_METRIC_SCHEMA_VERSION",
     "FREEZE_DECISION_SCHEMA_VERSION",
     "CandidateFreezeDecision",
