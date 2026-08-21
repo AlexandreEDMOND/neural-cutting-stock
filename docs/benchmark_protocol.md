@@ -151,7 +151,10 @@ L’ordre des générateurs dans une matrice ne change ni son `config_id` ni les
 bruts sont écrits dans l’ordre canonique des `run_id`, afin qu’une permutation de l’ordre d’exécution
 ne modifie pas leur sérialisation.
 
-Le nombre de répétitions ne sera fixé qu’après mesure de la variance. Les figures utiliseront au minimum une statistique centrale robuste (médiane) et une dispersion ou un intervalle de confiance défini dans la configuration de rapport.
+Le nombre de répétitions est fixé dans la configuration finale après observation de la variance. Le
+rapport `paired-uncertainty-v1` agrège d'abord chaque instance et publie la moyenne, la médiane,
+l'écart-type d'échantillon et un intervalle de confiance normal à 95 % lorsque deux répétitions ou
+plus sont admissibles. Les échecs restent comptés et exclus des statistiques admissibles.
 
 ## 5. Contrôle de qualité avant comparaison
 

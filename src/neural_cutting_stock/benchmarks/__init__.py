@@ -82,6 +82,12 @@ from .trajectory import (
     replay_trajectory,
     write_trajectory,
 )
+from .uncertainty import (
+    RUNTIME_UNCERTAINTY_SCHEMA_VERSION,
+    UNCERTAINTY_SCHEMA_VERSION,
+    summarize_repeated_runs,
+    summarize_runtime_variability,
+)
 
 __all__ = [
     "SCHEMA_VERSION",
@@ -137,6 +143,10 @@ __all__ = [
     "SIZE_CLASS_RUNTIME_THRESHOLDS_SECONDS",
     "SizeClass",
     "classify_runtime",
+    "UNCERTAINTY_SCHEMA_VERSION",
+    "RUNTIME_UNCERTAINTY_SCHEMA_VERSION",
+    "summarize_repeated_runs",
+    "summarize_runtime_variability",
     "TRAJECTORY_SCHEMA_VERSION",
     "DUAL_SIGN_CONVENTION",
     "ColumnGenerationTrajectory",

@@ -18,7 +18,7 @@ def test_phase6_freeze_declares_versioned_protocol_and_artifacts() -> None:
         "benchmark_schema_version": "benchmark-run-v1",
         "comparison": "paired_instance_id",
         "quality_tolerance_bars": 0.0,
-        "repetitions": 1,
+        "repetitions": 3,
         "warmup_runs": 0,
         "reduced_cost_tolerance": 1e-9,
         "max_runtime_seconds": None,

@@ -68,7 +68,7 @@
     "benchmark_schema_version": "benchmark-run-v1",
     "comparison": "paired_instance_id",
     "quality_tolerance_bars": 0.0,
-    "repetitions": 1,
+    "repetitions": 3,
     "warmup_runs": 0,
     "reduced_cost_tolerance": 1e-9,
     "max_runtime_seconds": null,

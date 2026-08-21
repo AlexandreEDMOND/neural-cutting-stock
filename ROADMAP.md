@@ -147,7 +147,7 @@ Objectif : répondre sans ambiguïté à la question de recherche sur des instan
 - [x] **P6.03** — Exécuter la baseline classique finale avec données brutes et environnement tracés.
 - [x] **P6.04** — Exécuter le mode neural final sur exactement les mêmes instances et ressources.
 - [x] **P6.05** — Vérifier chaque paire et calculer les différences d'objectif avant toute agrégation.
-- [ ] **P6.06** — Répéter les mesures selon la variabilité observée et reporter l'incertitude.
+- [x] **P6.06** — Répéter les mesures selon la variabilité observée et reporter l'incertitude.
 - [ ] **P6.07** — Tester la généralisation vers des tailles supérieures à celles d'entraînement.
 - [ ] **P6.08** — Conserver et analyser échecs, violations, fallbacks et timeouts des deux modes.
 - [ ] **P6.09** — Produire les tableaux appariés de qualité, runtime, mémoire, itérations et colonnes.

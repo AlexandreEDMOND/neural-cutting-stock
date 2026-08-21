@@ -18,6 +18,8 @@ from neural_cutting_stock.benchmarks import (
     compare_paired_profiles,
     profile_classical_runs,
     profile_neural_runs,
+    summarize_repeated_runs,
+    summarize_runtime_variability,
 )
 
 
@@ -142,7 +144,7 @@ def test_runner_profile_is_reproducible_in_shape_and_status() -> None:
     assert first["run_count"] == second["run_count"] == 1
     assert first["status_counts"] == second["status_counts"]
     assert first["runs"][0]["run_id"] == second["runs"][0]["run_id"]
-    assert first["dominant_component"] == second["dominant_component"]
+    assert set(first["component_totals_seconds"]) == set(second["component_totals_seconds"])
 
 
 def test_size_class_uses_frozen_runtime_boundaries() -> None:
@@ -253,6 +255,63 @@ def test_compare_paired_profiles_rejects_different_resources() -> None:
 
     with pytest.raises(ValueError, match="same environment"):
         compare_paired_profiles((classical, neural))
+
+
+def test_repeated_summary_reports_sample_uncertainty_per_instance() -> None:
+    classical = tuple(
+        _record(
+            f"classical-{index}",
+            repetition=index,
+            total_runtime_seconds=float(index + 1),
+            config_id="shared",
+            environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+            plan_feasible=True,
+            objective_value=5.0,
+        )
+        for index in range(3)
+    )
+    neural = tuple(
+        _record(
+            f"neural-{index}",
+            repetition=index,
+            solver_mode=SolverMode.NEURAL,
+            model_id="model-v1",
+            config_id="shared",
+            environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+            total_runtime_seconds=float(index + 1) / 2,
+            plan_feasible=True,
+            objective_value=5.0,
+            feature_preparation_runtime=1.0,
+            neural_inference_runtime=2.0,
+            number_of_candidates=2,
+            number_of_selected_columns=1,
+            exact_fallback_calls=1,
+        )
+        for index in range(3)
+    )
+
+    report = summarize_repeated_runs(classical + neural)
+
+    summary = report["instances"][0]
+    assert report["schema_version"] == "paired-uncertainty-v1"
+    assert summary["repetition_count"] == 3
+    assert summary["admissible_repetition_count"] == 3
+    assert summary["classical_runtime_seconds"]["median"] == 2.0
+    assert summary["classical_runtime_seconds"]["sample_stddev"] is not None
+    assert summary["speedup_vs_classical"]["count"] == 3
+
+
+def test_runtime_variability_retains_statuses_and_reports_interval() -> None:
+    records = tuple(
+        _record(f"run-{index}", repetition=index, total_runtime_seconds=float(index + 1))
+        for index in range(3)
+    )
+
+    report = summarize_runtime_variability(records)
+
+    assert report["schema_version"] == "runtime-uncertainty-v1"
+    assert report["instances"][0]["status_counts"] == {"optimal_lp_restricted_ip": 3}
+    assert report["instances"][0]["runtime_seconds"]["ci95"] is not None
 
 
 def replace_record(record: BenchmarkRunRecord, **changes: object) -> BenchmarkRunRecord:

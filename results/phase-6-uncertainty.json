@@ -1,0 +1,449 @@
+{
+  "classical": {
+    "instances": [
+      {
+        "instance_id": "2db8f04b0672b4e39578ab96c31e1989f5e93a806b484a143f83761c7a1f4c50",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.05176264215681801,
+            0.06219232987269039
+          ],
+          "count": 3,
+          "mean": 0.0569774860147542,
+          "median": 0.05474233301356435,
+          "sample_stddev": 0.004608354344634686
+        },
+        "size_class": "MEDIUM",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "2e8d6ecbaa342a376ff4bf4c2261c4dc9641091f94c4aebbb8364b9e2584f6af",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.01678353184736529,
+            0.018824078826588802
+          ],
+          "count": 3,
+          "mean": 0.017803805336977046,
+          "median": 0.01768441600142978,
+          "sample_stddev": 0.0009016150620526329
+        },
+        "size_class": "MEDIUM",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "35714b99e7af814094a2bd53d0a82a4c33fb1c3bcdedddf861740c744140d125",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.1043571797534203,
+            0.11141468156275024
+          ],
+          "count": 3,
+          "mean": 0.10788593065808527,
+          "median": 0.1081843749852851,
+          "sample_stddev": 0.00311835502761957
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "3eb804881591494848f167ba7b26a2b9267a3ba54e1727e6932ff3b14cd58e50",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.014108180121295309,
+            0.01895295856278995
+          ],
+          "count": 3,
+          "mean": 0.01653056934204263,
+          "median": 0.017026917019393295,
+          "sample_stddev": 0.002140663880633438
+        },
+        "size_class": null,
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "5d7cde942f6f9a9811561fb1c16bb97f0f197f7fd567dcb7f41c33103c0406a0",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.12759368927247458,
+            0.1355751720797431
+          ],
+          "count": 3,
+          "mean": 0.13158443067610884,
+          "median": 0.1331877920019906,
+          "sample_stddev": 0.003526615750491468
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "6a97075552eaa33fc90b205108ea38eed24df5e00e18099237a5924d12beab13",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.20705250288648466,
+            0.21835313579399826
+          ],
+          "count": 3,
+          "mean": 0.21270281934024146,
+          "median": 0.21455600002082065,
+          "sample_stddev": 0.004993181212627142
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "a0828ac52b3d58f01bfdadbd2eee43a27a4dc2fb83b298eb885be71d25ab31a2",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.15036447616166115,
+            0.16081227383238583
+          ],
+          "count": 3,
+          "mean": 0.1555883749970235,
+          "median": 0.1547482919995673,
+          "sample_stddev": 0.00461635622267727
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "b09c9bbfd876bc77c5440191ebfb1a02f5aa41b774b446ae71d1f3ca862891e9",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.12312773170197563,
+            0.13201690696708054
+          ],
+          "count": 3,
+          "mean": 0.1275723193345281,
+          "median": 0.1274397079832852,
+          "sample_stddev": 0.003927679386874043
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "b7dc915107b5020410fb5597772f3b4a18c1dc4ded8e114a35d3dc5e895e96cc",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.43419483739265385,
+            0.46096041326485115
+          ],
+          "count": 3,
+          "mean": 0.4475776253287525,
+          "median": 0.45071304199518636,
+          "sample_stddev": 0.011826361557266662
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "d71a500910a2039d84f38704af75d2036160060c50841a11b3d98be280d6f7fd",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.215893932422775,
+            0.22514509559205748
+          ],
+          "count": 3,
+          "mean": 0.22051951400741623,
+          "median": 0.2182936670142226,
+          "sample_stddev": 0.004087623632221226
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "d98437a9e4d1ee8f330f95435351e503b39e6dc899a005394a24ce46ef0bfc7d",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.0985229817992939,
+            0.10711182353574848
+          ],
+          "count": 3,
+          "mean": 0.1028174026675212,
+          "median": 0.10117741601425223,
+          "sample_stddev": 0.003794977108598834
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "e89f36850422c2316a18c0e5c220f81c1d6ab1fbeb7c500622d6d755ac5409b2",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.014872342752543804,
+            0.018159434570990292
+          ],
+          "count": 3,
+          "mean": 0.016515888661767047,
+          "median": 0.01644854198093526,
+          "sample_stddev": 0.0014524005200748182
+        },
+        "size_class": null,
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      }
+    ],
+    "run_count": 36,
+    "schema_version": "runtime-uncertainty-v1",
+    "solver_mode": "classical"
+  },
+  "neural": {
+    "instances": [
+      {
+        "instance_id": "2db8f04b0672b4e39578ab96c31e1989f5e93a806b484a143f83761c7a1f4c50",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.0682970193404426,
+            0.07223595265963104
+          ],
+          "count": 3,
+          "mean": 0.07026648600003682,
+          "median": 0.06998475000727922,
+          "sample_stddev": 0.0017404164888929344
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "2e8d6ecbaa342a376ff4bf4c2261c4dc9641091f94c4aebbb8364b9e2584f6af",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.017259592290081144,
+            0.01972690837499866
+          ],
+          "count": 3,
+          "mean": 0.0184932503325399,
+          "median": 0.01890958400326781,
+          "sample_stddev": 0.001090182861583945
+        },
+        "size_class": "MEDIUM",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "35714b99e7af814094a2bd53d0a82a4c33fb1c3bcdedddf861740c744140d125",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.11782012625765684,
+            0.12763079106329
+          ],
+          "count": 3,
+          "mean": 0.12272545866047342,
+          "median": 0.12521458399714902,
+          "sample_stddev": 0.004334839260047059
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "3eb804881591494848f167ba7b26a2b9267a3ba54e1727e6932ff3b14cd58e50",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.01663783436115043,
+            0.02084744297726868
+          ],
+          "count": 3,
+          "mean": 0.018742638669209555,
+          "median": 0.019755874993279576,
+          "sample_stddev": 0.0018600142865042135
+        },
+        "size_class": "MEDIUM",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "5d7cde942f6f9a9811561fb1c16bb97f0f197f7fd567dcb7f41c33103c0406a0",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.654099214978417,
+            0.6662184243699905
+          ],
+          "count": 3,
+          "mean": 0.6601588196742038,
+          "median": 0.6602875420066994,
+          "sample_stddev": 0.005354868983104817
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "6a97075552eaa33fc90b205108ea38eed24df5e00e18099237a5924d12beab13",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.3145612904713301,
+            0.3186271261861736
+          ],
+          "count": 3,
+          "mean": 0.31659420832875185,
+          "median": 0.3169070829753764,
+          "sample_stddev": 0.0017964882738105072
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "a0828ac52b3d58f01bfdadbd2eee43a27a4dc2fb83b298eb885be71d25ab31a2",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.07697770173967387,
+            0.08242040894076345
+          ],
+          "count": 3,
+          "mean": 0.07969905534021866,
+          "median": 0.08073474999400787,
+          "sample_stddev": 0.0024048585211755443
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "b09c9bbfd876bc77c5440191ebfb1a02f5aa41b774b446ae71d1f3ca862891e9",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.10288756116826002,
+            0.10846732817600878
+          ],
+          "count": 3,
+          "mean": 0.1056774446721344,
+          "median": 0.10706804200890474,
+          "sample_stddev": 0.002465418355055464
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "b7dc915107b5020410fb5597772f3b4a18c1dc4ded8e114a35d3dc5e895e96cc",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            11.271289580363808,
+            11.431191225654574
+          ],
+          "count": 3,
+          "mean": 11.351240403009191,
+          "median": 11.315338542015525,
+          "sample_stddev": 0.07065249333098622
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "d71a500910a2039d84f38704af75d2036160060c50841a11b3d98be280d6f7fd",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            1.0579545248773226,
+            1.0701355577904454
+          ],
+          "count": 3,
+          "mean": 1.064045041333884,
+          "median": 1.0645247909997124,
+          "sample_stddev": 0.005382185687295391
+        },
+        "size_class": "XL",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "d98437a9e4d1ee8f330f95435351e503b39e6dc899a005394a24ce46ef0bfc7d",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.10060961109214288,
+            0.11069469424258781
+          ],
+          "count": 3,
+          "mean": 0.10565215266736534,
+          "median": 0.10708308301400393,
+          "sample_stddev": 0.0044560909222263806
+        },
+        "size_class": "LARGE",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      },
+      {
+        "instance_id": "e89f36850422c2316a18c0e5c220f81c1d6ab1fbeb7c500622d6d755ac5409b2",
+        "repetition_count": 3,
+        "runtime_seconds": {
+          "ci95": [
+            0.018389642888119142,
+            0.01967563446232645
+          ],
+          "count": 3,
+          "mean": 0.019032638675222795,
+          "median": 0.01909316601813771,
+          "sample_stddev": 0.000568214985875647
+        },
+        "size_class": "MEDIUM",
+        "status_counts": {
+          "optimal_lp_restricted_ip": 3
+        }
+      }
+    ],
+    "run_count": 36,
+    "schema_version": "runtime-uncertainty-v1",
+    "solver_mode": "neural"
+  },
+  "schema_version": "phase-6-runtime-uncertainty-v1"
+}
