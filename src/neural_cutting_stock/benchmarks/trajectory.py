@@ -10,6 +10,8 @@ from typing import Any
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
+from ._validation import require_finite as _require_finite
+from ._validation import require_text as _require_text
 from .schema import EnvironmentMetadata
 
 TRAJECTORY_SCHEMA_VERSION = "cg-trajectory-v2"
@@ -590,13 +592,3 @@ def _require_pattern(name: str, pattern: tuple[int, ...]) -> None:
         not isinstance(count, int) or isinstance(count, bool) or count < 0 for count in pattern
     ):
         raise ValueError(f"{name} must contain non-negative integers")
-
-
-def _require_text(name: str, value: object) -> None:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{name} must be a non-empty string")
-
-
-def _require_finite(name: str, value: object) -> None:
-    if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value):
-        raise ValueError(f"{name} must be finite")

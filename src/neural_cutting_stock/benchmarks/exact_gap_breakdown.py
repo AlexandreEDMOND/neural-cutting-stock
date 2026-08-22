@@ -11,6 +11,7 @@ from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from .exact_gap import EXACT_GAP_SCHEMA_VERSION
 from .final_manifest import SIZE_CLASSES
 from .stats import median
 
@@ -27,7 +28,7 @@ def build_exact_gap_breakdown(report: Mapping[str, Any]) -> dict[str, Any]:
 
     if not isinstance(report, Mapping):
         raise ValueError("report must be a mapping")
-    if report.get("schema_version") != "exact-gap-v1":
+    if report.get("schema_version") != EXACT_GAP_SCHEMA_VERSION:
         raise ValueError("breakdown requires an exact-gap-v1 report")
     instances = report.get("instances")
     if not isinstance(instances, Sequence) or isinstance(instances, (str, bytes)):

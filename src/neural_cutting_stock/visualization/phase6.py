@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 from neural_cutting_stock.benchmarks import SIZE_CLASSES, BenchmarkRunRecord, build_paired_tables
 from neural_cutting_stock.benchmarks.stats import median
+from neural_cutting_stock.visualization._shared import number as _number
 from neural_cutting_stock.visualization._shared import seconds
 
 
@@ -337,10 +338,6 @@ def _relative(source: str) -> str:
     with suppress(ValueError):
         return str(Path(source).resolve().relative_to(Path.cwd().resolve()))
     return str(source)
-
-
-def _number(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:g}"
 
 
 def _count(value: float | None) -> str:

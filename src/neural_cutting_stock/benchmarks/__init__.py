@@ -42,7 +42,6 @@ from .exact_reference import (
     ExactReferenceRecord,
     ExactReferenceStatus,
     build_milp_exact_reference,
-    compute_milp_exact_reference,
     solve_milp_exact_reference,
 )
 from .exact_reference_verification import (
@@ -131,7 +130,6 @@ __all__ = [
     "ExactReferenceRecord",
     "ExactReferenceStatus",
     "build_milp_exact_reference",
-    "compute_milp_exact_reference",
     "ExactReferenceVerification",
     "verify_milp_exact_reference",
     "solve_milp_exact_reference",

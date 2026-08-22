@@ -18,6 +18,7 @@ from typing import Any
 from neural_cutting_stock.problem import CuttingStockInstance
 from neural_cutting_stock.solver.maximal_patterns import MaximalPatternLimits
 
+from ._validation import require_text as _require_text
 from .exact_reference import (
     ExactReferenceRecord,
     ExactReferenceStatus,
@@ -334,11 +335,6 @@ def _csv_cell(entry: dict[str, Any], name: str) -> Any:
     if name == "gap_bars_per_repetition":
         return "" if value is None else ";".join(str(gap) for gap in value)
     return "" if value is None else value
-
-
-def _require_text(name: str, value: object) -> None:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{name} must be a non-empty string")
 
 
 __all__ = [

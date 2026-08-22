@@ -1,6 +1,5 @@
 """Versioned schema for exact cutting-stock quality references."""
 
-import math
 from dataclasses import dataclass, fields
 from enum import StrEnum
 from typing import Any
@@ -15,6 +14,8 @@ from neural_cutting_stock.solver.maximal_patterns import (
     PatternEnumerationLimitExceeded,
 )
 
+from ._validation import require_finite as _require_finite
+from ._validation import require_text as _require_text
 from .schema import EnvironmentMetadata
 
 EXACT_REFERENCE_SCHEMA_VERSION = "exact-reference-v1"
@@ -276,35 +277,3 @@ def solve_milp_exact_reference(
         feasibility_tolerance=feasibility_tolerance,
         method_limits=method_limits,
     )
-
-
-def compute_milp_exact_reference(
-    instance_id: str,
-    instance: CuttingStockInstance,
-    *,
-    environment: EnvironmentMetadata,
-    integrality_tolerance: float,
-    feasibility_tolerance: float,
-    limits: MaximalPatternLimits | None = None,
-) -> ExactReferenceRecord:
-    """Solve the complete master by MILP and persist its proof or failure."""
-
-    _, record = solve_milp_exact_reference(
-        instance_id,
-        instance,
-        environment=environment,
-        integrality_tolerance=integrality_tolerance,
-        feasibility_tolerance=feasibility_tolerance,
-        limits=limits,
-    )
-    return record
-
-
-def _require_text(name: str, value: object) -> None:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{name} must be a non-empty string")
-
-
-def _require_finite(name: str, value: object) -> None:
-    if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value):
-        raise ValueError(f"{name} must be finite")

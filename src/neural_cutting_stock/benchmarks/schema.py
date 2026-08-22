@@ -5,6 +5,8 @@ from dataclasses import dataclass, fields
 from enum import StrEnum
 from typing import Any
 
+from ._validation import require_text as _require_text
+
 SCHEMA_VERSION = "benchmark-run-v1"
 
 
@@ -177,8 +179,3 @@ class BenchmarkRunRecord:
         values["solver_mode"] = self.solver_mode.value
         values["run_status"] = self.run_status.value
         return values
-
-
-def _require_text(name: str, value: object) -> None:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{name} must be a non-empty string")

@@ -7,6 +7,8 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from neural_cutting_stock.visualization._shared import number as _number
+
 EXACT_GAP_REPORT = "exact-gap.json"
 
 
@@ -136,10 +138,6 @@ def _types(group: Mapping[str, Any]) -> str:
 
 def _label(key: object) -> str:
     return "n/a" if key is None else str(key)
-
-
-def _number(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:g}"
 
 
 __all__ = ["write_exact_gap_breakdown_markdown"]

@@ -6,7 +6,7 @@ from neural_cutting_stock.benchmarks import (
     ExactReferenceRecord,
     ExactReferenceStatus,
     build_milp_exact_reference,
-    compute_milp_exact_reference,
+    solve_milp_exact_reference,
 )
 from neural_cutting_stock.problem import CuttingStockInstance
 from neural_cutting_stock.solver import CompleteMasterResult, MaximalPatternLimits
@@ -30,13 +30,13 @@ def _outcome(**changes: object) -> CompleteMasterResult:
 def test_optimal_instance_yields_persisted_optimal_record() -> None:
     instance = CuttingStockInstance(10, 1, [4], [5])
 
-    record = compute_milp_exact_reference(
+    record = solve_milp_exact_reference(
         "instance-kerf-1",
         instance,
         environment=_ENVIRONMENT,
         integrality_tolerance=1e-9,
         feasibility_tolerance=1e-9,
-    )
+    )[1]
 
     assert record.schema_version == "exact-reference-v1"
     assert record.reference_method is ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS
@@ -51,13 +51,13 @@ def test_optimal_instance_yields_persisted_optimal_record() -> None:
 def test_optimal_record_round_trips_through_persisted_representation() -> None:
     instance = CuttingStockInstance(6, 1, [2, 3], [3, 2])
 
-    record = compute_milp_exact_reference(
+    record = solve_milp_exact_reference(
         "instance-1",
         instance,
         environment=_ENVIRONMENT,
         integrality_tolerance=1e-9,
         feasibility_tolerance=1e-9,
-    )
+    )[1]
 
     assert ExactReferenceRecord.from_dict(record.to_dict()) == record
 
@@ -65,14 +65,14 @@ def test_optimal_record_round_trips_through_persisted_representation() -> None:
 def test_enumeration_guard_yields_failed_record_without_numerical_claims() -> None:
     instance = CuttingStockInstance(60, 0, [7, 11, 13], [30, 30, 30])
 
-    record = compute_milp_exact_reference(
+    record = solve_milp_exact_reference(
         "instance-huge",
         instance,
         environment=_ENVIRONMENT,
         integrality_tolerance=1e-9,
         feasibility_tolerance=1e-9,
         limits=MaximalPatternLimits(max_search_space_size=10),
-    )
+    )[1]
 
     assert record.status is ExactReferenceStatus.FAILED
     assert record.reference_method is ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS
@@ -85,14 +85,14 @@ def test_enumeration_guard_yields_failed_record_without_numerical_claims() -> No
 def test_method_limits_derive_from_effective_guards() -> None:
     instance = CuttingStockInstance(10, 0, [2], [1])
 
-    record = compute_milp_exact_reference(
+    record = solve_milp_exact_reference(
         "instance-1",
         instance,
         environment=_ENVIRONMENT,
         integrality_tolerance=1e-9,
         feasibility_tolerance=1e-9,
         limits=MaximalPatternLimits(max_search_space_size=500, max_patterns=40),
-    )
+    )[1]
 
     assert record.method_limits == "maximal_patterns:max_search_space_size=500,max_patterns=40"
 
