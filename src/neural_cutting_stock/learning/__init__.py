@@ -102,6 +102,12 @@ from .training import (
     train_artifact,
     write_training_artifact,
 )
+from .validation_eval import (
+    NEURAL_QC_VALIDATION_EVAL_SCHEMA_VERSION,
+    checkpoint_sha256,
+    evaluate_quality_agent_on_partition,
+    quality_agent_from_checkpoint,
+)
 
 __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
@@ -121,6 +127,7 @@ __all__ = [
     "TRAINING_JOURNAL_SCHEMA_VERSION",
     "NEURAL_QC_PIPELINE_SCHEMA_VERSION",
     "NEURAL_QC_PUBLICATION_SCHEMA_VERSION",
+    "NEURAL_QC_VALIDATION_EVAL_SCHEMA_VERSION",
     "STATUS_IMPROVED",
     "STATUS_UNCHANGED",
     "TERMINATION_BUDGET_EXHAUSTED",
@@ -188,6 +195,9 @@ __all__ = [
     "publish_refinement_result",
     "write_training_artifact",
     "verify_proposal",
+    "checkpoint_sha256",
+    "evaluate_quality_agent_on_partition",
+    "quality_agent_from_checkpoint",
     "load_checkpoint",
     "read_curves_json",
     "restore_module_state",

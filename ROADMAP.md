@@ -234,7 +234,7 @@ le vérificateur dispose.
 - [x] **P9.05** — Entraîner une politique profonde (algorithme documenté et justifié) sur les familles à marge de la phase 8, avec journal complet des expériences.
 - [x] **P9.06** — Intégrer le pipeline Neural-QC : partir de la solution classique restreinte, appliquer l'agent jusqu'à convergence ou budget d'amélioration déclaré.
 - [x] **P9.07** — Garde-fous de publication : toute solution finale vérifiée indépendamment, statuts honnêtes (amélioré/égal/dégradé), échecs conservés.
-- [ ] **P9.08** — Évaluation offline sur partition de validation : gain moyen de barres vs baseline classique, par famille et taille.
+- [x] **P9.08** — Évaluation offline sur partition de validation : gain moyen de barres vs baseline classique, par famille et taille.
 - [ ] **P9.09** — Ablations obligatoires : recherche aléatoire et gloutonne à budget égal, pour prouver l'apport propre de l'apprentissage.
 - [ ] **P9.10** — Nettoyage du code de la phase.
 - [ ] **P9.11** — Publication du bilan de phase, mise à jour du README et validation de la phase 9.

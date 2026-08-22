@@ -1,0 +1,150 @@
+{
+  "budget": {
+    "max_steps": 4,
+    "stall_patience": 1
+  },
+  "by_family": [
+    {
+      "equal_count": 1,
+      "failure_reasons": {},
+      "improved_count": 0,
+      "instance_count": 1,
+      "key": "scaled-tight-divisibility-t12-v1",
+      "mean_bars_saved": 0.0,
+      "preserved_failure_count": 0,
+      "published_solution_count": 1,
+      "total_bars_saved": 0
+    },
+    {
+      "equal_count": 1,
+      "failure_reasons": {},
+      "improved_count": 0,
+      "instance_count": 1,
+      "key": "structured-tight-divisibility-t3-v1",
+      "mean_bars_saved": 0.0,
+      "preserved_failure_count": 0,
+      "published_solution_count": 1,
+      "total_bars_saved": 0
+    },
+    {
+      "equal_count": 1,
+      "failure_reasons": {},
+      "improved_count": 0,
+      "instance_count": 1,
+      "key": "structured-tight-divisibility-t4-v1",
+      "mean_bars_saved": 0.0,
+      "preserved_failure_count": 0,
+      "published_solution_count": 1,
+      "total_bars_saved": 0
+    }
+  ],
+  "by_size": [
+    {
+      "equal_count": 1,
+      "failure_reasons": {},
+      "improved_count": 0,
+      "instance_count": 1,
+      "key": 3,
+      "mean_bars_saved": 0.0,
+      "preserved_failure_count": 0,
+      "published_solution_count": 1,
+      "total_bars_saved": 0
+    },
+    {
+      "equal_count": 1,
+      "failure_reasons": {},
+      "improved_count": 0,
+      "instance_count": 1,
+      "key": 4,
+      "mean_bars_saved": 0.0,
+      "preserved_failure_count": 0,
+      "published_solution_count": 1,
+      "total_bars_saved": 0
+    },
+    {
+      "equal_count": 1,
+      "failure_reasons": {},
+      "improved_count": 0,
+      "instance_count": 1,
+      "key": 12,
+      "mean_bars_saved": 0.0,
+      "preserved_failure_count": 0,
+      "published_solution_count": 1,
+      "total_bars_saved": 0
+    }
+  ],
+  "checkpoint": {
+    "path": "models/phase-9-quality-policy.pt",
+    "sha256": "d237b875f4c718c64c314152e36087db89f2921623fa3a592b3702a465b4fb3f"
+  },
+  "counts": {
+    "instance_count": 3,
+    "preserved_failure_count": 0,
+    "published_solution_count": 3
+  },
+  "environment": {
+    "code_commit": "204510d5c6f83d06675c9db1bccbf41a0f381627",
+    "dependency_versions": "numpy==2.4.6,scipy==1.17.1",
+    "hardware_id": "platform=macOS-26.4.1-arm64-arm-64bit;machine=arm64;processor=arm;cpu_count=10;threads=OMP_NUM_THREADS=unset,OPENBLAS_NUM_THREADS=unset,MKL_NUM_THREADS=unset",
+    "python_version": "3.11.15"
+  },
+  "instances": [
+    {
+      "bars_saved": 0,
+      "failure_message": null,
+      "failure_reason": null,
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "final_bars": 347,
+      "initial_bars": 347,
+      "instance_id": "02be7ee4ce402b9de27ce73e335b9195417cf41fcfc6c02bbef828ea0a2ac8d5",
+      "number_of_piece_types": 12,
+      "outcome": "published_solution",
+      "seed": 4,
+      "status": "equal",
+      "total_demand": 682
+    },
+    {
+      "bars_saved": 0,
+      "failure_message": null,
+      "failure_reason": null,
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "final_bars": 28,
+      "initial_bars": 28,
+      "instance_id": "701c0ae70701667f612b744e4f228e8ea8174abd1fb1eb57395d6e7174f4cb17",
+      "number_of_piece_types": 4,
+      "outcome": "published_solution",
+      "seed": 4,
+      "status": "equal",
+      "total_demand": 52
+    },
+    {
+      "bars_saved": 0,
+      "failure_message": null,
+      "failure_reason": null,
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "final_bars": 17,
+      "initial_bars": 17,
+      "instance_id": "8a70203d87d47681b759ff95df8cf4458e56fa3cfe8ed6803fb38799ac7ccc8e",
+      "number_of_piece_types": 3,
+      "outcome": "published_solution",
+      "seed": 4,
+      "status": "equal",
+      "total_demand": 31
+    }
+  ],
+  "overall": {
+    "equal_count": 3,
+    "failure_reasons": {},
+    "improved_count": 0,
+    "instance_count": 3,
+    "key": null,
+    "mean_bars_saved": 0.0,
+    "preserved_failure_count": 0,
+    "published_solution_count": 3,
+    "total_bars_saved": 0
+  },
+  "partition": "validation",
+  "plan_id": "b8ba8c2065d63bc2b1ba9a130e16751a2584fb2e24f107de055744aa1fc66ae9",
+  "schema_version": "neural-qc-validation-eval-v1",
+  "verification_tolerance": 1e-09
+}
