@@ -199,7 +199,7 @@ restent gagnables avant de chercher à les gagner.
 - [x] **P7.05** — Calculer l'écart de la baseline classique (`optimal_over_generated_columns_only`) à la référence exacte sur tout le corpus existant et persister `results/exact-gap.*`.
 - [x] **P7.06** — Publier le bilan chiffré des écarts par famille et taille : où une marge de qualité existe réellement, où elle est nulle.
 - [x] **P7.07** — Si la marge est quasi nulle partout, identifier dans le générateur déterministe les paramètres créant des trous entiers non triviaux (demandes peu divisibles, ratios tendus) et documenter ces leviers sans encore les activer.
-- [ ] **P7.08** — Tests de non-régression : la CG classique reste optimale LP et inchangée en objectif sur toutes les instances disposant d'une référence exacte.
+- [x] **P7.08** — Tests de non-régression : la CG classique reste optimale LP et inchangée en objectif sur toutes les instances disposant d'une référence exacte.
 - [ ] **P7.09** — Nettoyage du code de la phase : consolidation des helpers, suppression du code mort.
 - [ ] **P7.10** — Publication du bilan de phase fondé sur exécutions réelles, mise à jour du README et validation de la phase 7.
 
