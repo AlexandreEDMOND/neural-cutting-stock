@@ -266,14 +266,7 @@ def train_quality_rl_policy(
         if not basis:
             raise ValueError(f"{instance_id} enumerates an empty maximal-pattern basis")
         bases[instance_id] = basis
-        caps[instance_id] = [
-            min(
-                demand
-                for count, demand in zip(pattern, observation.demands, strict=True)
-                if count > 0
-            )
-            for pattern in basis
-        ]
+        caps[instance_id] = _candidate_caps(observation, basis)
 
     first_rows = imitation_candidate_features_batch(
         QualityAgentInput(
@@ -466,6 +459,27 @@ def _rollout(
     return log_probs, rewards_to_go, accumulated, accepted_steps, invalid_steps
 
 
+def _candidate_caps(
+    observation: QualityAgentInput,
+    candidates: tuple[tuple[int, ...], ...],
+) -> list[int]:
+    """Return the demand-bounded usage cap of every enumerated candidate.
+
+    The cap of one candidate is the smallest demand among the piece types it
+    uses, so executing up to ``cap`` whole copies can never overproduce any
+    type beyond its declared demand.
+    """
+
+    return [
+        min(
+            demand
+            for count, demand in zip(pattern, observation.demands, strict=True)
+            if count > 0
+        )
+        for pattern in candidates
+    ]
+
+
 def _decode_proposal(
     basis: tuple[tuple[int, ...], ...],
     counts: Sequence[int],
@@ -553,14 +567,7 @@ class RLQualityAgent:
         features = torch.tensor(rows, dtype=torch.float32)
         with torch.no_grad():
             rates = self._policy.module(features).tolist()
-        caps = [
-            min(
-                demand
-                for count, demand in zip(pattern, observation.demands, strict=True)
-                if count > 0
-            )
-            for pattern in candidates
-        ]
+        caps = _candidate_caps(observation, candidates)
         counts = []
         for rate, cap in zip(rates, caps, strict=True):
             if not math.isfinite(rate):

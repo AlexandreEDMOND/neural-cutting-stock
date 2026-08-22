@@ -1,5 +1,15 @@
 """Stable interfaces between classical column generation and learned policies."""
 
+from .ablation import (
+    EXCLUSION_NO_PUBLISHED_SOLUTION,
+    GREEDY_ABLATION_IDENTIFIER,
+    QUALITY_ABLATION_EVAL_SCHEMA_VERSION,
+    RANDOM_SEARCH_ABLATION_IDENTIFIER,
+    GreedyQualityAgent,
+    RandomSearchQualityAgent,
+    evaluate_quality_ablations_on_partition,
+    summarize_ablation_deltas,
+)
 from .candidates import deterministic_candidate_pool
 from .evaluation import EVALUATION_SCHEMA_VERSION, RANKING_CUTOFFS, evaluate_model
 from .features import FEATURE_SCHEMA_VERSION, pricing_features, pricing_features_batch
@@ -128,6 +138,9 @@ __all__ = [
     "NEURAL_QC_PIPELINE_SCHEMA_VERSION",
     "NEURAL_QC_PUBLICATION_SCHEMA_VERSION",
     "NEURAL_QC_VALIDATION_EVAL_SCHEMA_VERSION",
+    "QUALITY_ABLATION_EVAL_SCHEMA_VERSION",
+    "GREEDY_ABLATION_IDENTIFIER",
+    "RANDOM_SEARCH_ABLATION_IDENTIFIER",
     "STATUS_IMPROVED",
     "STATUS_UNCHANGED",
     "TERMINATION_BUDGET_EXHAUSTED",
@@ -150,6 +163,8 @@ __all__ = [
     "ImitationPolicy",
     "ImitationPolicyNetwork",
     "ImitationQualityAgent",
+    "GreedyQualityAgent",
+    "RandomSearchQualityAgent",
     "ProposalReview",
     "QualityAgent",
     "QualityAgentInput",
@@ -193,8 +208,11 @@ __all__ = [
     "attempt_quality_refinement",
     "classify_publication_status",
     "publish_refinement_result",
+    "evaluate_quality_ablations_on_partition",
+    "summarize_ablation_deltas",
     "write_training_artifact",
     "verify_proposal",
+    "EXCLUSION_NO_PUBLISHED_SOLUTION",
     "checkpoint_sha256",
     "evaluate_quality_agent_on_partition",
     "quality_agent_from_checkpoint",
