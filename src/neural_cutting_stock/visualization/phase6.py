@@ -116,9 +116,10 @@ def phase6_runtime_comparison_data(
 
     The paired tables are rebuilt from the raw campaign records with the same
     machinery as the published tables; only quality-preserved admissible
-    repetitions feed the medians. Grouping uses the frozen pre-evaluation
-    ``target_size_class`` of the final instance manifest, not the per-run
-    measured size class, so both modes are grouped on the same strata.
+    repetitions feed the runtime and speedup medians. Grouping uses the frozen
+    pre-evaluation ``target_size_class`` of the final instance manifest, not
+    the per-run measured size class, so both modes are grouped on the same
+    strata.
     """
 
     report = build_paired_tables(classical_records, neural_records, quality_tolerance)
@@ -144,6 +145,7 @@ def phase6_runtime_comparison_data(
             "neural_median_seconds": _median(
                 [row["neural_total_runtime_seconds"] for row in rows]
             ),
+            "speedup_median": _median([row["speedup_vs_classical"] for row in rows]),
         }
     return {"report": report, "size_data": size_data}
 
@@ -176,6 +178,26 @@ def write_phase6_runtime_comparison(data: dict[str, Any], output_dir: str | Path
     axis.grid(axis="y", alpha=0.25)
     figure.tight_layout()
     figure.savefig(output / "runtime_comparison.png", dpi=160)
+    plt.close(figure)
+
+
+def write_phase6_speedup_by_size(data: dict[str, Any], output_dir: str | Path) -> None:
+    """Write ``speedup_by_size.png`` from admissible final pairs only."""
+
+    output = Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    sizes = [size for size in SIZE_CLASSES if data["size_data"][size]["pair_count"]]
+    if not sizes:
+        raise ValueError("no admissible pair is available for the speedup by size figure")
+    figure, axis = plt.subplots(figsize=(7, 4.5))
+    axis.axhline(1.0, color="black", linewidth=1, linestyle="--")
+    axis.plot(sizes, [data["size_data"][size]["speedup_median"] for size in sizes], "o-")
+    axis.set_xlabel("Target size class (size-class-v1)")
+    axis.set_ylabel("Median speedup (Classical / Neural)")
+    axis.set_title("Final evaluation: measured paired speedup at preserved quality")
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(output / "speedup_by_size.png", dpi=160)
     plt.close(figure)
 
 

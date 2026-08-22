@@ -1,4 +1,4 @@
-"""Generate the final runtime comparison figure from validated Phase 6 runs."""
+"""Generate the final runtime and speedup figures from validated Phase 6 runs."""
 
 import argparse
 import json
@@ -9,6 +9,7 @@ from neural_cutting_stock.visualization.phase4 import load_phase4_runs
 from neural_cutting_stock.visualization.phase6 import (
     phase6_runtime_comparison_data,
     write_phase6_runtime_comparison,
+    write_phase6_speedup_by_size,
 )
 
 
@@ -39,7 +40,9 @@ def main() -> None:
     )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     write_phase6_runtime_comparison(data, args.output_dir)
+    write_phase6_speedup_by_size(data, args.output_dir)
     print(f"wrote {args.output_dir / 'runtime_comparison.png'}")
+    print(f"wrote {args.output_dir / 'speedup_by_size.png'}")
     report = data["report"]
     print(f"pairs: {report['pair_count']}, admissible: {report['admissible_pair_count']}")
 

@@ -9,6 +9,7 @@ from neural_cutting_stock.visualization.phase4 import load_phase4_runs
 from neural_cutting_stock.visualization.phase6 import (
     phase6_runtime_comparison_data,
     write_phase6_runtime_comparison,
+    write_phase6_speedup_by_size,
 )
 
 ROOT = Path(__file__).parents[1]
@@ -73,16 +74,21 @@ def test_phase6_runtime_medians_aggregate_only_admissible_pairs(tmp_path: Path) 
         "instance_count": 1,
         "classical_median_seconds": 3.0,
         "neural_median_seconds": 2.0,
+        "speedup_median": pytest.approx((2.0 / 1.0 + 4.0 / 3.0) / 2),
     }
     assert large["pair_count"] == 2 and large["instance_count"] == 1
     assert large["classical_median_seconds"] == 11.0
     assert large["neural_median_seconds"] == 6.0
+    assert large["speedup_median"] == pytest.approx((10.0 / 5.0 + 12.0 / 7.0) / 2)
     for empty in ("MEDIUM", "XL"):
         assert data["size_data"][empty]["pair_count"] == 0
         assert data["size_data"][empty]["classical_median_seconds"] is None
+        assert data["size_data"][empty]["speedup_median"] is None
 
     write_phase6_runtime_comparison(data, tmp_path)
+    write_phase6_speedup_by_size(data, tmp_path)
     assert (tmp_path / "runtime_comparison.png").stat().st_size > 0
+    assert (tmp_path / "speedup_by_size.png").stat().st_size > 0
 
 
 def test_phase6_runtime_data_rejects_instances_missing_from_the_final_manifest() -> None:
@@ -104,6 +110,21 @@ def test_phase6_runtime_figure_refuses_to_plot_without_admissible_pairs(tmp_path
     assert data["report"]["admissible_pair_count"] == 0
     with pytest.raises(ValueError, match="no admissible pair"):
         write_phase6_runtime_comparison(data, tmp_path)
+
+
+def test_phase6_speedup_figure_refuses_to_plot_without_admissible_pairs(tmp_path: Path) -> None:
+    records = [
+        _campaign_record(SolverMode.CLASSICAL, "i-1", 0),
+        _campaign_record(SolverMode.NEURAL, "i-1", 0, objective_value=6.0),
+    ]
+    classical, neural = _split_modes(records)
+
+    data = phase6_runtime_comparison_data(classical, neural, {"i-1": "SMALL"})
+
+    assert data["report"]["admissible_pair_count"] == 0
+    assert data["size_data"]["SMALL"]["speedup_median"] is None
+    with pytest.raises(ValueError, match="no admissible pair"):
+        write_phase6_speedup_by_size(data, tmp_path)
 
 
 def test_phase6_runtime_figure_is_derived_from_published_final_results(tmp_path: Path) -> None:
@@ -136,6 +157,9 @@ def test_phase6_runtime_figure_is_derived_from_published_final_results(tmp_path:
         assert item["pair_count"] == 9 and item["instance_count"] == 3
         assert item["classical_median_seconds"] > 0.0
         assert item["neural_median_seconds"] > 0.0
+        assert item["speedup_median"] > 0.0
 
     write_phase6_runtime_comparison(data, tmp_path)
     assert (tmp_path / "runtime_comparison.png").stat().st_size > 0
+    write_phase6_speedup_by_size(data, tmp_path)
+    assert (tmp_path / "speedup_by_size.png").stat().st_size > 0
