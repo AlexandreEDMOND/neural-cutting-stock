@@ -210,7 +210,7 @@ piste RL invérifiable ; il faut des familles où la baseline classique perd mes
 barres, tout en gardant une vérification exacte accessible.
 
 - [x] **P8.01** — Étendre le générateur déterministe au kerf strictement positif exercé (limite connue de la campagne finale) avec tests de convention conservative.
-- [ ] **P8.02** — Ajouter le multi-formats de barres (2 à 3 longueurs de stock) comme variante monodimensionnelle déclarée, schéma et validations inclus.
+- [x] **P8.02** — Ajouter le multi-formats de barres (2 à 3 longueurs de stock) comme variante monodimensionnelle déclarée, schéma et validations inclus.
 - [ ] **P8.03** — Créer des profils de demande structurée défavorables à l'arrondi du maître restreint (divisibilité difficile, ratios tendus) et vérifier qu'ils produisent des trous entiers non triviaux.
 - [ ] **P8.04** — Pousser la taille des instances (plus de types, demandes élevées) jusqu'au maintien possible d'une référence exacte MILP ou d'une borne inférieure certifiée.
 - [ ] **P8.05** — Mesurer l'écart classique-vs-référence sur chaque nouvelle famille ; ne retenir que celles présentant une marge positive sur une part significative des instances.
