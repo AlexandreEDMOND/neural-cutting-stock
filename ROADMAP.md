@@ -217,7 +217,7 @@ barres, tout en gardant une vérification exacte accessible.
 - [x] **P8.05a** — Étendre la boucle de génération de colonnes et la référence exacte aux instances multi-formats déclarées, afin de mesurer l'écart de la famille multi-formats comme les autres familles.
 - [x] **P8.06** — Geler partitions entraînement/validation/test des familles retenues avec manifestes versionnés et sans fuite.
 - [x] **P8.07** — Étendre le schéma de résultats aux nouveaux champs (formats multiples, kerf exercé) avec rétrocompatibilité des campagnes antérieures.
-- [ ] **P8.08** — Bilan intermédiaire : tableau des marges par famille, choix documenté du benchmark qualité final.
+- [x] **P8.08** — Bilan intermédiaire : tableau des marges par famille, choix documenté du benchmark qualité final.
 - [ ] **P8.09** — Nettoyage du code de la phase.
 - [ ] **P8.10** — Publication du bilan de phase, mise à jour du README et validation de la phase 8.
 

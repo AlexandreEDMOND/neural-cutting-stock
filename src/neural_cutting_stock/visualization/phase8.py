@@ -7,6 +7,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from neural_cutting_stock.benchmarks import (
+    FAMILY_MARGINS_SCHEMA_VERSION,
+    QUALITY_PARTITIONS_SCHEMA_VERSION,
+)
 from neural_cutting_stock.visualization._shared import number as _number
 
 
@@ -126,4 +130,203 @@ def _family_row(family: Mapping[str, Any]) -> str:
     )
 
 
-__all__ = ["write_family_margins_markdown"]
+def write_quality_benchmark_choice(
+    margins_report: Mapping[str, Any],
+    partitions_manifest: Mapping[str, Any],
+    output_path: str | Path,
+    *,
+    margins_link: str,
+    partitions_link: str,
+) -> None:
+    """Render the interim Phase 8 bilan: per-family margins and the final choice.
+
+    Every number comes from the persisted ``family-margins-v1`` measurement and
+    the frozen ``phase-8-quality-partitions-v1`` manifest; the publication is
+    refused when the frozen partitions do not cover exactly the families the
+    measurement retains. No duration enters the document.
+    """
+
+    _validate_choice_sources(margins_report, partitions_manifest)
+    counts = margins_report["counts"]
+    environment = margins_report["environment"]
+    cross_check = "activé" if margins_report["cross_check_with_enumeration"] else "désactivé"
+    instances = margins_report["instances"]
+    retained = [family for family in margins_report["families"] if family["retained"]]
+    rejected = [family for family in margins_report["families"] if not family["retained"]]
+    retained_gaps = [
+        entry["gap_bars"]
+        for entry in instances
+        if entry["gap_available"] and any(f["family_label"] == entry["family_label"] for f in retained)
+    ]
+    lines = [
+        "# Choix du benchmark qualité final (Phase 8)",
+        "",
+        "Bilan intermédiaire de la Phase 8 : tableau des marges mesurées par famille et choix "
+        "documenté du benchmark qualité final utilisé par les phases suivantes. Sources validées : "
+        f"[`{margins_link}`]({margins_link}) (schéma `{margins_report['schema_version']}`) et "
+        f"[`{partitions_link}`]({partitions_link}) (schéma "
+        f"`{partitions_manifest['schema_version']}`). Toutes les valeurs proviennent d'exécutions "
+        "réelles ; aucune durée n'entre dans ce bilan.",
+        "",
+        "## Méthode de mesure et règle de rétention",
+        "",
+        "- Référence : méthode `milp_on_enumerated_patterns`, limites "
+        f"`{margins_report['reference_method_limits']}`.",
+        f"- Tolérances : coût réduit **{_number(margins_report['reduced_cost_tolerance'])}**, "
+        f"intégralité **{_number(margins_report['integrality_tolerance'])}**, faisabilité "
+        f"**{_number(margins_report['feasibility_tolerance'])}**.",
+        f"- Contrôle croisé d'énumération : **{cross_check}**.",
+        "- Règle de rétention : une famille est retenue lorsque chaque instance mesurée dispose d'un "
+        "écart disponible et qu'au moins "
+        f"**{margins_report['significant_positive_share'] * 100:.0f} %** des instances perdent au "
+        "moins une barre face à leur optimum entier certifié.",
+        f"- Environnement tracé : commit `{environment['code_commit'][:12]}…`, Python "
+        f"{environment['python_version']}, {environment['dependency_versions']}.",
+        "",
+        "## Marges par famille",
+        "",
+        "| Famille | Instances | Écarts disponibles | Marge nulle | Marge positive | Part positive "
+        "| Écart maximal (barres) | Somme des écarts (barres) | Retenue |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---|",
+    ]
+    for family in margins_report["families"]:
+        lines.append(_choice_row(family, instances))
+    lines += [
+        "",
+        f"{counts['retained_family_count']} famille(s) retenue(s) sur {counts['family_count']} ; "
+        f"part positive globale : {counts['positive_gap_count']} instances positives sur "
+        f"{counts['instance_count']} mesurées.",
+        "",
+        "## Choix du benchmark qualité final",
+        "",
+        "Le benchmark qualité final retenu pour les phases suivantes est le plan de partitions gelé "
+        f"[`{partitions_link}`]({partitions_link}) (`plan_id` "
+        f"`{partitions_manifest['plan_id'][:12]}…`) : exactement les familles retenues ci-dessus, "
+        "sans aucune autre. Toute amélioration de qualité revendiquée sera entraînée sur `train`, "
+        "ajustée sur `validation` et mesurée sur `test` de ces partitions ; aucune graine n'est "
+        "partagée entre deux partitions et chaque `instance_id` n'y apparaît qu'une fois.",
+        "",
+        "| Partition | Graines | Instances | Familles |",
+        "|---|---|---:|---:|",
+    ]
+    statistics = partitions_manifest["statistics"]
+    for partition in ("train", "validation", "test"):
+        lines.append(
+            f"| {partition} | {_seed_span(partitions_manifest['seed_partitions'][partition])} "
+            f"| {statistics['partition_instance_counts'][partition]} "
+            f"| {statistics['partition_family_counts'][partition]} |"
+        )
+    lines += [
+        "",
+        "## Familles écartées du benchmark qualité final",
+        "",
+        "Les familles non retenues restent modélisées et exécutables (générateurs, solveur, schémas) "
+        "mais n'entrent pas dans le benchmark qualité final : leur marge mesurée ne satisfait pas la "
+        "règle de rétention, si bien qu'une amélioration de qualité y serait invérifiable face à "
+        "l'optimum entier certifié.",
+        "",
+        "| Famille | Part positive | Instances à marge positive | Écart maximal (barres) |",
+        "|---|---:|---:|---:|",
+    ]
+    if rejected:
+        for family in rejected:
+            share = f"{family['positive_share_of_instances'] * 100:.0f} %"
+            lines.append(
+                f"| `{family['family_label']}` | {share} "
+                f"| {family['positive_gap_count']}/{family['instance_count']} "
+                f"| {family['max_gap_bars']} |"
+            )
+    else:
+        lines.append("Aucune : toutes les familles mesurées satisfont la règle de rétention.")
+    unmeasured = margins_report["unmeasured_families"]
+    if unmeasured:
+        lines += [
+            "",
+            "Familles déclarées sans aucune mesure faute de support, donc non retenues en l'état :",
+            "",
+        ]
+        for item in unmeasured:
+            lines.append(f"- `{item['family_label']}` — {item['reason']}.")
+    lines += [
+        "",
+        "Conséquence documentée : le benchmark qualité final ne couvre que des barres à format "
+        "unique, sans kerf exercé (`kerf = 0`) ; un kerf exercé ou un multi-formats ne pourra y "
+        "entrer qu'après la démonstration d'une marge satisfaisant la règle de rétention sur de "
+        "nouvelles familles mesurées.",
+        "",
+        "## Garanties et limites",
+        "",
+        "- Les objectifs classiques restent des optimaux sur colonnes générées uniquement "
+        "(`optimal_over_generated_columns_only`) ; la marge est définie face à la référence exacte "
+        "MILP vérifiée indépendamment, pas face au maître entier restreint.",
+        f"- Les écarts gagnables mesurés restent modestes : de {_number(min(retained_gaps))} à "
+        f"{_number(max(retained_gaps))} barres par instance retenue, soit "
+        f"{_number(sum(retained_gaps))} barres au total sur les "
+        f"{len(partitions_manifest['assignments'])} instances du plan.",
+        "- Aucune durée n'entre dans ce bilan : la qualité est la métrique reine.",
+        "- Aucun écart indisponible ni famille non mesurée n'est filtré silencieusement ; les "
+        "diagnostics complets figurent dans le rapport source.",
+        "",
+        "Le document se régénère depuis les données persistées avec "
+        "`uv run python scripts/report_phase8_quality_benchmark.py`.",
+        "",
+    ]
+    Path(output_path).write_text("\n".join(lines), encoding="utf-8")
+
+
+def _validate_choice_sources(
+    margins_report: Mapping[str, Any], partitions_manifest: Mapping[str, Any]
+) -> None:
+    if not isinstance(margins_report, dict):
+        raise ValueError("the margin report must be a mapping")
+    if margins_report.get("schema_version") != FAMILY_MARGINS_SCHEMA_VERSION:
+        raise ValueError(f"unsupported margin report: {margins_report.get('schema_version')!r}")
+    if not isinstance(partitions_manifest, dict):
+        raise ValueError("the quality partition manifest must be a mapping")
+    if partitions_manifest.get("schema_version") != QUALITY_PARTITIONS_SCHEMA_VERSION:
+        raise ValueError(
+            f"unsupported quality partition manifest: {partitions_manifest.get('schema_version')!r}"
+        )
+    source = partitions_manifest.get("source")
+    if (
+        not isinstance(source, dict)
+        or source.get("schema_version") != FAMILY_MARGINS_SCHEMA_VERSION
+        or source.get("significant_positive_share") != margins_report.get("significant_positive_share")
+    ):
+        raise ValueError("the frozen partitions must cite the persisted margin measurement")
+    measured = sorted(
+        family["family_label"] for family in margins_report["families"] if family["retained"]
+    )
+    if not measured:
+        raise ValueError("the margin report retains no family for the quality benchmark")
+    frozen = sorted(family["family_label"] for family in partitions_manifest["families"])
+    if measured != frozen:
+        raise ValueError(
+            "the frozen partitions do not cover exactly the retained families: "
+            f"measurement retains {measured}, partitions freeze {frozen}"
+        )
+
+
+def _choice_row(family: Mapping[str, Any], instances: list[Any]) -> str:
+    share = f"{family['positive_share_of_instances'] * 100:.0f} %"
+    gap_sum = sum(
+        entry["gap_bars"]
+        for entry in instances
+        if entry["gap_available"] and entry["family_label"] == family["family_label"]
+    )
+    return (
+        f"| `{family['family_label']}` | {family['instance_count']}"
+        f" | {family['gap_available_count']} | {family['zero_gap_count']}"
+        f" | {family['positive_gap_count']} | {share}"
+        f" | {family['max_gap_bars']} | {gap_sum}"
+        f" | {'oui' if family['retained'] else 'non'} |"
+    )
+
+
+def _seed_span(seeds: list[int]) -> str:
+    if len(seeds) > 2 and seeds == list(range(seeds[0], seeds[-1] + 1)):
+        return f"{seeds[0]}–{seeds[-1]}"
+    return ", ".join(str(seed) for seed in seeds)
+
+
+__all__ = ["write_family_margins_markdown", "write_quality_benchmark_choice"]
