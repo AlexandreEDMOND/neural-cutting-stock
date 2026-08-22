@@ -194,3 +194,39 @@ Le script devra :
 L’axe des abscisses utilisera les catégories de difficulté versionnées, ordonnées de `SMALL` à `XL`, et pourra être complété par des graphiques structurels (par exemple nombre de types). Les seuils seront déterminés après profilage classique et gelés avant l’évaluation neuronale finale.
 
 Aucun fichier PNG factice n’est créé pendant la fondation du dépôt.
+
+## 7. Référence exacte de qualité `exact-reference-v1`
+
+La vérité terrain de la qualité est persistée par instance sous le schéma versionné
+`exact-reference-v1`. Une référence est produite par une méthode exacte déclarée et porte
+l’optimum entier du maître complet lorsque celui-ci est prouvé, sinon la borne inférieure
+certifiée associée.
+
+### Champs
+
+| Champ | Type | Définition |
+|---|---:|---|
+| `schema_version` | chaîne | `exact-reference-v1`. |
+| `instance_id` | chaîne | Identifiant stable de l’instance référencée. |
+| `reference_method` | enum | Méthode exacte productrice : `exhaustive_pattern_enumeration` ou `milp_on_enumerated_patterns`. |
+| `status` | enum | `optimal` (optimum entier prouvé), `lower_bound_only` (borne seule certifiée) ou `failed`. |
+| `integer_optimum_bars` | entier nullable | Nombre de barres de l’optimum entier prouvé ; requis et positif uniquement pour `optimal`. |
+| `certified_lower_bound_bars` | réel nullable | Borne inférieure certifiée associée ; requise pour `optimal` et `lower_bound_only`, nulle sinon. |
+| `integrality_tolerance` | réel | Tolérance d’intégralité déclarée de la méthode. |
+| `feasibility_tolerance` | réel | Tolérance de faisabilité déclarée de la méthode. |
+| `method_limits` | chaîne | Limites explicites de la méthode (bornes sur types et demandes, garde-fou mémoire…). |
+| `error_message` | chaîne nullable | Diagnostic non vide en cas d’échec. |
+| `code_commit`, `python_version`, `dependency_versions`, `hardware_id` | chaînes | Environnement de production de la référence. |
+
+### Règles de cohérence
+
+- Un statut `optimal` exige un optimum entier strictement positif et une borne inférieure telle
+  que `certified_lower_bound_bars <= integer_optimum_bars + feasibility_tolerance`.
+- Un statut `lower_bound_only` n’a pas de preuve d’optimalité entière : `integer_optimum_bars`
+  doit rester nul.
+- Un statut `failed` ne porte aucune valeur numérique et conserve son diagnostic ; les échecs
+  restent persistés.
+- Toute comparaison de la baseline à la référence passe par ce schéma persisté ; aucune valeur
+  recomposée à la volée ne peut se substituer à une référence enregistrée. Un optimum entier issu
+  d’un maître restreint reste qualifié `optimal_over_generated_columns_only` et n’est jamais
+  confondu avec cette référence.

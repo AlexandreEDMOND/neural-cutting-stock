@@ -25,6 +25,12 @@ from .dataset import (
     build_dataset,
     load_phase3_dataset,
 )
+from .exact_reference import (
+    EXACT_REFERENCE_SCHEMA_VERSION,
+    ExactReferenceMethod,
+    ExactReferenceRecord,
+    ExactReferenceStatus,
+)
 from .failures import FAILURE_ANALYSIS_SCHEMA_VERSION, analyze_campaign_failures
 from .final_baseline import (
     collect_environment,
@@ -101,6 +107,10 @@ from .uncertainty import (
 
 __all__ = [
     "SCHEMA_VERSION",
+    "EXACT_REFERENCE_SCHEMA_VERSION",
+    "ExactReferenceMethod",
+    "ExactReferenceRecord",
+    "ExactReferenceStatus",
     "BenchmarkRunRecord",
     "EnvironmentMetadata",
     "RunStatus",

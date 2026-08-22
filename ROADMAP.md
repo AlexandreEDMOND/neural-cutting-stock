@@ -192,7 +192,7 @@ Objectif : établir la vérité terrain de la qualité. La baseline classique ne
 entier que sur colonnes générées ; il faut une référence exacte pour savoir combien de barres
 restent gagnables avant de chercher à les gagner.
 
-- [ ] **P7.01** — Définir le schéma versionné `exact-reference-v1` : instance_id, méthode de référence, statut, optimum entier, borne inférieure associée, limites de la méthode, environnement.
+- [x] **P7.01** — Définir le schéma versionné `exact-reference-v1` : instance_id, méthode de référence, statut, optimum entier, borne inférieure associée, limites de la méthode, environnement.
 - [ ] **P7.02** — Implémenter l'énumération exhaustive des motifs maximaux pour instances bornées (types et demandes petits) avec génération paresseuse et garde-fou mémoire.
 - [ ] **P7.03** — Résoudre le maître entier complet par MILP sur motifs énumérés via `scipy.optimize.milp` (HiGHS déjà présent) ; statut et preuve persistés dans `exact-reference-v1`.
 - [ ] **P7.04** — Vérifier indépendamment chaque référence exacte : faisabilité du plan, cohérence borne LP ≤ optimum entier, contrôle croisé énumération/MILP sur un sous-échantillon.
