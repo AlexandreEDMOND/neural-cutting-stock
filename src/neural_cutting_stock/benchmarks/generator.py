@@ -4,15 +4,30 @@ import json
 import math
 import random
 from dataclasses import dataclass
+from decimal import Decimal
 from hashlib import sha256
 from numbers import Real
 
 from neural_cutting_stock.problem import CuttingStockInstance
 
+TIGHT_RATIO_LENGTH_DISTRIBUTION = "tight_ratio_v1"
+AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION = "awkward_divisibility_v1"
+
 
 @dataclass(frozen=True, slots=True)
 class SyntheticInstanceGenerator:
-    """Generate reproducible instances from a small, explicit configuration."""
+    """Generate reproducible instances from a small, explicit configuration.
+
+    The ``uniform_integer_v1`` labels keep the historical uniform sampler, and
+    any other label stays an inert metadata name sampled uniformly as well.
+    Two recognized structured profiles activate targeted samplers instead:
+    ``tight_ratio_v1`` draws piece lengths from the narrow band whose kerf-aware
+    natural multiplicity is exactly two pieces per bar, and
+    ``awkward_divisibility_v1`` builds each demand as ``quotient *
+    natural_multiplicity + remainder`` with a strictly positive remainder, so
+    homogeneous patterns always overshoot the demand. Both profiles remain
+    deterministic under the seed and stay inside their configured ranges.
+    """
 
     seed: int
     stock_length: float = 100.0
@@ -60,14 +75,61 @@ class SyntheticInstanceGenerator:
         """Return one instance; the same configuration always yields the same data."""
 
         rng = random.Random(self.seed)
+        lengths = self._sample_lengths(rng)
+        demands = self._sample_demands(rng, lengths)
+        return CuttingStockInstance(self.stock_length, self.kerf, lengths, demands)
+
+    def _sample_lengths(self, rng: random.Random) -> list[float]:
         lower, upper = self.piece_length_range
         available_lengths = range(lower, upper + 1)
+        if self.length_distribution == TIGHT_RATIO_LENGTH_DISTRIBUTION:
+            window_lower, window_upper = _tight_ratio_window(
+                self.stock_length, self.kerf
+            )
+            available_lengths = [
+                value
+                for value in available_lengths
+                if window_lower <= value <= window_upper
+            ]
+            if not available_lengths:
+                raise ValueError(
+                    "the tight-ratio multiplicity-two window does not intersect "
+                    "piece_length_range"
+                )
         if self.number_of_types > len(available_lengths):
             raise ValueError("number_of_types exceeds the available length values")
-        lengths = rng.sample(list(available_lengths), self.number_of_types)
+        return rng.sample(list(available_lengths), self.number_of_types)
+
+    def _sample_demands(
+        self, rng: random.Random, lengths: list[float]
+    ) -> list[int]:
         demand_lower, demand_upper = self.demand_range
-        demands = [rng.randint(demand_lower, demand_upper) for _ in lengths]
-        return CuttingStockInstance(self.stock_length, self.kerf, lengths, demands)
+        if self.demand_distribution != AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION:
+            return [rng.randint(demand_lower, demand_upper) for _ in lengths]
+        demands: list[int] = []
+        for length in lengths:
+            multiplicity = _natural_multiplicity(self.stock_length, self.kerf, length)
+            remainder_upper = min(multiplicity - 1, demand_upper - multiplicity)
+            valid_remainders = [
+                remainder
+                for remainder in range(1, remainder_upper + 1)
+                if max(1, -(-(demand_lower - remainder) // multiplicity))
+                <= (demand_upper - remainder) // multiplicity
+            ]
+            if not valid_remainders:
+                if multiplicity >= 2:
+                    raise ValueError(
+                        "demand_range admits no demand non-divisible by the "
+                        f"natural multiplicity {multiplicity} of length {length}"
+                    )
+                demands.append(rng.randint(demand_lower, demand_upper))
+                continue
+            remainder = rng.choice(valid_remainders)
+            quotient_upper = (demand_upper - remainder) // multiplicity
+            quotient_lower = max(1, -(-(demand_lower - remainder) // multiplicity))
+            quotient = rng.randint(quotient_lower, quotient_upper)
+            demands.append(quotient * multiplicity + remainder)
+        return demands
 
     @property
     def instance_id(self) -> str:
@@ -106,6 +168,31 @@ class SyntheticInstanceGenerator:
             sort_keys=True,
         ).encode("ascii")
         return sha256(payload).hexdigest()
+
+
+def _tight_ratio_window(stock_length: float, kerf: float) -> tuple[int, int]:
+    """Return the integer lengths admitting exactly two kerf-aware pieces per bar.
+
+    A length admits two pieces when ``stock_length/3 < length + kerf <=``
+    ``stock_length/2``; the returned bounds follow from that band using the
+    decimal spelling of the configuration.
+    """
+
+    stock = Decimal(str(stock_length))
+    kerf_width = Decimal(str(kerf))
+    upper_bound = stock / 2 - kerf_width
+    lower_bound = stock / 3 - kerf_width
+    if upper_bound <= 0:
+        raise ValueError("no length admits two pieces per bar with this kerf")
+    return int(lower_bound) + 1, int(upper_bound)
+
+
+def _natural_multiplicity(stock_length: float, kerf: float, length: float) -> int:
+    """Return how many copies of ``length`` fit on one bar under the kerf rule."""
+
+    return int(
+        Decimal(str(stock_length)) // (Decimal(str(length)) + Decimal(str(kerf)))
+    )
 
 
 def _validate_range(value: tuple[int, int], name: str) -> None:

@@ -68,7 +68,11 @@ from .generalization import (
     pair_campaign_records,
     training_size_frontier,
 )
-from .generator import SyntheticInstanceGenerator
+from .generator import (
+    AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION,
+    TIGHT_RATIO_LENGTH_DISTRIBUTION,
+    SyntheticInstanceGenerator,
+)
 from .matrix import BenchmarkMatrix, DistributionSpec
 from .paired_runner import PairedBenchmarkConfig, PairedBenchmarkRunner
 from .paired_tables import PAIRED_TABLES_SCHEMA_VERSION, build_paired_tables
@@ -144,6 +148,8 @@ __all__ = [
     "RunStatus",
     "SolverMode",
     "SyntheticInstanceGenerator",
+    "TIGHT_RATIO_LENGTH_DISTRIBUTION",
+    "AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION",
     "FINAL_MANIFEST_SCHEMA_VERSION",
     "SIZE_CLASSES",
     "build_final_manifest",
