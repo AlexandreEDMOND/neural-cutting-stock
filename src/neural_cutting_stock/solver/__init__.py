@@ -2,6 +2,7 @@
 
 from .column_generation import ColumnGeneration, ColumnGenerationResult
 from .complete_master import CompleteIntegerMaster, CompleteMasterResult
+from .exhaustive_search import ExhaustiveIntegerOptimum, ExhaustiveIntegerSearch
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .maximal_patterns import (
     MaximalPatternLimits,
@@ -17,6 +18,8 @@ __all__ = [
     "ColumnGenerationResult",
     "CompleteIntegerMaster",
     "CompleteMasterResult",
+    "ExhaustiveIntegerOptimum",
+    "ExhaustiveIntegerSearch",
     "IntegerMasterResult",
     "IntegerRestrictedMasterProblem",
     "MaximalPatternLimits",

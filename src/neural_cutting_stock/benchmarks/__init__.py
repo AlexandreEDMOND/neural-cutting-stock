@@ -34,6 +34,10 @@ from .exact_reference import (
     build_milp_exact_reference,
     compute_milp_exact_reference,
 )
+from .exact_reference_verification import (
+    ExactReferenceVerification,
+    verify_milp_exact_reference,
+)
 from .failures import FAILURE_ANALYSIS_SCHEMA_VERSION, analyze_campaign_failures
 from .final_baseline import (
     collect_environment,
@@ -117,6 +121,8 @@ __all__ = [
     "ExactReferenceStatus",
     "build_milp_exact_reference",
     "compute_milp_exact_reference",
+    "ExactReferenceVerification",
+    "verify_milp_exact_reference",
     "BenchmarkRunRecord",
     "EnvironmentMetadata",
     "RunStatus",
