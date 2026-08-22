@@ -3,6 +3,18 @@
 from .candidates import deterministic_candidate_pool
 from .evaluation import EVALUATION_SCHEMA_VERSION, RANKING_CUTOFFS, evaluate_model
 from .features import FEATURE_SCHEMA_VERSION, pricing_features, pricing_features_batch
+from .imitation import (
+    IMITATION_BASELINE_SCHEMA_VERSION,
+    ExactChoiceDemonstration,
+    ImitationPolicy,
+    ImitationPolicyNetwork,
+    ImitationQualityAgent,
+    collect_exact_choice_demonstrations,
+    enumerated_candidates,
+    imitation_candidate_features,
+    imitation_candidate_features_batch,
+    train_imitation_policy,
+)
 from .interfaces import (
     LEARNING_INTERFACE_SCHEMA_VERSION,
     ColumnScoringModel,
@@ -50,6 +62,7 @@ from .training import (
 
 __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
+    "IMITATION_BASELINE_SCHEMA_VERSION",
     "QUALITY_AGENT_INTERFACE_SCHEMA_VERSION",
     "QUALITY_REFINEMENT_ENV_SCHEMA_VERSION",
     "TRAINING_CHECKPOINT_SCHEMA_VERSION",
@@ -60,6 +73,10 @@ __all__ = [
     "PatternCandidate",
     "PatternScore",
     "PricingState",
+    "ExactChoiceDemonstration",
+    "ImitationPolicy",
+    "ImitationPolicyNetwork",
+    "ImitationQualityAgent",
     "ProposalReview",
     "QualityAgent",
     "QualityAgentInput",
@@ -81,6 +98,11 @@ __all__ = [
     "NeuralColumnGeneration",
     "NeuralRuntimeProfile",
     "deterministic_candidate_pool",
+    "collect_exact_choice_demonstrations",
+    "enumerated_candidates",
+    "imitation_candidate_features",
+    "imitation_candidate_features_batch",
+    "train_imitation_policy",
     "TRAINING_ARTIFACT_SCHEMA_VERSION",
     "load_training_artifact",
     "train_artifact",
