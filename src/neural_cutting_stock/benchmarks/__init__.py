@@ -49,6 +49,14 @@ from .exact_reference_verification import (
     verify_milp_exact_reference,
 )
 from .failures import FAILURE_ANALYSIS_SCHEMA_VERSION, analyze_campaign_failures
+from .family_margins import (
+    FAMILY_MARGINS_SCHEMA_VERSION,
+    SIGNIFICANT_POSITIVE_SHARE,
+    FamilyMarginSpec,
+    measure_family_margins,
+    phase8_family_specs,
+    summarize_family_margin_entries,
+)
 from .final_baseline import (
     collect_environment,
     generators_from_final_manifest,
@@ -143,6 +151,12 @@ __all__ = [
     "build_exact_gap_report",
     "build_exact_gap_breakdown",
     "write_exact_gap_csv",
+    "FAMILY_MARGINS_SCHEMA_VERSION",
+    "SIGNIFICANT_POSITIVE_SHARE",
+    "FamilyMarginSpec",
+    "measure_family_margins",
+    "phase8_family_specs",
+    "summarize_family_margin_entries",
     "BenchmarkRunRecord",
     "EnvironmentMetadata",
     "RunStatus",

@@ -1,0 +1,1367 @@
+{
+  "counts": {
+    "family_count": 5,
+    "gap_available_count": 30,
+    "instance_count": 30,
+    "positive_gap_count": 21,
+    "retained_family_count": 3
+  },
+  "cross_check_with_enumeration": false,
+  "environment": {
+    "code_commit": "efb6fda396d0cb176575ea8f6bdf03a996bd009c",
+    "dependency_versions": "numpy==2.4.6,scipy==1.17.1",
+    "hardware_id": "platform=macOS-26.4.1-arm64-arm-64bit;machine=arm64;processor=arm;cpu_count=10;threads=OMP_NUM_THREADS=unset,OPENBLAS_NUM_THREADS=unset,MKL_NUM_THREADS=unset",
+    "python_version": "3.11.15"
+  },
+  "families": [
+    {
+      "all_gaps_available": true,
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available_count": 6,
+      "gap_unavailable_reasons": {},
+      "instance_count": 6,
+      "max_gap_bars": 1,
+      "positive_gap_count": 1,
+      "positive_share_of_instances": 0.16666666666666666,
+      "retained": false,
+      "zero_gap_count": 5
+    },
+    {
+      "all_gaps_available": true,
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available_count": 6,
+      "gap_unavailable_reasons": {},
+      "instance_count": 6,
+      "max_gap_bars": 1,
+      "positive_gap_count": 2,
+      "positive_share_of_instances": 0.3333333333333333,
+      "retained": false,
+      "zero_gap_count": 4
+    },
+    {
+      "all_gaps_available": true,
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available_count": 6,
+      "gap_unavailable_reasons": {},
+      "instance_count": 6,
+      "max_gap_bars": 6,
+      "positive_gap_count": 6,
+      "positive_share_of_instances": 1.0,
+      "retained": true,
+      "zero_gap_count": 0
+    },
+    {
+      "all_gaps_available": true,
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available_count": 6,
+      "gap_unavailable_reasons": {},
+      "instance_count": 6,
+      "max_gap_bars": 1,
+      "positive_gap_count": 6,
+      "positive_share_of_instances": 1.0,
+      "retained": true,
+      "zero_gap_count": 0
+    },
+    {
+      "all_gaps_available": true,
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available_count": 6,
+      "gap_unavailable_reasons": {},
+      "instance_count": 6,
+      "max_gap_bars": 2,
+      "positive_gap_count": 6,
+      "positive_share_of_instances": 1.0,
+      "retained": true,
+      "zero_gap_count": 0
+    }
+  ],
+  "feasibility_tolerance": 1e-09,
+  "instances": [
+    {
+      "classical_bars": 39,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "f7ddc2e4a2c5ab4d9ed0fc51489be1769d7081c6f665e5ae5f599592c857cf39",
+      "integer_optimum_bars": 38,
+      "kerf": 2.0,
+      "lp_bound_bars": 37.7,
+      "number_of_piece_types": 4,
+      "pattern_count": 8,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 1,
+      "stock_length": 100.0,
+      "total_demand": 76,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 34,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "9e4515f567f8f4d819761d7d478e774c652455e026d298fe0ecf845b053990c7",
+      "integer_optimum_bars": 34,
+      "kerf": 2.0,
+      "lp_bound_bars": 34.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 18,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 2,
+      "stock_length": 100.0,
+      "total_demand": 94,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 59,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "b9a40109c255a286a55fce20434f7b5c9ec79ca67fa4cf08383bd752a24d2aa7",
+      "integer_optimum_bars": 59,
+      "kerf": 2.0,
+      "lp_bound_bars": 58.25,
+      "number_of_piece_types": 4,
+      "pattern_count": 5,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 3,
+      "stock_length": 100.0,
+      "total_demand": 85,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 22,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "4d34415e8bf47e549d0d781c2e6b04b5a9f7d2201cc96cef7b31587dd25bc79e",
+      "integer_optimum_bars": 22,
+      "kerf": 2.0,
+      "lp_bound_bars": 21.5,
+      "number_of_piece_types": 4,
+      "pattern_count": 7,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 4,
+      "stock_length": 100.0,
+      "total_demand": 43,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 56,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "a87116c30072555116be4197b0acb3c9adde1039b53a3bd085fd219125bd3457",
+      "integer_optimum_bars": 56,
+      "kerf": 2.0,
+      "lp_bound_bars": 55.5,
+      "number_of_piece_types": 4,
+      "pattern_count": 4,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 5,
+      "stock_length": 100.0,
+      "total_demand": 65,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 28,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "0efbc50ea428536a86e913b03deaf367ba346c9c301aa3f6f4e91ccbb3d65c21",
+      "integer_optimum_bars": 28,
+      "kerf": 2.0,
+      "lp_bound_bars": 28.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 5,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 6,
+      "stock_length": 100.0,
+      "total_demand": 46,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 74,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "a4c03a443fc39baf95ef3e3dbb26c30a9dccc301ec3e6c9e9f292eefaa72cb77",
+      "integer_optimum_bars": 74,
+      "kerf": 2.0,
+      "lp_bound_bars": 74.0,
+      "number_of_piece_types": 6,
+      "pattern_count": 18,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 1,
+      "stock_length": 100.0,
+      "total_demand": 140,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 47,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "7344b09ff2c8b2fe365f31f69308d453042b7dc7df45812a02828a0f4aff3308",
+      "integer_optimum_bars": 47,
+      "kerf": 2.0,
+      "lp_bound_bars": 47.0,
+      "number_of_piece_types": 6,
+      "pattern_count": 38,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 2,
+      "stock_length": 100.0,
+      "total_demand": 101,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 68,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "b1462a28dd47452c8a7551888d401bcfd3150372d4f5811aeffe5e8bb70a44ac",
+      "integer_optimum_bars": 68,
+      "kerf": 2.0,
+      "lp_bound_bars": 67.5,
+      "number_of_piece_types": 6,
+      "pattern_count": 7,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 3,
+      "stock_length": 100.0,
+      "total_demand": 104,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 47,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "06d43443e5387e0fd2dd97ff3bca50780d1111a0b347d096d9d31eaad57695c8",
+      "integer_optimum_bars": 46,
+      "kerf": 2.0,
+      "lp_bound_bars": 46.0,
+      "number_of_piece_types": 6,
+      "pattern_count": 14,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 4,
+      "stock_length": 100.0,
+      "total_demand": 72,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 74,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "13a011a8690c41dc63d9d82b630d880b31b7d8174af6bb4cfb46270ebbfc600d",
+      "integer_optimum_bars": 74,
+      "kerf": 2.0,
+      "lp_bound_bars": 74.0,
+      "number_of_piece_types": 6,
+      "pattern_count": 7,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 5,
+      "stock_length": 100.0,
+      "total_demand": 90,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 50,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "uniform_integer_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 2.0,
+        "length_distribution": "uniform_integer_v1",
+        "number_of_types": 6,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "kerf-exercised-uniform-t6-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "9fd418fd0c65e1fb49f5f2d75456a29d95979a5ec3a085e0d3ef61673a61f8d6",
+      "integer_optimum_bars": 49,
+      "kerf": 2.0,
+      "lp_bound_bars": 48.91666666666667,
+      "number_of_piece_types": 6,
+      "pattern_count": 33,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 6,
+      "stock_length": 100.0,
+      "total_demand": 135,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 425,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available": true,
+      "gap_bars": 6,
+      "gap_unavailable_reason": null,
+      "instance_id": "22a9d5d9c1b31aeb25e9aea90718e699a42433fb557a1a6f7fe5cab36c9c9cb4",
+      "integer_optimum_bars": 419,
+      "kerf": 0.0,
+      "lp_bound_bars": 419.0,
+      "number_of_piece_types": 12,
+      "pattern_count": 78,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 1,
+      "stock_length": 100.0,
+      "total_demand": 838,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 400,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available": true,
+      "gap_bars": 6,
+      "gap_unavailable_reason": null,
+      "instance_id": "4f9c63312c5b05bb17499fc3bdd659653b8de5880da077543c0b24450ef7e168",
+      "integer_optimum_bars": 394,
+      "kerf": 0.0,
+      "lp_bound_bars": 394.0,
+      "number_of_piece_types": 12,
+      "pattern_count": 78,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 2,
+      "stock_length": 100.0,
+      "total_demand": 788,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 397,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available": true,
+      "gap_bars": 6,
+      "gap_unavailable_reason": null,
+      "instance_id": "c8f9eb999d72cec47b4235fb834a9809b3a362c5bf146395b2befe726db36420",
+      "integer_optimum_bars": 391,
+      "kerf": 0.0,
+      "lp_bound_bars": 391.0,
+      "number_of_piece_types": 12,
+      "pattern_count": 78,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 3,
+      "stock_length": 100.0,
+      "total_demand": 782,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 347,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available": true,
+      "gap_bars": 6,
+      "gap_unavailable_reason": null,
+      "instance_id": "02be7ee4ce402b9de27ce73e335b9195417cf41fcfc6c02bbef828ea0a2ac8d5",
+      "integer_optimum_bars": 341,
+      "kerf": 0.0,
+      "lp_bound_bars": 341.0,
+      "number_of_piece_types": 12,
+      "pattern_count": 78,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 4,
+      "stock_length": 100.0,
+      "total_demand": 682,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 305,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available": true,
+      "gap_bars": 6,
+      "gap_unavailable_reason": null,
+      "instance_id": "f890cf01ef15e9b45e2589f23658f86b7a84bd03c287b192dadb8f65dd6ee4e3",
+      "integer_optimum_bars": 299,
+      "kerf": 0.0,
+      "lp_bound_bars": 299.0,
+      "number_of_piece_types": 12,
+      "pattern_count": 78,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 5,
+      "stock_length": 100.0,
+      "total_demand": 598,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 404,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "gap_available": true,
+      "gap_bars": 6,
+      "gap_unavailable_reason": null,
+      "instance_id": "2e4b00a9b8a555f2753885190fe62574bf1c2640e842578ea0864956faaf5fb0",
+      "integer_optimum_bars": 398,
+      "kerf": 0.0,
+      "lp_bound_bars": 398.0,
+      "number_of_piece_types": 12,
+      "pattern_count": 78,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 6,
+      "stock_length": 100.0,
+      "total_demand": 796,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 35,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "577a1c8a265a29398ed2834a45e63020dcaba3c948fcca9bc27a0e780e293cfc",
+      "integer_optimum_bars": 34,
+      "kerf": 0.0,
+      "lp_bound_bars": 33.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 6,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 1,
+      "stock_length": 100.0,
+      "total_demand": 67,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 24,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "8df29b8c097ccd00fd408213586796a6e3d19c0c395d14d0f08310d96eef87ef",
+      "integer_optimum_bars": 23,
+      "kerf": 0.0,
+      "lp_bound_bars": 22.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 6,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 2,
+      "stock_length": 100.0,
+      "total_demand": 45,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 35,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "c45e8dd7bdce444593332730455ac62d45ed87126593969e5c816f04a2f2d2e4",
+      "integer_optimum_bars": 34,
+      "kerf": 0.0,
+      "lp_bound_bars": 33.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 6,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 3,
+      "stock_length": 100.0,
+      "total_demand": 67,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 17,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "8a70203d87d47681b759ff95df8cf4458e56fa3cfe8ed6803fb38799ac7ccc8e",
+      "integer_optimum_bars": 16,
+      "kerf": 0.0,
+      "lp_bound_bars": 15.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 6,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 4,
+      "stock_length": 100.0,
+      "total_demand": 31,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 28,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "cd3f91ce0ad7fd786bb153def0e309451a5381f0829bcacf239c8515e9f50a79",
+      "integer_optimum_bars": 27,
+      "kerf": 0.0,
+      "lp_bound_bars": 26.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 6,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 5,
+      "stock_length": 100.0,
+      "total_demand": 53,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 23,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "5250b4ad75b9f2eeba8e5ce9267cf6cf1e7e8b67f421373664a9c38b2e508e71",
+      "integer_optimum_bars": 22,
+      "kerf": 0.0,
+      "lp_bound_bars": 21.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 6,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 6,
+      "stock_length": 100.0,
+      "total_demand": 43,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 44,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available": true,
+      "gap_bars": 2,
+      "gap_unavailable_reason": null,
+      "instance_id": "f9a8b35dbc2b5fa5542d4f4091ac379f1b85dc05c49b4147e733f53cc9902fbb",
+      "integer_optimum_bars": 42,
+      "kerf": 0.0,
+      "lp_bound_bars": 42.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 10,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 1,
+      "stock_length": 100.0,
+      "total_demand": 84,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 45,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available": true,
+      "gap_bars": 2,
+      "gap_unavailable_reason": null,
+      "instance_id": "ddd6241be3d7aac1b28d924aa01340060273957c44f4fe298ddad4b51c7606dc",
+      "integer_optimum_bars": 43,
+      "kerf": 0.0,
+      "lp_bound_bars": 43.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 10,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 2,
+      "stock_length": 100.0,
+      "total_demand": 86,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 46,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available": true,
+      "gap_bars": 2,
+      "gap_unavailable_reason": null,
+      "instance_id": "dea0eba30d5f2af33c9c1efab3d8309d7d49b0b416c248d476b05142756f5485",
+      "integer_optimum_bars": 44,
+      "kerf": 0.0,
+      "lp_bound_bars": 44.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 10,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 3,
+      "stock_length": 100.0,
+      "total_demand": 88,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 28,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available": true,
+      "gap_bars": 2,
+      "gap_unavailable_reason": null,
+      "instance_id": "701c0ae70701667f612b744e4f228e8ea8174abd1fb1eb57395d6e7174f4cb17",
+      "integer_optimum_bars": 26,
+      "kerf": 0.0,
+      "lp_bound_bars": 26.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 10,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 4,
+      "stock_length": 100.0,
+      "total_demand": 52,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 36,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available": true,
+      "gap_bars": 2,
+      "gap_unavailable_reason": null,
+      "instance_id": "23e0fe633b02e891212870e92feacee1709276651e4fca2135bd55320e135524",
+      "integer_optimum_bars": 34,
+      "kerf": 0.0,
+      "lp_bound_bars": 34.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 10,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 5,
+      "stock_length": 100.0,
+      "total_demand": 68,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 39,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "gap_available": true,
+      "gap_bars": 2,
+      "gap_unavailable_reason": null,
+      "instance_id": "01b5a876d7a444f5967ef0aa2ebb8d392bb294d3c28a8031b8ded4873612056a",
+      "integer_optimum_bars": 37,
+      "kerf": 0.0,
+      "lp_bound_bars": 37.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 10,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 6,
+      "stock_length": 100.0,
+      "total_demand": 74,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    }
+  ],
+  "integrality_tolerance": 1e-09,
+  "reduced_cost_tolerance": 1e-09,
+  "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+  "schema_version": "family-margins-v1",
+  "significant_positive_share": 0.5,
+  "unmeasured_families": [
+    {
+      "family_label": "multi-stock-formats",
+      "reason": "the declared multi-format variant (P8.02) is not measurable yet: the classical column-generation loop and the complete-master MILP reference only accept single-format instances"
+    }
+  ]
+}
