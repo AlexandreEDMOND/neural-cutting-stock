@@ -201,7 +201,7 @@ restent gagnables avant de chercher à les gagner.
 - [x] **P7.07** — Si la marge est quasi nulle partout, identifier dans le générateur déterministe les paramètres créant des trous entiers non triviaux (demandes peu divisibles, ratios tendus) et documenter ces leviers sans encore les activer.
 - [x] **P7.08** — Tests de non-régression : la CG classique reste optimale LP et inchangée en objectif sur toutes les instances disposant d'une référence exacte.
 - [x] **P7.09** — Nettoyage du code de la phase : consolidation des helpers, suppression du code mort.
-- [ ] **P7.10** — Publication du bilan de phase fondé sur exécutions réelles, mise à jour du README et validation de la phase 7.
+- [x] **P7.10** — Publication du bilan de phase fondé sur exécutions réelles, mise à jour du README et validation de la phase 7.
 
 ## Phase 8 — Familles d'instances à marge de qualité
 

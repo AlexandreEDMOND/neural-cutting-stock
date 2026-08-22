@@ -22,8 +22,9 @@ doit être ajouté. La conclusion scientifique de la Phase 6 est publiée dans
 
 ## Référence exacte et écarts (Phase 7)
 
-L'écart de la baseline classique (`optimal_over_generated_columns_only`) aux références exactes
-vérifiées est persisté au schéma `exact-gap-v1` dans [`exact-gap.json`](exact-gap.json) et
+Le bilan de clôture de la phase est [`phase-7-summary.md`](phase-7-summary.md). L'écart de la
+baseline classique (`optimal_over_generated_columns_only`) aux références exactes vérifiées est
+persisté au schéma `exact-gap-v1` dans [`exact-gap.json`](exact-gap.json) et
 [`exact-gap.csv`](exact-gap.csv), avec les exclusions et diagnostics conservés. Le rapport ne
 contient aucune durée ; il se régénère depuis les corpus et campagnes persistés avec :
 
@@ -37,4 +38,10 @@ agrégé uniquement depuis le rapport `exact-gap-v1` persisté :
 
 ```bash
 uv run python scripts/report_phase7_exact_gap_breakdown.py
+```
+
+Le bilan de phase se régénère depuis le même rapport persisté :
+
+```bash
+uv run python scripts/report_phase7_summary.py
 ```

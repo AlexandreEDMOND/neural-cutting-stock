@@ -1,10 +1,10 @@
 # Neural Cutting Stock — Learning to Accelerate Column Generation
 
-> Projet de recherche focalisé sur une seule question : un modèle appris peut-il accélérer significativement la génération de colonnes pour le Cutting Stock 1D, tout en préservant la qualité de la méthode classique ?
+> Projet de recherche en deux temps : les Phases 1 à 6 ont testé si un modèle appris peut accélérer significativement la génération de colonnes pour le Cutting Stock 1D sans dégrader la qualité, avec une réponse mesurée négative ([docs/conclusion.md](docs/conclusion.md)) ; à compter de la Phase 7, le projet étudie si un agent de deep RL peut améliorer la qualité des solutions de découpe (moins de barres, moins de perte) par rapport à la baseline classique, sans aucune contrainte de temps mur-à-mur.
 
 ## État du projet
 
-Les six phases du projet sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe. La Phase 6 a exécuté l'évaluation finale sur 12 instances non vues : la qualité est préservée sur toutes les paires, mais Neural CG n'accélère pas le temps mur-à-mur ; la réponse mesurée à l'hypothèse de recherche est négative pour le candidat gelé évalué (voir [Évaluation finale](#résultats-finaux-et-réponse-à-lhypothèse-phase-6) et [docs/conclusion.md](docs/conclusion.md)).
+Les sept premières phases du projet sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe. La Phase 6 a exécuté l'évaluation finale sur 12 instances non vues : la qualité est préservée sur toutes les paires, mais Neural CG n'accélère pas le temps mur-à-mur ; la réponse mesurée à l'hypothèse de recherche est négative pour le candidat gelé évalué (voir [Évaluation finale](#résultats-finaux-et-réponse-à-lhypothèse-phase-6) et [docs/conclusion.md](docs/conclusion.md)). La Phase 7 a établi la vérité terrain de la qualité : des références exactes vérifiées (MILP sur motifs énumérés) couvrent désormais 16 instances du corpus existant, le trou entier de la baseline classique y est quasi nul partout — une seule instance perd une barre face à l'optimum entier certifié — et les leviers du générateur susceptibles d'élargir cette marge sont documentés pour la Phase 8 (voir [Vérité terrain de qualité](#vérité-terrain-de-qualité-et-trou-doptimalité-entier-phase-7)).
 
 ## Motivation
 
@@ -341,6 +341,43 @@ démontrent pas qu'aucune politique apprise ne peut accélérer la boucle.
 La liste exhaustive des limites et les conditions de reproductibilité figurent dans
 [docs/conclusion.md](docs/conclusion.md).
 
+## Vérité terrain de qualité et trou d'optimalité entier (Phase 7)
+
+La baseline classique ne certifie son maître entier que sur colonnes générées
+(`optimal_over_generated_columns_only`). La Phase 7 calcule pour chaque instance du corpus existant
+une référence exacte par MILP résolu sur l'énumération exhaustive des motifs maximaux, puis vérifie
+chaque référence indépendamment : faisabilité du plan, cohérence borne LP ≤ optimum entier ; un
+contrôle croisé d'énumération sur sous-échantillon est implémenté mais désactivé dans le rapport
+publié.
+
+Le bilan complet est publié dans [`results/phase-7-summary.md`](results/phase-7-summary.md), la
+ventilation chiffrée dans [`results/exact-gap-breakdown.md`](results/exact-gap-breakdown.md) et les
+leviers identifiés dans [`docs/phase-7-gap-levers.md`](docs/phase-7-gap-levers.md) :
+
+| Classe | Instances | Écarts disponibles | Marge nulle | Marge positive | Écart médian maximal (barres) |
+|---|---:|---:|---:|---:|---:|
+| SMALL | 7 | 7 | 7 | 0 | 0 |
+| MEDIUM | 3 | 3 | 3 | 0 | 0 |
+| LARGE | 3 | 3 | 2 | 1 | 1 |
+| XL | 3 | 3 | 3 | 0 | 0 |
+
+Sur les 16 écarts disponibles (9 instances sans baseline rattachable restent exclues, avec leur
+diagnostic conservé), 15 sont nuls et un seul est positif : l'instance `d71a500910a2…` (`LARGE`,
+six types) consomme 20 barres contre un optimum entier certifié de 19. La marge de qualité mesurée
+est donc quasi nulle partout sur le corpus actuel : avant de chercher à gagner des barres en Phase 9,
+la Phase 8 doit construire des familles d'instances où une marge existe réellement, à partir des
+leviers documentés (kerf exercé, ratios tendus, demandes peu divisibles). Aucun levier n'est activé
+ni mesuré à ce stade.
+
+Ces mesures ne contiennent aucune durée : la qualité est la métrique reine. Le bilan se régénère
+depuis les données persistées :
+
+```bash
+uv run python scripts/report_phase7_exact_gap.py
+uv run python scripts/report_phase7_exact_gap_breakdown.py
+uv run python scripts/report_phase7_summary.py
+```
+
 ## Organisation du dépôt
 
 ```text
@@ -353,7 +390,8 @@ neural-cutting-stock/
 ├── docs/
 │   ├── benchmark_protocol.md
 │   ├── conclusion.md               # conclusion scientifique finale de Phase 6
-│   └── formulation.md
+│   ├── formulation.md
+│   └── phase-7-gap-levers.md       # leviers de trous entiers du générateur (Phase 7)
 ├── data/
 │   ├── phase-3-corpus/             # trajectoires, manifeste et partitions validés
 │   └── phase-6-final/              # manifeste gelé des instances non vues
@@ -387,8 +425,8 @@ sans installer de composant d'apprentissage.
 
 ## Feuille de route
 
-La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six phases contiennent chacune quinze étapes initiales et peuvent recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération est toujours la première case non cochée de la roadmap ; son identifiant n’est pas recopié ici afin d’éviter toute information obsolète.
+La progression est pilotée par les cases atomiques de [ROADMAP.md](ROADMAP.md) : une case correspond à une itération et un commit. Les six premières phases contiennent chacune quinze étapes initiales ; les phases 7 à 10 pilotent le pivot vers la qualité et définissent leurs propres cases atomiques. Toute phase peut recevoir des sous-étapes non cochées si le travail révèle un besoin réel. La prochaine itération est toujours la première case non cochée de la roadmap ; son identifiant n’est pas recopié ici afin d’éviter toute information obsolète.
 
 ## Périmètre
 
-Ce dépôt traite exclusivement du Cutting Stock 1D accéléré par apprentissage au sein d’une génération de colonnes. Les solveurs end-to-end neuronaux, Pointer Networks, métaheuristiques, Cutting Stock 2D/3D et autres problèmes combinatoires ne font pas partie du projet.
+Ce dépôt traite exclusivement du Cutting Stock 1D : d'abord l'accélération par apprentissage au sein d'une génération de colonnes (Phases 1 à 6), puis l'amélioration de la qualité des solutions par deep RL adossé à la même boucle classique (Phases 7 à 10). Les solveurs end-to-end neuronaux, Pointer Networks, métaheuristiques, Cutting Stock 2D/3D et autres problèmes combinatoires ne font pas partie du projet.
