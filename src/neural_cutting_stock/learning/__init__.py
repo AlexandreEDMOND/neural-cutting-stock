@@ -29,6 +29,18 @@ from .quality_env import (
     QualityRefinementEnv,
     RefinementStep,
 )
+from .reproducibility import (
+    TRAINING_CHECKPOINT_SCHEMA_VERSION,
+    TRAINING_CURVES_SCHEMA_VERSION,
+    TrainingCurvePoint,
+    TrainingCurves,
+    load_checkpoint,
+    read_curves_json,
+    restore_module_state,
+    save_checkpoint,
+    set_reproducible_seed,
+    write_curves_json,
+)
 from .training import (
     TRAINING_ARTIFACT_SCHEMA_VERSION,
     load_training_artifact,
@@ -40,6 +52,8 @@ __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
     "QUALITY_AGENT_INTERFACE_SCHEMA_VERSION",
     "QUALITY_REFINEMENT_ENV_SCHEMA_VERSION",
+    "TRAINING_CHECKPOINT_SCHEMA_VERSION",
+    "TRAINING_CURVES_SCHEMA_VERSION",
     "ColumnSelectionDecision",
     "ColumnSelectionPolicy",
     "ColumnScoringModel",
@@ -52,6 +66,8 @@ __all__ = [
     "QualityAgentProposal",
     "QualityRefinementEnv",
     "RefinementStep",
+    "TrainingCurvePoint",
+    "TrainingCurves",
     "DEFAULT_INVALID_PLAN_PENALTY",
     "FEATURE_SCHEMA_VERSION",
     "pricing_features",
@@ -70,4 +86,10 @@ __all__ = [
     "train_artifact",
     "write_training_artifact",
     "verify_proposal",
+    "load_checkpoint",
+    "read_curves_json",
+    "restore_module_state",
+    "save_checkpoint",
+    "set_reproducible_seed",
+    "write_curves_json",
 ]

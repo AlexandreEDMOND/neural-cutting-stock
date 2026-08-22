@@ -229,7 +229,7 @@ le vérificateur dispose.
 
 - [x] **P9.01** — Définir l'interface `quality-agent` : entrées (instance, pool de colonnes, solution courante), sortie (motifs ou colonnes supplémentaires proposés), contrat de vérification indépendante systématique.
 - [x] **P9.02** — Construire l'environnement RL : épisode = raffinement itératif de la solution entière, observation = état du pool et de la solution, récompense = réduction de barres ou de perte, pénalité stricte pour plan invalide.
-- [ ] **P9.03** — Introduire PyTorch comme dépendance justifiée et versionnée, avec entraînement reproductible : graines, checkpoints versionnés, courbes persistées.
+- [x] **P9.03** — Introduire PyTorch comme dépendance justifiée et versionnée, avec entraînement reproductible : graines, checkpoints versionnés, courbes persistées.
 - [ ] **P9.04** — Baseline d'apprentissage par imitation du choix exact sur petites instances, afin de valider l'interface avant tout RL profond.
 - [ ] **P9.05** — Entraîner une politique profonde (algorithme documenté et justifié) sur les familles à marge de la phase 8, avec journal complet des expériences.
 - [ ] **P9.06** — Intégrer le pipeline Neural-QC : partir de la solution classique restreinte, appliquer l'agent jusqu'à convergence ou budget d'amélioration déclaré.
