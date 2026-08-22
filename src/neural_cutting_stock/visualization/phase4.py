@@ -10,15 +10,16 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 
-from neural_cutting_stock.benchmarks import compare_paired_runs
+from neural_cutting_stock.benchmarks import SIZE_CLASSES, compare_paired_runs
 from neural_cutting_stock.benchmarks.schema import (
     BenchmarkRunRecord,
     EnvironmentMetadata,
     RunStatus,
     SolverMode,
 )
+from neural_cutting_stock.benchmarks.stats import median
+from neural_cutting_stock.visualization._shared import seconds
 
-SIZE_CLASSES = ("SMALL", "MEDIUM", "LARGE", "XL")
 _INT_FIELDS = {
     "seed",
     "repetition",
@@ -154,16 +155,16 @@ def phase4_report_data(records: tuple[BenchmarkRunRecord, ...]) -> dict[str, Any
     size_data = {
         size: {
             "pair_count": len(by_size[size]),
-            "classical_median_seconds": _median(
+            "classical_median_seconds": median(
                 [
                     records_by_id(records, item.classical_run_id).total_runtime_seconds
                     for item in by_size[size]
                 ]
             ),
-            "neural_median_seconds": _median(
+            "neural_median_seconds": median(
                 [neural[item.neural_run_id].total_runtime_seconds for item in by_size[size]]
             ),
-            "speedup_median": _median([item.speedup_vs_classical for item in by_size[size]]),
+            "speedup_median": median([item.speedup_vs_classical for item in by_size[size]]),
         }
         for size in SIZE_CLASSES
     }
@@ -246,7 +247,7 @@ def write_phase4_summary(data: dict[str, Any], path: str | Path, runs_path: str)
     for size in SIZE_CLASSES:
         item = data["size_data"][size]
         lines.append(
-            f"| {size} | {item['pair_count']} | {fmt(item['classical_median_seconds'])} | {fmt(item['neural_median_seconds'])} | {fmt(item['speedup_median'])} |"
+            f"| {size} | {item['pair_count']} | {seconds(item['classical_median_seconds'])} | {seconds(item['neural_median_seconds'])} | {seconds(item['speedup_median'])} |"
         )
     lines += [
         "",
@@ -266,17 +267,3 @@ def write_phase4_summary(data: dict[str, Any], path: str | Path, runs_path: str)
 
 def records_by_id(records: tuple[BenchmarkRunRecord, ...], run_id: str) -> BenchmarkRunRecord:
     return next(record for record in records if record.run_id == run_id)
-
-
-def _median(values: list[float | None]) -> float | None:
-    numbers = sorted(value for value in values if value is not None)
-    if not numbers:
-        return None
-    middle = len(numbers) // 2
-    return (
-        float(numbers[middle]) if len(numbers) % 2 else (numbers[middle - 1] + numbers[middle]) / 2
-    )
-
-
-def fmt(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:.6f}"

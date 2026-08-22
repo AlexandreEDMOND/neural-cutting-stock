@@ -8,6 +8,7 @@ from typing import Any
 
 from .comparison import compare_paired_runs
 from .schema import BenchmarkRunRecord, RunStatus, SolverMode
+from .stats import median
 
 PROFILE_SCHEMA_VERSION = "baseline-profile-v1"
 NEURAL_PROFILE_SCHEMA_VERSION = "neural-profile-v1"
@@ -55,6 +56,9 @@ class SizeClass(StrEnum):
     MEDIUM = "MEDIUM"
     LARGE = "LARGE"
     XL = "XL"
+
+
+SIZE_CLASSES = tuple(size_class.value for size_class in SizeClass)
 
 
 def classify_runtime(runtime_seconds: float) -> SizeClass:
@@ -201,7 +205,6 @@ def compare_paired_profiles(
     for comparison in comparisons:
         classical = by_id[comparison.classical_run_id]
         neural = by_id[comparison.neural_run_id]
-        _validate_pair_resources(classical, neural)
         complete = all(
             getattr(classical, component) is not None
             and getattr(neural, component) is not None
@@ -229,11 +232,11 @@ def compare_paired_profiles(
 
     component_medians = {
         "classical": {
-            component: _median([getattr(record, component) for record, _ in eligible])
+            component: median([getattr(record, component) for record, _ in eligible])
             for component in PAIRED_PROFILE_COMPONENTS
         },
         "neural": {
-            component: _median([getattr(record, component) for _, record in eligible])
+            component: median([getattr(record, component) for _, record in eligible])
             for component in PAIRED_PROFILE_COMPONENTS + NEURAL_ONLY_PROFILE_COMPONENTS
         },
     }
@@ -269,37 +272,6 @@ def _size_class_counts(records: list[BenchmarkRunRecord]) -> dict[str, int]:
         if record.size_class is not None:
             counts[record.size_class] = counts.get(record.size_class, 0) + 1
     return dict(sorted(counts.items()))
-
-
-def _validate_pair_resources(
-    classical: BenchmarkRunRecord, neural: BenchmarkRunRecord
-) -> None:
-    if classical.config_id != neural.config_id:
-        raise ValueError("paired runs must use the same config_id")
-    if classical.environment != neural.environment:
-        raise ValueError("paired runs must use the same environment")
-    for field in (
-        "seed",
-        "stock_length",
-        "kerf",
-        "number_of_piece_types",
-        "total_demand",
-        "requested_length",
-        "length_distribution",
-        "demand_distribution",
-    ):
-        if getattr(classical, field) != getattr(neural, field):
-            raise ValueError(f"paired runs must share instance field {field}")
-
-
-def _median(values: list[float | None]) -> float | None:
-    numbers = sorted(value for value in values if value is not None)
-    if not numbers:
-        return None
-    middle = len(numbers) // 2
-    if len(numbers) % 2:
-        return float(numbers[middle])
-    return float((numbers[middle - 1] + numbers[middle]) / 2)
 
 
 def _write_profile(path: str | Path, profile: dict[str, Any]) -> None:

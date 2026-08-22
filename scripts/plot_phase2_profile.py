@@ -6,6 +6,7 @@
 import argparse
 from pathlib import Path
 
+from neural_cutting_stock.visualization._shared import seconds
 from neural_cutting_stock.visualization.phase2 import (
     load_phase2_profile,
     phase2_report_data,
@@ -31,8 +32,8 @@ def _write_summary(profile: dict, path: Path) -> None:
         for status, count in sorted(profile["status_counts"].items())
     )
     size_lines = "\n".join(
-        f"| {size} | {values['count']} | {_seconds(values['runtime_median_seconds'])} | "
-        f"{_seconds(values['runtime_min_seconds'])}--{_seconds(values['runtime_max_seconds'])} | "
+        f"| {size} | {values['count']} | {seconds(values['runtime_median_seconds'])} | "
+        f"{seconds(values['runtime_min_seconds'])}--{seconds(values['runtime_max_seconds'])} | "
         f"{values['iterations_median']} |"
         for size, values in data["size_data"].items()
     )
@@ -81,10 +82,6 @@ Les deux figures ont été générées depuis le JSON source par `scripts/plot_p
 def _distinct(records: list[dict], field: str) -> str:
     values = sorted({str(record[field]) for record in records})
     return ", ".join(f"`{value}`" for value in values)
-
-
-def _seconds(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:.6f}"
 
 
 if __name__ == "__main__":

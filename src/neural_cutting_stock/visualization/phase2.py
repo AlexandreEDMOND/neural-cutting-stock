@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 from neural_cutting_stock.benchmarks.profile import (
     PROFILE_SCHEMA_VERSION,
     SIZE_CLASS_SCHEMA_VERSION,
-    SizeClass,
+    SIZE_CLASSES,
 )
+from neural_cutting_stock.benchmarks.stats import median
 
-SIZE_CLASSES = tuple(size_class.value for size_class in SizeClass)
 COMPONENTS = (
     "master_problem_runtime",
     "pricing_runtime",
@@ -55,9 +55,9 @@ def phase2_report_data(profile: dict[str, Any]) -> dict[str, Any]:
         size_data[size_class] = {
             "count": len(runtimes),
             "runtime_min_seconds": runtimes[0] if runtimes else None,
-            "runtime_median_seconds": _median(runtimes),
+            "runtime_median_seconds": median(runtimes),
             "runtime_max_seconds": runtimes[-1] if runtimes else None,
-            "iterations_median": _median(iterations),
+            "iterations_median": median(iterations),
         }
     return {"successful_runs": runs, "size_data": size_data}
 
@@ -101,12 +101,3 @@ def write_phase2_figures(profile: dict[str, Any], output_dir: str | Path) -> Non
     figure.tight_layout()
     figure.savefig(output / "classical_runtime_components.png", dpi=160)
     plt.close(figure)
-
-
-def _median(values: list[int | float]) -> float | None:
-    if not values:
-        return None
-    middle = len(values) // 2
-    if len(values) % 2:
-        return float(values[middle])
-    return (values[middle - 1] + values[middle]) / 2

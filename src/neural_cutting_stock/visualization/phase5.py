@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 
 from neural_cutting_stock.benchmarks import compare_paired_runs, freeze_candidate_on_validation
 from neural_cutting_stock.benchmarks.schema import BenchmarkRunRecord, SolverMode
+from neural_cutting_stock.benchmarks.stats import median
+from neural_cutting_stock.visualization._shared import seconds
 from neural_cutting_stock.visualization.phase4 import SIZE_CLASSES, load_phase4_runs
 
 
@@ -41,13 +43,13 @@ def phase5_report_data(
     size_data = {
         size: {
             "pair_count": len(by_size[size]),
-            "classical_median_seconds": _median(
+            "classical_median_seconds": median(
                 [classical[item.classical_run_id].total_runtime_seconds for item in by_size[size]]
             ),
-            "neural_median_seconds": _median(
+            "neural_median_seconds": median(
                 [neural[item.neural_run_id].total_runtime_seconds for item in by_size[size]]
             ),
-            "speedup_median": _median([item.speedup_vs_classical for item in by_size[size]]),
+            "speedup_median": median([item.speedup_vs_classical for item in by_size[size]]),
         }
         for size in SIZE_CLASSES
     }
@@ -127,8 +129,8 @@ def write_phase5_summary(data: dict[str, Any], path: str | Path, runs_path: str)
         "",
         f"- Exécutions : **{len(data['records'])}** ; paires : **{len(data['comparisons'])}**.",
         f"- Paires comparables : **{data['comparable_pair_count']}** ; paires à qualité préservée : **{data['quality_pair_count']}**.",
-        f"- Runtime Classical agrégé : **{_seconds(decision.classical_total_runtime_seconds)} s**.",
-        f"- Runtime Neural agrégé : **{_seconds(decision.candidate_total_runtime_seconds)} s**.",
+        f"- Runtime Classical agrégé : **{seconds(decision.classical_total_runtime_seconds)} s**.",
+        f"- Runtime Neural agrégé : **{seconds(decision.candidate_total_runtime_seconds)} s**.",
         "- Les différences d'objectif et les speedups ont été recalculés depuis les enregistrements bruts.",
         "",
         "| Taille | Paires admissibles | Médiane Classical (s) | Médiane Neural (s) | Médiane speedup |",
@@ -137,7 +139,7 @@ def write_phase5_summary(data: dict[str, Any], path: str | Path, runs_path: str)
     for size in SIZE_CLASSES:
         item = data["size_data"][size]
         lines.append(
-            f"| {size} | {item['pair_count']} | {_seconds(item['classical_median_seconds'])} | {_seconds(item['neural_median_seconds'])} | {_seconds(item['speedup_median'])} |"
+            f"| {size} | {item['pair_count']} | {seconds(item['classical_median_seconds'])} | {seconds(item['neural_median_seconds'])} | {seconds(item['speedup_median'])} |"
         )
     lines += [
         "",
@@ -152,15 +154,3 @@ def write_phase5_summary(data: dict[str, Any], path: str | Path, runs_path: str)
         "- [`phase5_speedup_by_size.png`](phase5_speedup_by_size.png) : speedup médian avec référence `1x`.",
     ]
     Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def _median(values: list[float | None]) -> float | None:
-    numbers = sorted(value for value in values if value is not None)
-    if not numbers:
-        return None
-    middle = len(numbers) // 2
-    return float(numbers[middle]) if len(numbers) % 2 else (numbers[middle - 1] + numbers[middle]) / 2
-
-
-def _seconds(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:.6f}"

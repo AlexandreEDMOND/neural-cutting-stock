@@ -284,10 +284,6 @@ class TrajectoryValidation:
     def valid(self) -> bool:
         return not self.errors
 
-    def raise_if_invalid(self) -> None:
-        if self.errors:
-            raise ValueError("invalid trajectory: " + "; ".join(self.errors))
-
 
 @dataclass(frozen=True, slots=True)
 class TrajectoryCollectionMeasurement:

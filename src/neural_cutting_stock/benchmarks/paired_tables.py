@@ -10,6 +10,7 @@ from typing import Any
 from .comparison import build_paired_comparison
 from .generalization import pair_campaign_records
 from .schema import BenchmarkRunRecord
+from .stats import median
 
 PAIRED_TABLES_SCHEMA_VERSION = "phase-6-paired-tables-v1"
 
@@ -110,56 +111,46 @@ def _instance_row(instance_id: str, rows: Sequence[dict[str, Any]]) -> dict[str,
         "admissible_repetition_count": len(admissible),
         "status_counts": dict(sorted(status_counts.items())),
         "quality_violation_pair_count": sum(not row["quality_preserved"] for row in rows),
-        "objective_classical_bars_median": _median(
+        "objective_classical_bars_median": median(
             row["objective_classical_bars"] for row in admissible
         ),
-        "objective_neural_bars_median": _median(
+        "objective_neural_bars_median": median(
             row["objective_neural_bars"] for row in admissible
         ),
-        "objective_difference_vs_classical_median": _median(
+        "objective_difference_vs_classical_median": median(
             row["objective_difference_vs_classical"] for row in admissible
         ),
-        "classical_runtime_seconds_median": _median(
+        "classical_runtime_seconds_median": median(
             row["classical_total_runtime_seconds"] for row in admissible
         ),
-        "neural_runtime_seconds_median": _median(
+        "neural_runtime_seconds_median": median(
             row["neural_total_runtime_seconds"] for row in admissible
         ),
-        "speedup_vs_classical_median": _median(row["speedup_vs_classical"] for row in admissible),
-        "classical_peak_memory_bytes_median": _median(
+        "speedup_vs_classical_median": median(row["speedup_vs_classical"] for row in admissible),
+        "classical_peak_memory_bytes_median": median(
             row["classical_peak_memory_bytes"] for row in admissible
         ),
-        "neural_peak_memory_bytes_median": _median(
+        "neural_peak_memory_bytes_median": median(
             row["neural_peak_memory_bytes"] for row in admissible
         ),
-        "classical_cg_iterations_median": _median(
+        "classical_cg_iterations_median": median(
             row["classical_cg_iterations"] for row in admissible
         ),
-        "neural_cg_iterations_median": _median(
+        "neural_cg_iterations_median": median(
             row["neural_cg_iterations"] for row in admissible
         ),
-        "classical_generated_columns_median": _median(
+        "classical_generated_columns_median": median(
             row["classical_generated_columns"] for row in admissible
         ),
-        "neural_generated_columns_median": _median(
+        "neural_generated_columns_median": median(
             row["neural_generated_columns"] for row in admissible
         ),
-        "classical_added_columns_median": _median(
+        "classical_added_columns_median": median(
             row["classical_added_columns"] for row in admissible
         ),
-        "neural_added_columns_median": _median(row["neural_added_columns"] for row in admissible),
-        "classical_final_columns_median": _median(
+        "neural_added_columns_median": median(row["neural_added_columns"] for row in admissible),
+        "classical_final_columns_median": median(
             row["classical_final_columns"] for row in admissible
         ),
-        "neural_final_columns_median": _median(row["neural_final_columns"] for row in admissible),
+        "neural_final_columns_median": median(row["neural_final_columns"] for row in admissible),
     }
-
-
-def _median(values: Any) -> float | None:
-    numbers = sorted(value for value in values if value is not None)
-    if not numbers:
-        return None
-    middle = len(numbers) // 2
-    if len(numbers) % 2:
-        return float(numbers[middle])
-    return (numbers[middle - 1] + numbers[middle]) / 2

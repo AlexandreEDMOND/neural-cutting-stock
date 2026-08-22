@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Any
 
 from .generator import SyntheticInstanceGenerator
+from .profile import SIZE_CLASSES
 
 FINAL_MANIFEST_SCHEMA_VERSION = "phase-6-instance-manifest-v1"
-SIZE_CLASSES = ("SMALL", "MEDIUM", "LARGE", "XL")
 
 
 def build_final_manifest(
@@ -91,7 +91,7 @@ def validate_final_manifest(
         if instance_id in previous_ids:
             raise ValueError(f"final instance overlaps Phase 3: {instance_id}")
         seen_ids.add(instance_id)
-        generator = _generator_from_entry(entry)
+        generator = generator_from_entry(entry)
         instance = generator.generate()
         if generator.instance_id != instance_id:
             raise ValueError(f"instance_id does not match materialized data: {instance_id}")
@@ -133,7 +133,8 @@ def _generator_dict(generator: SyntheticInstanceGenerator) -> dict[str, Any]:
     }
 
 
-def _generator_from_entry(entry: dict[str, Any]) -> SyntheticInstanceGenerator:
+def generator_from_entry(entry: dict[str, Any]) -> SyntheticInstanceGenerator:
+    """Reconstruct the deterministic generator recorded for one manifest entry."""
     config = entry["generator"]
     return SyntheticInstanceGenerator(
         seed=config["seed"],

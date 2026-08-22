@@ -12,6 +12,8 @@ from typing import Any
 import matplotlib.pyplot as plt
 
 from neural_cutting_stock.benchmarks import SIZE_CLASSES, BenchmarkRunRecord, build_paired_tables
+from neural_cutting_stock.benchmarks.stats import median
+from neural_cutting_stock.visualization._shared import seconds
 
 
 def write_paired_tables_markdown(
@@ -55,8 +57,8 @@ def write_paired_tables_markdown(
     for item in report["instances"]:
         lines.append(
             f"| {item['instance_id']} | {item['number_of_piece_types']} | {item['admissible_repetition_count']}"
-            f" | {_seconds(item['classical_runtime_seconds_median'])} | {_seconds(item['neural_runtime_seconds_median'])}"
-            f" | {_seconds(item['speedup_vs_classical_median'])} |"
+            f" | {seconds(item['classical_runtime_seconds_median'])} | {seconds(item['neural_runtime_seconds_median'])}"
+            f" | {seconds(item['speedup_vs_classical_median'])} |"
         )
     lines += [
         "",
@@ -139,13 +141,13 @@ def phase6_runtime_comparison_data(
         size_data[size] = {
             "pair_count": len(rows),
             "instance_count": len({row["instance_id"] for row in rows}),
-            "classical_median_seconds": _median(
+            "classical_median_seconds": median(
                 [row["classical_total_runtime_seconds"] for row in rows]
             ),
-            "neural_median_seconds": _median(
+            "neural_median_seconds": median(
                 [row["neural_total_runtime_seconds"] for row in rows]
             ),
-            "speedup_median": _median([row["speedup_vs_classical"] for row in rows]),
+            "speedup_median": median([row["speedup_vs_classical"] for row in rows]),
         }
     return {"report": report, "size_data": size_data}
 
@@ -205,20 +207,6 @@ def _relative(source: str) -> str:
     with suppress(ValueError):
         return str(Path(source).resolve().relative_to(Path.cwd().resolve()))
     return str(source)
-
-
-def _median(values: list[float | None]) -> float | None:
-    numbers = sorted(value for value in values if value is not None)
-    if not numbers:
-        return None
-    middle = len(numbers) // 2
-    return (
-        float(numbers[middle]) if len(numbers) % 2 else (numbers[middle - 1] + numbers[middle]) / 2
-    )
-
-
-def _seconds(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:.6f}"
 
 
 def _number(value: float | None) -> str:

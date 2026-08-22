@@ -9,7 +9,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
-from .final_manifest import validate_final_manifest
+from .final_manifest import generator_from_entry, validate_final_manifest
 from .generator import SyntheticInstanceGenerator
 from .schema import EnvironmentMetadata
 
@@ -21,7 +21,7 @@ def generators_from_final_manifest(
 
     validate_final_manifest(manifest, phase3_manifest)
     generators = tuple(
-        _generator_from_entry(entry) for entry in manifest["instances"]
+        generator_from_entry(entry) for entry in manifest["instances"]
     )
     if tuple(generator.instance_id for generator in generators) != tuple(
         entry["instance_id"] for entry in manifest["instances"]
@@ -146,20 +146,6 @@ def write_neural_campaign_metadata(
     }
     output = Path(path)
     output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
-def _generator_from_entry(entry: dict[str, Any]) -> SyntheticInstanceGenerator:
-    config = entry["generator"]
-    return SyntheticInstanceGenerator(
-        seed=config["seed"],
-        stock_length=config["stock_length"],
-        kerf=config["kerf"],
-        number_of_types=config["number_of_types"],
-        piece_length_range=tuple(config["piece_length_range"]),
-        demand_range=tuple(config["demand_range"]),
-        length_distribution=config["length_distribution"],
-        demand_distribution=config["demand_distribution"],
-    )
 
 
 def _installed_version(name: str) -> str:
