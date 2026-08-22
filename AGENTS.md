@@ -6,18 +6,22 @@ Ce fichier s’applique à l’ensemble du dépôt. Toute session de développem
 
 Répondre expérimentalement à la question suivante :
 
-> Un composant appris peut-il accélérer significativement la génération de colonnes sur de grandes instances de Cutting Stock 1D, tout en préservant la qualité de solution du solveur classique ?
+> Un agent de deep RL peut-il améliorer la qualité des solutions de découpe (moins de barres, moins de perte) produites pour le Cutting Stock 1D par rapport à la baseline classique de génération de colonnes, sans aucune contrainte de temps mur-à-mur ?
+
+Note historique : les phases 1 à 6 ont répondu à la question initiale d'accélération du temps
+mur-à-mur par une réponse négative rigoureusement documentée ([docs/conclusion.md](docs/conclusion.md)).
+Cette réponse reste valable et close ; la mission évolue vers la qualité à partir de la phase 7.
 
 ## Invariants non négociables
 
-1. Le problème étudié est exclusivement le **Cutting Stock 1D**.
-2. La **génération de colonnes** est le socle d’optimisation classique.
-3. Le ML sert à **accélérer la génération de colonnes**, initialement par la sélection ou le classement de colonnes candidates ; il ne remplace pas le solveur.
-4. La qualité de solution ne doit pas être sciemment sacrifiée pour afficher un gain de temps. Toute différence doit être mesurée et visible.
+1. Le problème étudié est exclusivement le **Cutting Stock 1D**, y compris ses variantes monodimensionnelles déclarées (multi-formats de barres, kerf exercé).
+2. La **génération de colonnes** est le socle d’optimisation classique et la baseline de comparaison.
+3. Le ML sert à **améliorer la qualité des solutions** : proposition de colonnes supplémentaires, amélioration primal au-delà du maître entier restreint, ou guidage de la recherche ; il ne remplace pas le solveur ni la vérification exacte.
+4. Le temps mur-à-mur est **hors périmètre d’évaluation** : une méthode plus lente est acceptable dès lors qu’elle améliore l’objectif mesuré. Toute différence doit être mesurée et visible.
 5. Un pricing exact ou un fallback exact reste le garde-fou avant toute déclaration de convergence.
-6. La métrique de performance principale est le temps mur-à-mur sur les instances difficiles et grandes, comparé sur des paires d’instances identiques.
-7. Le kerf est supporté dès le modèle du problème, avec la convention documentée, mais n’est pas un sujet de recherche autonome.
-8. Les autres familles de solveurs sont hors périmètre sauf demande explicite : Pointer Networks, solveur RL end-to-end, algorithmes génétiques, recuit simulé, AlphaZero, bin-packing RL générique, découpe 2D/3D, routage, ordonnancement, multi-usines ou arrivées stochastiques.
+6. La métrique de performance principale est l’**objectif de découpe** (nombre de barres, puis perte totale) comparé sur des paires d’instances identiques, et l’écart à une référence exacte lorsqu’elle existe. Les durées sont enregistrées à titre informatif et ne constituent jamais un critère de succès.
+7. Le kerf est supporté dès le modèle du problème, avec la convention documentée ; son exercice effectif dans les campagnes devient un axe de recherche à partir de la phase 8.
+8. Les autres familles de solveurs sont hors périmètre sauf demande explicite : Pointer Networks, solveur RL end-to-end remplaçant la génération de colonnes, algorithmes génétiques, recuit simulé, AlphaZero, bin-packing RL générique, découpe 2D/3D, routage, ordonnancement, multi-usines ou arrivées stochastiques. Le deep RL d’amélioration primal adossé à la boucle classique est au contraire le sujet central à partir de la phase 9.
 9. Les benchmarks doivent être reproductibles : graines, configuration, version du code, environnement, statuts et données brutes doivent être traçables.
 10. Toute figure de performance doit provenir de mesures réelles. Ne jamais inventer, interpoler comme mesure, ni publier de nombres synthétiques comme résultats.
 
@@ -40,10 +44,10 @@ Répondre expérimentalement à la question suivante :
 
 ## Règles d’expérimentation
 
-- Comparer Classical CG et Neural CG sur les mêmes identifiants d’instances et les mêmes limites de ressources.
-- Enregistrer le temps total ainsi que les composants RMP, pricing, maître entier, gestion des colonnes et inférence.
-- Ne jamais conclure à un speedup à partir du seul temps d’inférence.
-- Vérifier et reporter `objective_difference_vs_classical` avant d’agréger les runtimes.
+- Comparer Classical CG et les approches neurales sur les mêmes identifiants d’instances et les mêmes limites de ressources.
+- Enregistrer l’objectif de découpe en priorité ; les temps total et par composant (RMP, pricing, maître entier, gestion des colonnes, inférence, entraînement) restent journalisés à titre informatif.
+- Ne jamais conclure à une amélioration de qualité sans comparaison appariée et, lorsque disponible, référence exacte ou borne inférieure certifiée.
+- Vérifier et reporter `objective_difference_vs_classical` avant toute agrégation.
 - Conserver les échecs, timeouts et violations dans les rapports ; ne pas les filtrer silencieusement.
 - Ne fixer les seuils `SMALL`/`MEDIUM`/`LARGE`/`XL` qu’après profilage, puis versionner leur définition.
 

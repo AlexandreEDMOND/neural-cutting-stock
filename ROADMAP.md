@@ -1,8 +1,16 @@
 # Feuille de route atomique
 
-Cette feuille de route pilote le développement autonome du projet. Elle répond à une seule
-question : un composant appris peut-il accélérer significativement la génération de colonnes du
-Cutting Stock 1D sur les grandes instances, sans dégrader sciemment la qualité de solution ?
+Cette feuille de route pilote le développement autonome du projet. Les phases 1 à 6 ont répondu à
+la question initiale — un composant appris peut-il accélérer significativement la génération de
+colonnes sans dégrader la qualité ? — par une réponse négative documentée dans
+`docs/conclusion.md`. À compter de la phase 7, elle répond à une nouvelle question :
+
+> Un agent de deep RL peut-il améliorer la qualité des solutions de découpe (moins de barres,
+> moins de perte) par rapport à la baseline classique de génération de colonnes, sans aucune
+> contrainte de temps mur-à-mur ?
+
+La qualité est la métrique reine ; les durées sont journalisées mais ne constituent jamais un
+critère de succès.
 
 ## Règle d'exécution
 
@@ -177,3 +185,69 @@ succès.
 
 La prochaine itération est toujours la première case `- [ ]` de ce fichier. Aucun identifiant
 n'est recopié dans cette section afin que cette règle reste correcte après chaque commit.
+
+## Phase 7 — Référence exacte et mesure du trou d'optimalité entier
+
+Objectif : établir la vérité terrain de la qualité. La baseline classique ne certifie son maître
+entier que sur colonnes générées ; il faut une référence exacte pour savoir combien de barres
+restent gagnables avant de chercher à les gagner.
+
+- [ ] **P7.01** — Définir le schéma versionné `exact-reference-v1` : instance_id, méthode de référence, statut, optimum entier, borne inférieure associée, limites de la méthode, environnement.
+- [ ] **P7.02** — Implémenter l'énumération exhaustive des motifs maximaux pour instances bornées (types et demandes petits) avec génération paresseuse et garde-fou mémoire.
+- [ ] **P7.03** — Résoudre le maître entier complet par MILP sur motifs énumérés via `scipy.optimize.milp` (HiGHS déjà présent) ; statut et preuve persistés dans `exact-reference-v1`.
+- [ ] **P7.04** — Vérifier indépendamment chaque référence exacte : faisabilité du plan, cohérence borne LP ≤ optimum entier, contrôle croisé énumération/MILP sur un sous-échantillon.
+- [ ] **P7.05** — Calculer l'écart de la baseline classique (`optimal_over_generated_columns_only`) à la référence exacte sur tout le corpus existant et persister `results/exact-gap.*`.
+- [ ] **P7.06** — Publier le bilan chiffré des écarts par famille et taille : où une marge de qualité existe réellement, où elle est nulle.
+- [ ] **P7.07** — Si la marge est quasi nulle partout, identifier dans le générateur déterministe les paramètres créant des trous entiers non triviaux (demandes peu divisibles, ratios tendus) et documenter ces leviers sans encore les activer.
+- [ ] **P7.08** — Tests de non-régression : la CG classique reste optimale LP et inchangée en objectif sur toutes les instances disposant d'une référence exacte.
+- [ ] **P7.09** — Nettoyage du code de la phase : consolidation des helpers, suppression du code mort.
+- [ ] **P7.10** — Publication du bilan de phase fondé sur exécutions réelles, mise à jour du README et validation de la phase 7.
+
+## Phase 8 — Familles d'instances à marge de qualité
+
+Objectif : construire le benchmark où gagner des barres est possible. Une marge nulle rendrait la
+piste RL invérifiable ; il faut des familles où la baseline classique perd mesurablement des
+barres, tout en gardant une vérification exacte accessible.
+
+- [ ] **P8.01** — Étendre le générateur déterministe au kerf strictement positif exercé (limite connue de la campagne finale) avec tests de convention conservative.
+- [ ] **P8.02** — Ajouter le multi-formats de barres (2 à 3 longueurs de stock) comme variante monodimensionnelle déclarée, schéma et validations inclus.
+- [ ] **P8.03** — Créer des profils de demande structurée défavorables à l'arrondi du maître restreint (divisibilité difficile, ratios tendus) et vérifier qu'ils produisent des trous entiers non triviaux.
+- [ ] **P8.04** — Pousser la taille des instances (plus de types, demandes élevées) jusqu'au maintien possible d'une référence exacte MILP ou d'une borne inférieure certifiée.
+- [ ] **P8.05** — Mesurer l'écart classique-vs-référence sur chaque nouvelle famille ; ne retenir que celles présentant une marge positive sur une part significative des instances.
+- [ ] **P8.06** — Geler partitions entraînement/validation/test des familles retenues avec manifestes versionnés et sans fuite.
+- [ ] **P8.07** — Étendre le schéma de résultats aux nouveaux champs (formats multiples, kerf exercé) avec rétrocompatibilité des campagnes antérieures.
+- [ ] **P8.08** — Bilan intermédiaire : tableau des marges par famille, choix documenté du benchmark qualité final.
+- [ ] **P8.09** — Nettoyage du code de la phase.
+- [ ] **P8.10** — Publication du bilan de phase, mise à jour du README et validation de la phase 8.
+
+## Phase 9 — Agent deep RL d'amélioration primal
+
+Objectif : entraîner un agent qui améliore l'objectif au-delà du maître entier restreint classique,
+sans contrainte de temps. Le solveur et la vérification exacte restent le socle ; l'agent propose,
+le vérificateur dispose.
+
+- [ ] **P9.01** — Définir l'interface `quality-agent` : entrées (instance, pool de colonnes, solution courante), sortie (motifs ou colonnes supplémentaires proposés), contrat de vérification indépendante systématique.
+- [ ] **P9.02** — Construire l'environnement RL : épisode = raffinement itératif de la solution entière, observation = état du pool et de la solution, récompense = réduction de barres ou de perte, pénalité stricte pour plan invalide.
+- [ ] **P9.03** — Introduire PyTorch comme dépendance justifiée et versionnée, avec entraînement reproductible : graines, checkpoints versionnés, courbes persistées.
+- [ ] **P9.04** — Baseline d'apprentissage par imitation du choix exact sur petites instances, afin de valider l'interface avant tout RL profond.
+- [ ] **P9.05** — Entraîner une politique profonde (algorithme documenté et justifié) sur les familles à marge de la phase 8, avec journal complet des expériences.
+- [ ] **P9.06** — Intégrer le pipeline Neural-QC : partir de la solution classique restreinte, appliquer l'agent jusqu'à convergence ou budget d'amélioration déclaré.
+- [ ] **P9.07** — Garde-fous de publication : toute solution finale vérifiée indépendamment, statuts honnêtes (amélioré/égal/dégradé), échecs conservés.
+- [ ] **P9.08** — Évaluation offline sur partition de validation : gain moyen de barres vs baseline classique, par famille et taille.
+- [ ] **P9.09** — Ablations obligatoires : recherche aléatoire et gloutonne à budget égal, pour prouver l'apport propre de l'apprentissage.
+- [ ] **P9.10** — Nettoyage du code de la phase.
+- [ ] **P9.11** — Publication du bilan de phase, mise à jour du README et validation de la phase 9.
+
+## Phase 10 — Évaluation finale qualité et réponse
+
+Objectif : répondre sans ambiguïté à la nouvelle question de recherche sur des instances non vues,
+avec la même rigueur que la phase 6 mais la qualité comme métrique reine.
+
+- [ ] **P10.01** — Geler code, dépendances, checkpoints, configurations, partitions et protocole final qualité.
+- [ ] **P10.02** — Générer et valider le manifeste des instances non vues issues des familles à marge.
+- [ ] **P10.03** — Exécuter la campagne appariée Classical CG vs Neural-QC sur instances non vues, répétitions incluses, durées journalisées hors critère.
+- [ ] **P10.04** — Comparer chaque solution aux références exactes quand elles existent, sinon aux bornes inférieures certifiées.
+- [ ] **P10.05** — Analyser l'incertitude des gains (intervalles de confiance par instance et agrégés).
+- [ ] **P10.06** — Produire les figures de qualité (barres gagnées par famille et taille) dérivées exclusivement des données validées.
+- [ ] **P10.07** — Rédiger la conclusion scientifique : réponse à la question qualité, portée exacte, limites et conditions de reproduction.
+- [ ] **P10.08** — Publier les résultats finaux, mettre à jour le README et valider la phase 10.
