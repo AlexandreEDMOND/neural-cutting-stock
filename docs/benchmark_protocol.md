@@ -53,13 +53,21 @@ Les noms suivants sont le contrat commun des futurs fichiers tabulaires. Les cha
 
 | Champ | Type | Définition |
 |---|---:|---|
-| `stock_length` | réel | Longueur d’une barre. |
-| `kerf` | réel | Trait de scie par pièce selon la convention v1. |
+| `stock_length` | réel | Longueur d’une barre ; la plus grande longueur déclarée pour la variante multi-formats. |
+| `kerf` | réel | Trait de scie par pièce selon la convention v1 ; strictement positif lorsque le kerf est exercé. |
+| `number_of_stock_formats` | entier nullable | Nombre de longueurs de barre déclarées (1 à 3) ; nul dans les campagnes antérieures à la Phase 8. |
+| `stock_lengths` | chaîne nullable | Longueurs de barre déclarées, ascendantes, distinctes et jointes par `;` ; la plus grande est égale à `stock_length`. |
 | `number_of_piece_types` | entier | Nombre de longueurs distinctes normalisées. |
 | `total_demand` | entier | Somme des demandes. |
 | `requested_length` | réel | `sum(length_i * demand_i)`. |
 | `length_distribution` | chaîne | Famille et paramètres versionnés. |
 | `demand_distribution` | chaîne | Famille et paramètres versionnés. |
+
+Extension Phase 8 et rétrocompatibilité : les champs `number_of_stock_formats` et
+`stock_lengths` portent les formats multiples déclarés (P8.02) et le kerf exercé (P8.01) reste
+porté par le champ existant `kerf` avec son bilan matière (`kerf_loss`). Ces champs sont
+optionnels : un enregistrement dépourvu de ces colonnes reste valide sous `benchmark-run-v1`,
+dont la version est conservée car aucun champ existant ne change de sens.
 
 ### Qualité et matière
 

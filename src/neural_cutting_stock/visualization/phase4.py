@@ -24,6 +24,7 @@ _INT_FIELDS = {
     "seed",
     "repetition",
     "number_of_piece_types",
+    "number_of_stock_formats",
     "total_demand",
     "peak_memory_bytes",
     "exact_pricing_calls",
@@ -65,6 +66,8 @@ _FLOAT_FIELDS = {
 }
 _NULLABLE_FIELDS = {
     "size_class",
+    "number_of_stock_formats",
+    "stock_lengths",
     "objective_value",
     "number_of_stock_bars",
     "lp_objective_value",
@@ -121,6 +124,10 @@ def load_phase4_runs(path: str | Path) -> tuple[BenchmarkRunRecord, ...]:
             for field in _FLOAT_FIELDS:
                 if values.get(field) is not None:
                     values[field] = float(values[field])
+            if values.get("stock_lengths"):
+                values["stock_lengths"] = tuple(
+                    float(length) for length in str(values["stock_lengths"]).split(";")
+                )
             values["solver_mode"] = SolverMode(values["solver_mode"])
             values["run_status"] = RunStatus(values["run_status"])
             values["environment"] = EnvironmentMetadata(

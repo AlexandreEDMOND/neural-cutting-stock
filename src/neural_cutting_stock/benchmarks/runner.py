@@ -235,7 +235,7 @@ class ClassicalBenchmarkRunner:
         solver_mode: SolverMode = SolverMode.CLASSICAL,
         solver_version: str | None = None,
     ):
-        return {
+        identity = {
             "run_id": run_id,
             "instance_id": generator.instance_id,
             "solver_mode": solver_mode,
@@ -255,6 +255,11 @@ class ClassicalBenchmarkRunner:
             "length_distribution": generator.length_distribution,
             "demand_distribution": generator.demand_distribution,
         }
+        declared_stock_lengths = getattr(instance, "stock_lengths", None)
+        if declared_stock_lengths is not None:
+            identity["number_of_stock_formats"] = len(declared_stock_lengths)
+            identity["stock_lengths"] = tuple(declared_stock_lengths)
+        return identity
 
 
 def _component_status(status: int | None) -> str:

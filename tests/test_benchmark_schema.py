@@ -17,6 +17,7 @@ from neural_cutting_stock.benchmarks import (
     define_useful_column_target,
     read_trajectory,
     replay_trajectory,
+    write_raw_runs,
     write_trajectory,
 )
 from neural_cutting_stock.problem import CuttingStockInstance
@@ -108,6 +109,57 @@ def test_neural_fields_are_required_only_for_neural_runs() -> None:
     ],
 )
 def test_record_rejects_invalid_contract(changes: dict[str, object], message: str) -> None:
+    with pytest.raises(ValueError, match=message):
+        _record(**changes)
+
+
+def test_record_defaults_keep_previous_campaigns_valid() -> None:
+    record = _record()
+
+    output = record.to_dict()
+
+    assert record.number_of_stock_formats is None
+    assert record.stock_lengths is None
+    assert output["number_of_stock_formats"] is None
+    assert output["stock_lengths"] is None
+
+
+def test_record_carries_declared_multi_format_stock_lengths() -> None:
+    record = _record(number_of_stock_formats=2, stock_lengths=(100.0, 50.0))
+
+    output = record.to_dict()
+
+    assert record.stock_lengths == (50.0, 100.0)
+    assert output["number_of_stock_formats"] == 2
+    assert output["stock_lengths"] == "50.0;100.0"
+
+
+def test_kerf_exercised_single_format_record_validates_unchanged() -> None:
+    record = _record(kerf=2.0, number_of_stock_formats=1, stock_lengths=(100.0,))
+
+    assert record.kerf == 2.0
+    assert record.stock_lengths == (100.0,)
+    assert record.to_dict()["stock_lengths"] == "100.0"
+
+
+@pytest.mark.parametrize(
+    ("changes", "message"),
+    [
+        ({"number_of_stock_formats": 0}, "positive integer"),
+        ({"number_of_stock_formats": True}, "positive integer"),
+        ({"stock_lengths": ()}, "between one and three"),
+        ({"stock_lengths": (100.0, 100.0)}, "distinct"),
+        ({"stock_lengths": (40.0, 60.0)}, "largest declared length"),
+        ({"stock_lengths": (50.0, float("nan"))}, "finite numbers"),
+        (
+            {"number_of_stock_formats": 3, "stock_lengths": (50.0, 100.0)},
+            "match the count",
+        ),
+    ],
+)
+def test_record_rejects_invalid_stock_format_fields(
+    changes: dict[str, object], message: str
+) -> None:
     with pytest.raises(ValueError, match=message):
         _record(**changes)
 
@@ -437,3 +489,22 @@ def test_trajectory_replay_rejects_changed_dual() -> None:
 
     assert not replay.valid
     assert any("dual values differ" in error for error in replay.errors)
+
+
+def test_extended_and_legacy_records_round_trip_through_the_raw_table(tmp_path) -> None:
+    from neural_cutting_stock.visualization.phase4 import load_phase4_runs
+
+    legacy = _record()
+    multi_format = _record(
+        run_id="run-2",
+        instance_id="instance-2",
+        kerf=2.0,
+        number_of_stock_formats=2,
+        stock_lengths=(50.0, 100.0),
+    )
+    path = tmp_path / "runs.csv"
+
+    write_raw_runs(path, (legacy, multi_format))
+    loaded = load_phase4_runs(path)
+
+    assert loaded == (legacy, multi_format)

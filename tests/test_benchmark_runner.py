@@ -10,6 +10,7 @@ from neural_cutting_stock.benchmarks import (
     SyntheticInstanceGenerator,
     write_raw_runs,
 )
+from neural_cutting_stock.problem import MultiFormatCuttingStockInstance
 from neural_cutting_stock.solver import ColumnGenerationResult
 
 
@@ -223,6 +224,44 @@ def test_resource_limits_are_part_of_campaign_identity() -> None:
     )
 
     assert unlimited.config_id != limited.config_id
+
+
+def test_record_identity_declares_multi_format_stock_lengths() -> None:
+    class _DeclaredFormatsGenerator:
+        seed = 11
+        instance_id = "declared-multi-format"
+        length_distribution = "uniform_integer_v1"
+        demand_distribution = "uniform_integer_v1"
+
+    runner = ClassicalBenchmarkRunner(
+        ClassicalBenchmarkConfig(
+            generators=(SyntheticInstanceGenerator(seed=12),),
+            environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+        )
+    )
+    instance = MultiFormatCuttingStockInstance((100.0, 50.0), 2.0, [20.0, 45.0], [2, 3])
+
+    identity = runner._record_identity(_DeclaredFormatsGenerator(), instance, 0, "run-multi")
+
+    assert identity["stock_length"] == 100.0
+    assert identity["kerf"] == 2.0
+    assert identity["number_of_stock_formats"] == 2
+    assert identity["stock_lengths"] == (50.0, 100.0)
+
+
+def test_record_identity_keeps_single_format_records_unchanged() -> None:
+    generator = SyntheticInstanceGenerator(seed=11)
+    runner = ClassicalBenchmarkRunner(
+        ClassicalBenchmarkConfig(
+            generators=(generator,),
+            environment=EnvironmentMetadata("commit", "3.11", "deps", "machine"),
+        )
+    )
+
+    identity = runner._record_identity(generator, generator.generate(), 0, "run-single")
+
+    assert "number_of_stock_formats" not in identity
+    assert "stock_lengths" not in identity
 
 
 def test_paired_config_validates_shared_budget_and_resource_limits() -> None:

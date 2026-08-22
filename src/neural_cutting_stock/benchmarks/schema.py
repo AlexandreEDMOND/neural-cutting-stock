@@ -3,6 +3,7 @@
 import math
 from dataclasses import dataclass, fields
 from enum import StrEnum
+from numbers import Real
 from typing import Any
 
 from ._validation import require_text as _require_text
@@ -68,6 +69,8 @@ class BenchmarkRunRecord:
     termination_reason: str
     schema_version: str = SCHEMA_VERSION
     size_class: str | None = None
+    number_of_stock_formats: int | None = None
+    stock_lengths: tuple[float, ...] | None = None
     objective_value: float | None = None
     number_of_stock_bars: int | None = None
     lp_objective_value: float | None = None
@@ -126,6 +129,27 @@ class BenchmarkRunRecord:
             or self.repetition < 0
         ):
             raise ValueError("repetition must be a non-negative integer")
+        if self.number_of_stock_formats is not None and (
+            not isinstance(self.number_of_stock_formats, int)
+            or isinstance(self.number_of_stock_formats, bool)
+            or self.number_of_stock_formats < 1
+        ):
+            raise ValueError("number_of_stock_formats must be a positive integer when present")
+        if self.stock_lengths is not None:
+            object.__setattr__(
+                self, "stock_lengths", _validated_declared_stock_lengths(self.stock_lengths)
+            )
+            if self.stock_lengths[-1] != self.stock_length:
+                raise ValueError(
+                    "stock_lengths must carry stock_length as its largest declared length"
+                )
+            if (
+                self.number_of_stock_formats is not None
+                and len(self.stock_lengths) != self.number_of_stock_formats
+            ):
+                raise ValueError(
+                    "number_of_stock_formats must match the count of declared stock_lengths"
+                )
         if self.solver_mode is SolverMode.NEURAL and not self.model_id:
             raise ValueError("model_id is required for neural runs")
         if self.solver_mode is SolverMode.CLASSICAL and any(
@@ -161,13 +185,23 @@ class BenchmarkRunRecord:
                 raise ValueError(f"{field.name} must be a non-negative integer when present")
 
     def to_dict(self) -> dict[str, Any]:
-        """Return the flat, JSON-ready representation used by raw tables."""
+        """Return the flat, JSON-ready representation used by raw tables.
+
+        ``stock_lengths`` is flattened to its canonical ascending ``;``-joined
+        spelling so the tabular contract stays scalar per cell; ``None`` stays
+        absent of meaning for campaigns recorded before the field existed.
+        """
 
         values = {
             field.name: getattr(self, field.name)
             for field in fields(self)
             if field.name != "environment"
         }
+        values["stock_lengths"] = (
+            None
+            if self.stock_lengths is None
+            else ";".join(str(length) for length in self.stock_lengths)
+        )
         values.update(
             {
                 "code_commit": self.environment.code_commit,
@@ -179,3 +213,27 @@ class BenchmarkRunRecord:
         values["solver_mode"] = self.solver_mode.value
         values["run_status"] = self.run_status.value
         return values
+
+
+def _validated_declared_stock_lengths(value: object) -> tuple[float, ...]:
+    """Normalize declared stock lengths to distinct ascending positive floats."""
+
+    try:
+        candidates = tuple(value)  # type: ignore[arg-type]
+    except TypeError as error:
+        raise ValueError("stock_lengths must be an iterable of real numbers") from error
+    if not 1 <= len(candidates) <= 3:
+        raise ValueError("stock_lengths must declare between one and three stock lengths")
+    lengths: list[float] = []
+    for candidate in candidates:
+        if isinstance(candidate, bool) or not isinstance(candidate, Real):
+            raise ValueError("stock_lengths must contain real numbers")
+        number = float(candidate)
+        if not math.isfinite(number):
+            raise ValueError("stock_lengths must contain finite numbers")
+        if number <= 0:
+            raise ValueError("stock_lengths must contain strictly positive numbers")
+        lengths.append(number)
+    if len(set(lengths)) != len(lengths):
+        raise ValueError("stock_lengths must contain distinct lengths")
+    return tuple(sorted(lengths))
