@@ -4,7 +4,7 @@ from dataclasses import dataclass, fields
 from enum import StrEnum
 from typing import Any
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 from neural_cutting_stock.solver.complete_master import (
     CompleteIntegerMaster,
     CompleteMasterResult,
@@ -233,7 +233,7 @@ def build_milp_exact_reference(
 
 def solve_milp_exact_reference(
     instance_id: str,
-    instance: CuttingStockInstance,
+    instance: AnyCuttingStockInstance,
     *,
     environment: EnvironmentMetadata,
     integrality_tolerance: float,

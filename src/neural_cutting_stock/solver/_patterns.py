@@ -1,13 +1,18 @@
 """Shared validation for generated Cutting Stock patterns."""
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 
 def validate_patterns(
-    instance: CuttingStockInstance,
+    instance: AnyCuttingStockInstance,
     patterns: tuple[tuple[int, ...], ...],
 ) -> None:
-    """Validate the patterns accepted by a restricted master problem."""
+    """Validate the patterns accepted by a restricted master problem.
+
+    A pattern is accepted when its kerf-aware capacity fits at least one
+    declared stock length, which for a declared multi-format instance is the
+    largest one (see ``MultiFormatCuttingStockInstance.stock_length``).
+    """
 
     if not patterns:
         raise ValueError("patterns must not be empty")

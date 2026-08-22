@@ -17,11 +17,13 @@ from neural_cutting_stock.benchmarks import (
     TIGHT_RATIO_LENGTH_DISTRIBUTION,
     EnvironmentMetadata,
     FamilyMarginSpec,
+    MultiFormatSyntheticGenerator,
     SyntheticInstanceGenerator,
     measure_family_margins,
     phase8_family_specs,
     summarize_family_margin_entries,
 )
+from neural_cutting_stock.problem import MultiFormatCuttingStockInstance
 
 ENVIRONMENT = EnvironmentMetadata("family-margins-test", "test", "test", "test")
 
@@ -95,6 +97,7 @@ def test_phase8_specs_are_deterministic_homogeneous_and_disjoint() -> None:
     assert [spec.family_label for spec in specs] == [
         "kerf-exercised-uniform-t4-v1",
         "kerf-exercised-uniform-t6-v1",
+        "multi-stock-formats-t4-v1",
         "structured-tight-divisibility-t3-v1",
         "structured-tight-divisibility-t4-v1",
         "scaled-tight-divisibility-t12-v1",
@@ -107,9 +110,10 @@ def test_phase8_specs_are_deterministic_homogeneous_and_disjoint() -> None:
     assert counts == {
         "kerf-exercised-uniform-t4-v1": 6,
         "kerf-exercised-uniform-t6-v1": 6,
+        "multi-stock-formats-t4-v1": 6,
+        "scaled-tight-divisibility-t12-v1": 6,
         "structured-tight-divisibility-t3-v1": 6,
         "structured-tight-divisibility-t4-v1": 6,
-        "scaled-tight-divisibility-t12-v1": 6,
     }
     scaled = {spec.family_label: spec for spec in specs}["scaled-tight-divisibility-t12-v1"]
     assert scaled.configuration == {
@@ -120,6 +124,14 @@ def test_phase8_specs_are_deterministic_homogeneous_and_disjoint() -> None:
         "demand_range": (20, 100),
         "length_distribution": TIGHT_RATIO_LENGTH_DISTRIBUTION,
         "demand_distribution": AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION,
+    }
+    multi = {spec.family_label: spec for spec in specs}["multi-stock-formats-t4-v1"]
+    assert multi.configuration == {
+        "stock_lengths": (50.0, 100.0),
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": (10, 90),
+        "demand_range": (5, 30),
     }
 
 
@@ -141,6 +153,105 @@ def test_spec_rejects_cells_that_do_not_share_one_configuration() -> None:
         FamilyMarginSpec("empty", ())
     with pytest.raises(ValueError):
         FamilyMarginSpec("   ", (SyntheticInstanceGenerator(seed=1),))
+    with pytest.raises(ValueError):
+        FamilyMarginSpec("no-generate", (object(),))
+
+
+def test_multi_format_generator_produces_deterministic_declared_instances() -> None:
+    generator = MultiFormatSyntheticGenerator(
+        seed=3,
+        stock_lengths=(100.0, 50.0),
+        number_of_types=4,
+        demand_range=(5, 30),
+    )
+
+    first = generator.generate()
+    second = generator.generate()
+    reordered = MultiFormatSyntheticGenerator(
+        seed=3,
+        stock_lengths=(50.0, 100.0),
+        number_of_types=4,
+        demand_range=(5, 30),
+    ).generate()
+
+    assert isinstance(first, MultiFormatCuttingStockInstance)
+    assert first.stock_lengths == (50.0, 100.0)
+    assert first == second == reordered
+    assert generator.instance_id == generator.instance_id
+    assert (
+        MultiFormatSyntheticGenerator(
+            seed=4,
+            stock_lengths=(100.0, 50.0),
+            number_of_types=4,
+            demand_range=(5, 30),
+        ).instance_id
+        != generator.instance_id
+    )
+    assert generator.configuration == {
+        "stock_lengths": (50.0, 100.0),
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": (10, 90),
+        "demand_range": (5, 30),
+    }
+
+
+@pytest.mark.parametrize(
+    "stock_lengths",
+    [
+        (100.0,),
+        (100.0, 50.0, 20.0, 10.0),
+        (100.0, 100.0),
+        (0.0, 50.0),
+        (-100.0, 50.0),
+        (float("inf"), 50.0),
+    ],
+)
+def test_multi_format_generator_rejects_invalid_stock_lengths(stock_lengths) -> None:
+    with pytest.raises(ValueError):
+        MultiFormatSyntheticGenerator(seed=1, stock_lengths=stock_lengths)
+
+
+def test_multi_format_generator_requires_pieces_on_the_largest_format() -> None:
+    with pytest.raises(ValueError, match="every piece must fit"):
+        MultiFormatSyntheticGenerator(
+            seed=1,
+            stock_lengths=(100.0, 50.0),
+            piece_length_range=(10, 120),
+        )
+
+
+def test_measure_family_margins_covers_a_small_multi_format_family_end_to_end() -> None:
+    spec = FamilyMarginSpec(
+        "multi-stock-formats-tiny",
+        tuple(
+            MultiFormatSyntheticGenerator(
+                seed=seed,
+                stock_lengths=(60.0, 30.0),
+                number_of_types=3,
+                piece_length_range=(5, 25),
+                demand_range=(2, 6),
+            )
+            for seed in range(1, 3)
+        ),
+    )
+
+    report = measure_family_margins((spec,), environment=ENVIRONMENT)
+
+    assert report["counts"]["instance_count"] == 2
+    assert report["unmeasured_families"] == []
+    family = report["families"][0]
+    assert family["family_label"] == "multi-stock-formats-tiny"
+    assert family["all_gaps_available"] is True
+    for entry in report["instances"]:
+        assert entry["classical_status"] == "converged"
+        assert entry["classical_plan_feasible"] is True
+        assert entry["reference_status"] == "optimal"
+        assert entry["verification_passed"] is True
+        assert entry["classical_bars"] >= entry["integer_optimum_bars"]
+        expected_gap = entry["classical_bars"] - entry["integer_optimum_bars"]
+        assert entry["gap_bars"] == expected_gap
+        assert entry["configuration"]["stock_lengths"] == (30.0, 60.0)
 
 
 def test_measure_family_margins_runs_real_executions_and_applies_the_rule() -> None:

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import LinearConstraint, milp
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 from ._patterns import validate_patterns
 
@@ -25,7 +25,7 @@ class IntegerRestrictedMasterProblem:
 
     def __init__(
         self,
-        instance: CuttingStockInstance,
+        instance: AnyCuttingStockInstance,
         patterns: tuple[tuple[int, ...], ...],
     ) -> None:
         validate_patterns(instance, patterns)

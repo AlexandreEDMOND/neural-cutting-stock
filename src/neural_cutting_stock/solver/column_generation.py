@@ -5,7 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from time import perf_counter
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .pricing import ExactPricing, PricingResult
@@ -13,7 +13,7 @@ from .rmp import RestrictedMasterProblem, RMPResult, RMPState
 from .verification import PlanVerification, verify_plan
 
 ColumnSelector = Callable[
-    [CuttingStockInstance, tuple[tuple[int, ...], ...], tuple[float, ...]],
+    [AnyCuttingStockInstance, tuple[tuple[int, ...], ...], tuple[float, ...]],
     tuple[tuple[int, ...], ...],
 ]
 
@@ -64,11 +64,16 @@ class ColumnGenerationResult:
 
 
 class ColumnGeneration:
-    """Iteratively solve the RMP and add exact pricing columns."""
+    """Iteratively solve the RMP and add exact pricing columns.
+
+    Declared multi-format instances are accepted and solved exactly through
+    their largest declared format (see
+    ``MultiFormatCuttingStockInstance.stock_length``).
+    """
 
     def __init__(
         self,
-        instance: CuttingStockInstance,
+        instance: AnyCuttingStockInstance,
         reduced_cost_tolerance: float = 1e-9,
         max_runtime_seconds: float | None = None,
         max_iterations: int | None = None,

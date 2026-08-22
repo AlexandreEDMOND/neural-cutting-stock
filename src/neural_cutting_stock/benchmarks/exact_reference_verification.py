@@ -10,7 +10,7 @@ as errors and never silently repaired.
 
 from dataclasses import dataclass
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 from neural_cutting_stock.solver import (
     CompleteMasterResult,
     ExhaustiveIntegerSearch,
@@ -42,7 +42,7 @@ class ExactReferenceVerification:
 
 def verify_milp_exact_reference(
     instance_id: str,
-    instance: CuttingStockInstance,
+    instance: AnyCuttingStockInstance,
     outcome: CompleteMasterResult,
     record: ExactReferenceRecord,
     *,

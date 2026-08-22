@@ -79,6 +79,7 @@ from .generalization import (
 from .generator import (
     AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION,
     TIGHT_RATIO_LENGTH_DISTRIBUTION,
+    MultiFormatSyntheticGenerator,
     SyntheticInstanceGenerator,
 )
 from .matrix import BenchmarkMatrix, DistributionSpec
@@ -162,6 +163,7 @@ __all__ = [
     "RunStatus",
     "SolverMode",
     "SyntheticInstanceGenerator",
+    "MultiFormatSyntheticGenerator",
     "TIGHT_RATIO_LENGTH_DISTRIBUTION",
     "AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION",
     "FINAL_MANIFEST_SCHEMA_VERSION",

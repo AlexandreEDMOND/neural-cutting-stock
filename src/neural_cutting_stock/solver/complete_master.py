@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import LinearConstraint, milp
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 from .maximal_patterns import MaximalPatternLimits, iter_maximal_patterns
 
@@ -28,14 +28,16 @@ class CompleteIntegerMaster:
     Every plan of the complete demand-bounded master extends bar by bar to a
     plan over maximal patterns with the same number of bars, so the MILP
     optimum over the enumerated maximal patterns is the proven integer optimum
-    of the complete master. HiGHS runs with a zero relative gap and its
-    branch-and-bound dual bound is reported as the certified lower bound
-    attached to that proof.
+    of the complete master. For a declared multi-format instance the
+    enumeration runs against the largest declared format, whose master has
+    the same optimum (see ``MultiFormatCuttingStockInstance.stock_length``).
+    HiGHS runs with a zero relative gap and its branch-and-bound dual bound
+    is reported as the certified lower bound attached to that proof.
     """
 
     def __init__(
         self,
-        instance: CuttingStockInstance,
+        instance: AnyCuttingStockInstance,
         limits: MaximalPatternLimits | None = None,
     ) -> None:
         self.instance = instance

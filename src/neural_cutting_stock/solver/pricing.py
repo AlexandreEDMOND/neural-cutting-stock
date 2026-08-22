@@ -7,7 +7,7 @@ from numbers import Real
 import numpy as np
 from scipy.optimize import LinearConstraint, milp
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,9 +22,15 @@ class PricingResult:
 
 
 class ExactPricing:
-    """Solve the bounded integer-knapsack pricing problem exactly."""
+    """Solve the bounded integer-knapsack pricing problem exactly.
 
-    def __init__(self, instance: CuttingStockInstance) -> None:
+    The knapsack capacity is ``instance.stock_length``, which for a declared
+    multi-format instance is the largest declared format: with non-negative
+    covering duals, the best column over all declared formats always lies in
+    that pattern set.
+    """
+
+    def __init__(self, instance: AnyCuttingStockInstance) -> None:
         self.instance = instance
 
     def solve(self, dual_values: tuple[float, ...]) -> PricingResult:
@@ -68,7 +74,7 @@ class ExactPricing:
 
 
 def _integer_capacity_coefficients(
-    instance: CuttingStockInstance,
+    instance: AnyCuttingStockInstance,
 ) -> tuple[np.ndarray, float]:
     """Scale decimal capacities so exact boundary patterns remain feasible."""
 

@@ -22,6 +22,11 @@ class MultiFormatCuttingStockInstance:
     documented conservative kerf rule reserves ``kerf`` capacity for every produced
     piece. Every demanded piece must fit alone on the largest declared stock length;
     shorter formats remain available to the patterns they can host.
+
+    The instance also satisfies the single-format surface consumed by the
+    classical components (``stock_length``, ``initial_patterns``, capacity and
+    demand accessors): see :attr:`stock_length` for why solving that view is
+    exact for this variant.
     """
 
     stock_lengths: tuple[float, ...]
@@ -52,10 +57,47 @@ class MultiFormatCuttingStockInstance:
         return len(self.piece_lengths)
 
     @property
+    def stock_length(self) -> float:
+        """Return the capacity view solved by the classical components.
+
+        This is the largest declared stock length, identical to
+        ``largest_stock_length``; it repeats the single-format name so the
+        column-generation loop, the exact pricing and the complete-master
+        reference accept the declared variant unchanged. The reduction is
+        exact rather than an approximation:
+
+        - a pattern fits at least one declared format if and only if it fits
+          the largest one, because capacity grows monotonically with the
+          piece counts while the formats are sorted ascending;
+        - every bar costs one unit whatever its declared format, so each bar
+          of any feasible plan can be replaced by the same pattern cut from
+          the largest declared format without changing coverage or the bar
+          count.
+
+        Both the LP relaxation and the integer master therefore admit optima
+        over largest-format patterns equal to those of the declared variant,
+        and the non-negative covering duals make the knapsack pricing over
+        this capacity bound find the best column among all format choices.
+        """
+
+        return self.stock_lengths[-1]
+
+    @property
     def largest_stock_length(self) -> float:
         """Return the largest declared stock length."""
 
         return self.stock_lengths[-1]
+
+    def initial_patterns(self) -> tuple[tuple[int, ...], ...]:
+        """Return demand-bounded homogeneous patterns on the largest format.
+
+        One pattern per piece type, each carrying as many copies of its type
+        as the largest declared format hosts within the demand. Because every
+        piece fits alone on that format, each count is at least one and the
+        initial restricted master stays feasible.
+        """
+
+        return self._reference.initial_patterns()
 
     def capacity_used(self, pattern: tuple[int, ...]) -> float:
         """Return capacity consumed by a pattern under the documented kerf rule."""

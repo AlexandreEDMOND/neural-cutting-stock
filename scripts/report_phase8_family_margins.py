@@ -11,15 +11,6 @@ from neural_cutting_stock.benchmarks import (
 )
 from neural_cutting_stock.visualization.phase8 import write_family_margins_markdown
 
-UNMEASURED_MULTI_FORMAT_FAMILY = {
-    "family_label": "multi-stock-formats",
-    "reason": (
-        "the declared multi-format variant (P8.02) is not measurable yet: the classical "
-        "column-generation loop and the complete-master MILP reference only accept "
-        "single-format instances"
-    ),
-}
-
 
 def main() -> None:
     args = _parse_args()
@@ -30,7 +21,6 @@ def main() -> None:
         integrality_tolerance=args.integrality_tolerance,
         feasibility_tolerance=args.feasibility_tolerance,
         cross_check_with_enumeration=args.cross_check_enumeration,
-        unmeasured_families=(UNMEASURED_MULTI_FORMAT_FAMILY,),
     )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)

@@ -4,7 +4,7 @@ import math
 from dataclasses import dataclass
 from numbers import Integral
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,12 +24,16 @@ class PlanVerification:
 
 
 def verify_plan(
-    instance: CuttingStockInstance,
+    instance: AnyCuttingStockInstance,
     patterns: tuple[tuple[int, ...], ...],
     column_values: tuple[int, ...],
     tolerance: float = 1e-9,
 ) -> PlanVerification:
-    """Verify an integer plan without relying on a solver result status."""
+    """Verify an integer plan without relying on a solver result status.
+
+    For a declared multi-format instance, capacity and trim accounting use
+    the largest declared format, the only format a generated plan needs.
+    """
 
     if not math.isfinite(tolerance) or tolerance < 0:
         raise ValueError("tolerance must be finite and non-negative")

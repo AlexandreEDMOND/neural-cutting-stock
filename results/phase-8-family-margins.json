@@ -1,14 +1,14 @@
 {
   "counts": {
-    "family_count": 5,
-    "gap_available_count": 30,
-    "instance_count": 30,
-    "positive_gap_count": 21,
+    "family_count": 6,
+    "gap_available_count": 36,
+    "instance_count": 36,
+    "positive_gap_count": 22,
     "retained_family_count": 3
   },
   "cross_check_with_enumeration": false,
   "environment": {
-    "code_commit": "efb6fda396d0cb176575ea8f6bdf03a996bd009c",
+    "code_commit": "c1f2a8bac4e97b6278d5a0e07bd05464b5b8293e",
     "dependency_versions": "numpy==2.4.6,scipy==1.17.1",
     "hardware_id": "platform=macOS-26.4.1-arm64-arm-64bit;machine=arm64;processor=arm;cpu_count=10;threads=OMP_NUM_THREADS=unset,OPENBLAS_NUM_THREADS=unset,MKL_NUM_THREADS=unset",
     "python_version": "3.11.15"
@@ -67,6 +67,34 @@
       "positive_share_of_instances": 0.3333333333333333,
       "retained": false,
       "zero_gap_count": 4
+    },
+    {
+      "all_gaps_available": true,
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available_count": 6,
+      "gap_unavailable_reasons": {},
+      "instance_count": 6,
+      "max_gap_bars": 1,
+      "positive_gap_count": 1,
+      "positive_share_of_instances": 0.16666666666666666,
+      "retained": false,
+      "zero_gap_count": 5
     },
     {
       "all_gaps_available": true,
@@ -631,6 +659,252 @@
       "verification_errors": [],
       "verification_passed": true,
       "zero_gap": false
+    },
+    {
+      "classical_bars": 33,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "dcdd63d4d0374dcb45c312dc38af3718d1ddef27d928fd6e2f7d7e47daeffbf6",
+      "integer_optimum_bars": 33,
+      "kerf": 0.0,
+      "lp_bound_bars": 33.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 9,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 1,
+      "stock_length": 100.0,
+      "total_demand": 76,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 30,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "06bd5da22cc53b82f909d6798802dfbe43e3454e870cf72fbd4ce73b5662d5da",
+      "integer_optimum_bars": 30,
+      "kerf": 0.0,
+      "lp_bound_bars": 29.2,
+      "number_of_piece_types": 4,
+      "pattern_count": 22,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 2,
+      "stock_length": 100.0,
+      "total_demand": 94,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 59,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "1502bd15c95d8b3835ded73a46a6906a1eebfc940ccc38215a7586584a3b60cf",
+      "integer_optimum_bars": 59,
+      "kerf": 0.0,
+      "lp_bound_bars": 58.25,
+      "number_of_piece_types": 4,
+      "pattern_count": 5,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 3,
+      "stock_length": 100.0,
+      "total_demand": 85,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 21,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available": true,
+      "gap_bars": 1,
+      "gap_unavailable_reason": null,
+      "instance_id": "5ef6f13e68b58d54af0956ab7a5c7723be2539c5def6d2a34d02e7abc36430a4",
+      "integer_optimum_bars": 20,
+      "kerf": 0.0,
+      "lp_bound_bars": 19.75,
+      "number_of_piece_types": 4,
+      "pattern_count": 8,
+      "positive_gap": true,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 4,
+      "stock_length": 100.0,
+      "total_demand": 43,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "classical_bars": 46,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "a7205f53a11b051a2349184c78a8c27db99ac8448a43b9033d27a3f80ef51076",
+      "integer_optimum_bars": 46,
+      "kerf": 0.0,
+      "lp_bound_bars": 46.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 4,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 5,
+      "stock_length": 100.0,
+      "total_demand": 65,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "classical_bars": 28,
+      "classical_plan_feasible": true,
+      "classical_status": "converged",
+      "configuration": {
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_lengths": [
+          50.0,
+          100.0
+        ]
+      },
+      "family_label": "multi-stock-formats-t4-v1",
+      "gap_available": true,
+      "gap_bars": 0,
+      "gap_unavailable_reason": null,
+      "instance_id": "a8b7334edba19203fc01a0055f0ea15d0dc68cf5782dbe5d9d4a2c64865a6e15",
+      "integer_optimum_bars": 28,
+      "kerf": 0.0,
+      "lp_bound_bars": 28.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 5,
+      "positive_gap": false,
+      "reference_error_message": null,
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "seed": 6,
+      "stock_length": 100.0,
+      "total_demand": 46,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
     },
     {
       "classical_bars": 425,
@@ -1358,10 +1632,5 @@
   "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
   "schema_version": "family-margins-v1",
   "significant_positive_share": 0.5,
-  "unmeasured_families": [
-    {
-      "family_label": "multi-stock-formats",
-      "reason": "the declared multi-format variant (P8.02) is not measurable yet: the classical column-generation loop and the complete-master MILP reference only accept single-format instances"
-    }
-  ]
+  "unmeasured_families": []
 }

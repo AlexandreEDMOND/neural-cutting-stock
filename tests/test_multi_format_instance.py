@@ -2,11 +2,20 @@ import json
 
 import pytest
 
+from neural_cutting_stock.benchmarks.exact_reference import (
+    ExactReferenceStatus,
+    solve_milp_exact_reference,
+)
+from neural_cutting_stock.benchmarks.exact_reference_verification import (
+    verify_milp_exact_reference,
+)
+from neural_cutting_stock.benchmarks.schema import EnvironmentMetadata
 from neural_cutting_stock.problem import (
     MULTI_STOCK_FORMAT_SCHEMA_VERSION,
     CuttingStockInstance,
     MultiFormatCuttingStockInstance,
 )
+from neural_cutting_stock.solver import ColumnGeneration, CompleteIntegerMaster
 
 
 def test_multi_format_instance_normalizes_formats_and_pieces() -> None:
@@ -152,3 +161,67 @@ def test_from_dict_rejects_invalid_payloads() -> None:
         MultiFormatCuttingStockInstance.from_dict(missing_kerf)
     with pytest.raises(ValueError, match="unknown fields"):
         MultiFormatCuttingStockInstance.from_dict(dict(valid, extra_field=1))
+
+
+def test_stock_length_view_exposes_the_largest_declared_format() -> None:
+    instance = MultiFormatCuttingStockInstance([100.0, 50.0], 1.0, [70, 20], [2, 1])
+
+    assert instance.stock_length == instance.largest_stock_length == 100.0
+
+
+def test_initial_patterns_are_homogeneous_on_the_largest_format() -> None:
+    instance = MultiFormatCuttingStockInstance([100.0, 50.0], 2.0, [30.0, 10.0], [10, 4])
+
+    patterns = instance.initial_patterns()
+
+    # Sorted piece types are (10, 30): eight copies of 10 fit the demand of 4,
+    # three copies of 30 fit one largest-format bar.
+    assert patterns == ((4, 0), (0, 3))
+    for pattern in patterns:
+        assert instance.fits_on(pattern, 100.0)
+
+
+def test_column_generation_solves_multi_format_instances_exactly() -> None:
+    multi = MultiFormatCuttingStockInstance(
+        [100.0, 50.0], 1.0, [70, 20, 45], [2, 6, 3]
+    )
+    twin = CuttingStockInstance(100.0, 1.0, multi.piece_lengths, multi.demands)
+
+    result = ColumnGeneration(multi, instance_id="multi").solve()
+    twin_result = ColumnGeneration(twin).solve()
+
+    assert result.status == "converged"
+    assert result.termination_reason == "no_improving_column"
+    assert result.verification is not None
+    assert result.verification.feasible
+    assert result.integer_solution_guarantee == "optimal_over_generated_columns_only"
+    assert result.rmp_result.objective_value == pytest.approx(
+        twin_result.rmp_result.objective_value
+    )
+    assert (
+        result.integer_master_result.objective_value
+        == twin_result.integer_master_result.objective_value
+    )
+
+
+ENVIRONMENT = EnvironmentMetadata("multi-format-reference-test", "test", "test", "test")
+
+
+def test_exact_reference_certifies_multi_format_instances_and_verifies_independently() -> None:
+    multi = MultiFormatCuttingStockInstance([100.0, 50.0], 0.0, [40, 25, 10], [3, 5, 7])
+    twin = CuttingStockInstance(100.0, 0.0, multi.piece_lengths, multi.demands)
+
+    outcome, record = solve_milp_exact_reference(
+        "multi-format-ref",
+        multi,
+        environment=ENVIRONMENT,
+        integrality_tolerance=1e-9,
+        feasibility_tolerance=1e-9,
+    )
+
+    assert record.status is ExactReferenceStatus.OPTIMAL
+    verification = verify_milp_exact_reference("multi-format-ref", multi, outcome, record)
+    assert verification.passed
+    twin_outcome = CompleteIntegerMaster(twin).solve()
+    assert record.integer_optimum_bars == round(twin_outcome.objective_value)
+    assert outcome.number_of_patterns > 0

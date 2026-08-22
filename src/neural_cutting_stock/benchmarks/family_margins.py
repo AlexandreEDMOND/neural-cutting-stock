@@ -26,6 +26,7 @@ from .exact_reference_verification import verify_milp_exact_reference
 from .generator import (
     AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION,
     TIGHT_RATIO_LENGTH_DISTRIBUTION,
+    MultiFormatSyntheticGenerator,
     SyntheticInstanceGenerator,
 )
 from .schema import EnvironmentMetadata
@@ -34,38 +35,31 @@ FAMILY_MARGINS_SCHEMA_VERSION = "family-margins-v1"
 
 SIGNIFICANT_POSITIVE_SHARE = 0.5
 
-_GENERATOR_CONFIGURATION_FIELDS = (
-    "stock_length",
-    "kerf",
-    "number_of_types",
-    "piece_length_range",
-    "demand_range",
-    "length_distribution",
-    "demand_distribution",
-)
-
 
 @dataclass(frozen=True, slots=True)
 class FamilyMarginSpec:
     """One Phase 8 family: a label and its deterministic instance cells.
 
-    Every cell must share the same generator configuration except the seed,
-    so the family identity is carried entirely by the configuration and the
-    cells differ only through their reproducible seeds.
+    Every cell must expose an integer ``seed``, a ``generate()`` method, an
+    ``instance_id`` and a ``configuration`` mapping, and all cells of one
+    spec must share the same configuration, so the family identity is carried
+    entirely by that configuration while the cells differ only through their
+    reproducible seeds. Single-format and declared multi-format generators
+    both qualify.
     """
 
     family_label: str
-    generators: tuple[SyntheticInstanceGenerator, ...]
+    generators: tuple[SyntheticInstanceGenerator | MultiFormatSyntheticGenerator, ...]
 
     def __post_init__(self) -> None:
         _require_text("family_label", self.family_label)
         if not self.generators:
             raise ValueError("a family margin spec requires at least one generator")
-        configuration = self._configuration(self.generators[0])
         for generator in self.generators:
-            if not isinstance(generator, SyntheticInstanceGenerator):
-                raise ValueError("family margin cells must be synthetic generators")
-            if self._configuration(generator) != configuration:
+            _validated_cell(generator)
+        configuration = dict(self.configuration)
+        for generator in self.generators:
+            if dict(generator.configuration) != configuration:
                 raise ValueError(
                     "family margin cells must share one configuration modulo the seed"
                 )
@@ -80,11 +74,26 @@ class FamilyMarginSpec:
     def configuration(self) -> dict[str, Any]:
         """Return the shared generator configuration without any seed."""
 
-        return self._configuration(self.generators[0])
+        return dict(_configuration_of(self.generators[0]))
 
-    @staticmethod
-    def _configuration(generator: SyntheticInstanceGenerator) -> dict[str, Any]:
-        return {name: getattr(generator, name) for name in _GENERATOR_CONFIGURATION_FIELDS}
+
+def _configuration_of(generator: Any) -> dict[str, Any]:
+    configuration = getattr(generator, "configuration", None)
+    if not isinstance(configuration, dict):
+        raise ValueError("family margin cells must provide a configuration mapping")
+    return configuration
+
+
+def _validated_cell(generator: object) -> None:
+    _configuration_of(generator)
+    seed = getattr(generator, "seed", None)
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        raise ValueError("family margin cells must provide an integer seed")
+    if not callable(getattr(generator, "generate", None)):
+        raise ValueError("family margin cells must provide a generate() method")
+    instance_id = getattr(generator, "instance_id", None)
+    if not isinstance(instance_id, str) or not instance_id.strip():
+        raise ValueError("family margin cells must provide a non-empty instance_id")
 
 
 def phase8_family_specs() -> tuple[FamilyMarginSpec, ...]:
@@ -93,12 +102,12 @@ def phase8_family_specs() -> tuple[FamilyMarginSpec, ...]:
     The kerf-exercised families isolate the P8.01 lever (strictly positive
     kerf under otherwise uniform sampling), the structured families combine
     the P8.03 levers (tight multiplicity-two ratios and awkward divisibility),
-    and the scaled family pushes the structured levers to twelve piece types
-    with higher demands while staying inside the default enumeration guards.
+    the scaled family pushes the structured levers to twelve piece types
+    with higher demands while staying inside the default enumeration guards,
+    and the multi-format family declares two stock lengths per instance so
+    its gap is measured exactly like the other families (P8.05a).
     Every spec keeps exactly one generator configuration so its label matches
-    a single deterministic ``family_id``. The multi-format variant declared in
-    P8.02 stays outside this list until the solver and the exact reference
-    accept it.
+    a single deterministic ``family_id``.
     """
 
     return (
@@ -122,6 +131,18 @@ def phase8_family_specs() -> tuple[FamilyMarginSpec, ...]:
                     number_of_types=6,
                     demand_range=(5, 30),
                     kerf=2.0,
+                )
+                for seed in range(1, 7)
+            ),
+        ),
+        FamilyMarginSpec(
+            "multi-stock-formats-t4-v1",
+            tuple(
+                MultiFormatSyntheticGenerator(
+                    seed=seed,
+                    stock_lengths=(100.0, 50.0),
+                    number_of_types=4,
+                    demand_range=(5, 30),
                 )
                 for seed in range(1, 7)
             ),

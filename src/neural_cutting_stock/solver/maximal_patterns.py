@@ -13,7 +13,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from decimal import Decimal
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,7 +35,7 @@ class PatternEnumerationLimitExceeded(RuntimeError):
 
 
 def iter_maximal_patterns(
-    instance: CuttingStockInstance,
+    instance: AnyCuttingStockInstance,
     limits: MaximalPatternLimits | None = None,
 ) -> Iterator[tuple[int, ...]]:
     """Yield every maximal pattern of ``instance`` in lexicographic order.

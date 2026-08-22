@@ -8,7 +8,7 @@ Source validée : [`phase-8-family-margins.json`](phase-8-family-margins.json) (
 - Tolérances : coût réduit **1e-09**, intégralité **1e-09**, faisabilité **1e-09**.
 - Contrôle croisé d'énumération : **désactivé**.
 - Règle de rétention : une famille est retenue lorsque chaque instance mesurée dispose d'un écart disponible et qu'au moins **50 %** des instances perdent au moins une barre face à leur optimum entier certifié.
-- Environnement tracé : commit `efb6fda396d0…`, Python 3.11.15, numpy==2.4.6,scipy==1.17.1.
+- Environnement tracé : commit `c1f2a8bac4e9…`, Python 3.11.15, numpy==2.4.6,scipy==1.17.1.
 
 ## Marge par famille
 
@@ -16,17 +16,12 @@ Source validée : [`phase-8-family-margins.json`](phase-8-family-margins.json) (
 |---|---:|---:|---:|---:|---:|---|
 | `kerf-exercised-uniform-t4-v1` | 6 | 6 | 5 | 1 | 17 % | non |
 | `kerf-exercised-uniform-t6-v1` | 6 | 6 | 4 | 2 | 33 % | non |
+| `multi-stock-formats-t4-v1` | 6 | 6 | 5 | 1 | 17 % | non |
 | `scaled-tight-divisibility-t12-v1` | 6 | 6 | 0 | 6 | 100 % | oui |
 | `structured-tight-divisibility-t3-v1` | 6 | 6 | 0 | 6 | 100 % | oui |
 | `structured-tight-divisibility-t4-v1` | 6 | 6 | 0 | 6 | 100 % | oui |
 
-3 famille(s) retenue(s) sur 5 ; part positive globale : 21 instances positives sur 30 mesurées.
-
-## Familles non mesurées
-
-Ces familles déclarées n'ont produit aucune mesure faute de support ; elles ne peuvent pas être retenues en l'état :
-
-- `multi-stock-formats` — the declared multi-format variant (P8.02) is not measurable yet: the classical column-generation loop and the complete-master MILP reference only accept single-format instances.
+3 famille(s) retenue(s) sur 6 ; part positive globale : 22 instances positives sur 36 mesurées.
 
 ## Instances à marge positive
 
@@ -47,6 +42,7 @@ Ces familles déclarées n'ont produit aucune mesure faute de support ; elles ne
 | `f7ddc2e4a2c5…` | `kerf-exercised-uniform-t4-v1` | 4 | 38 | 39 | 1 |
 | `06d43443e538…` | `kerf-exercised-uniform-t6-v1` | 6 | 46 | 47 | 1 |
 | `9fd418fd0c65…` | `kerf-exercised-uniform-t6-v1` | 6 | 49 | 50 | 1 |
+| `5ef6f13e68b5…` | `multi-stock-formats-t4-v1` | 4 | 20 | 21 | 1 |
 | `5250b4ad75b9…` | `structured-tight-divisibility-t3-v1` | 3 | 22 | 23 | 1 |
 | `577a1c8a265a…` | `structured-tight-divisibility-t3-v1` | 3 | 34 | 35 | 1 |
 | `8a70203d87d4…` | `structured-tight-divisibility-t3-v1` | 3 | 16 | 17 | 1 |

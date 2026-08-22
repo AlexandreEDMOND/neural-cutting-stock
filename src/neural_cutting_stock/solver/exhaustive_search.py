@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from functools import cache
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import AnyCuttingStockInstance
 
 from .maximal_patterns import MaximalPatternLimits, iter_maximal_patterns
 
@@ -34,7 +34,7 @@ class ExhaustiveIntegerSearch:
 
     def __init__(
         self,
-        instance: CuttingStockInstance,
+        instance: AnyCuttingStockInstance,
         limits: MaximalPatternLimits | None = None,
     ) -> None:
         self.instance = instance

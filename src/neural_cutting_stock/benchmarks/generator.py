@@ -7,11 +7,25 @@ from dataclasses import dataclass
 from decimal import Decimal
 from hashlib import sha256
 from numbers import Real
+from typing import Any
 
-from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.problem import (
+    CuttingStockInstance,
+    MultiFormatCuttingStockInstance,
+)
 
 TIGHT_RATIO_LENGTH_DISTRIBUTION = "tight_ratio_v1"
 AWKWARD_DIVISIBILITY_DEMAND_DISTRIBUTION = "awkward_divisibility_v1"
+
+GENERATOR_CONFIGURATION_FIELDS = (
+    "stock_length",
+    "kerf",
+    "number_of_types",
+    "piece_length_range",
+    "demand_range",
+    "length_distribution",
+    "demand_distribution",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -149,6 +163,12 @@ class SyntheticInstanceGenerator:
         return sha256(payload).hexdigest()
 
     @property
+    def configuration(self) -> dict[str, Any]:
+        """Return the generator configuration without any seed."""
+
+        return {name: getattr(self, name) for name in GENERATOR_CONFIGURATION_FIELDS}
+
+    @property
     def family_id(self) -> str:
         """Return a stable identifier for the generator family, excluding its seed."""
 
@@ -168,6 +188,113 @@ class SyntheticInstanceGenerator:
             sort_keys=True,
         ).encode("ascii")
         return sha256(payload).hexdigest()
+
+
+@dataclass(frozen=True, slots=True)
+class MultiFormatSyntheticGenerator:
+    """Generate reproducible declared multi-format instances.
+
+    Piece lengths and demands are sampled by the same deterministic sampler
+    as ``SyntheticInstanceGenerator`` run against the largest declared
+    format, then declared together with the configured shorter formats. The
+    resulting ``MultiFormatCuttingStockInstance`` enforces that every piece
+    fits alone on the largest declared format; shorter formats stay
+    available to the patterns they host.
+    """
+
+    seed: int
+    stock_lengths: tuple[float, ...]
+    kerf: float = 0.0
+    number_of_types: int = 3
+    piece_length_range: tuple[int, int] = (10, 90)
+    demand_range: tuple[int, int] = (1, 10)
+
+    name = "uniform_integer_v1"
+    version = "1"
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.seed, int) or isinstance(self.seed, bool):
+            raise ValueError("seed must be an integer")
+        stock_lengths = _validated_format_lengths(self.stock_lengths)
+        object.__setattr__(self, "stock_lengths", stock_lengths)
+        if (
+            isinstance(self.kerf, bool)
+            or not isinstance(self.kerf, Real)
+            or not math.isfinite(self.kerf)
+            or self.kerf < 0
+        ):
+            raise ValueError("kerf must be finite and non-negative")
+        if (
+            not isinstance(self.number_of_types, int)
+            or isinstance(self.number_of_types, bool)
+            or self.number_of_types <= 0
+        ):
+            raise ValueError("number_of_types must be a positive integer")
+        _validate_range(self.piece_length_range, "piece_length_range")
+        _validate_range(self.demand_range, "demand_range")
+        if self.piece_length_range[1] + self.kerf > self.stock_lengths[-1]:
+            raise ValueError("every piece must fit on the largest declared bar with kerf")
+
+    def generate(self) -> MultiFormatCuttingStockInstance:
+        """Return one instance; the same configuration always yields the same data."""
+
+        largest = SyntheticInstanceGenerator(
+            seed=self.seed,
+            stock_length=self.stock_lengths[-1],
+            kerf=self.kerf,
+            number_of_types=self.number_of_types,
+            piece_length_range=self.piece_length_range,
+            demand_range=self.demand_range,
+        ).generate()
+        return MultiFormatCuttingStockInstance(
+            self.stock_lengths, self.kerf, largest.piece_lengths, largest.demands
+        )
+
+    @property
+    def instance_id(self) -> str:
+        """Return a stable identifier of the generated, normalized declaration."""
+
+        payload = json.dumps(self.generate().to_dict(), separators=(",", ":"), sort_keys=True)
+        return sha256(payload.encode("ascii")).hexdigest()
+
+    @property
+    def configuration(self) -> dict[str, Any]:
+        """Return the generator configuration without any seed."""
+
+        return {
+            "stock_lengths": self.stock_lengths,
+            "kerf": self.kerf,
+            "number_of_types": self.number_of_types,
+            "piece_length_range": self.piece_length_range,
+            "demand_range": self.demand_range,
+        }
+
+
+def _validated_format_lengths(value: tuple[float, ...]) -> tuple[float, ...]:
+    """Normalize and validate the declared stock lengths eagerly."""
+
+    try:
+        candidates = tuple(value)
+    except TypeError as error:
+        raise ValueError("stock_lengths must be iterable") from error
+    if len(candidates) < 2 or len(candidates) > 3:
+        raise ValueError("stock_lengths must declare two or three formats")
+    lengths = []
+    for candidate in candidates:
+        if isinstance(candidate, bool) or not isinstance(candidate, Real):
+            raise ValueError("stock_lengths must contain real numbers")
+        try:
+            number = float(candidate)
+        except OverflowError as error:
+            raise ValueError("stock_lengths must contain finite numbers") from error
+        if not math.isfinite(number):
+            raise ValueError("stock_lengths must contain finite numbers")
+        if number <= 0:
+            raise ValueError("stock_lengths must be strictly positive")
+        lengths.append(number)
+    if len(set(lengths)) != len(lengths):
+        raise ValueError("stock_lengths must be distinct")
+    return tuple(sorted(lengths))
 
 
 def _tight_ratio_window(stock_length: float, kerf: float) -> tuple[int, int]:
