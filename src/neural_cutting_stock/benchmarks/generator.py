@@ -53,8 +53,8 @@ class SyntheticInstanceGenerator:
         _validate_range(self.demand_range, "demand_range")
         _validate_text(self.length_distribution, "length_distribution")
         _validate_text(self.demand_distribution, "demand_distribution")
-        if self.piece_length_range[1] > self.stock_length - self.kerf:
-            raise ValueError("piece_length_range contains pieces that do not fit")
+        if self.piece_length_range[1] + self.kerf > self.stock_length:
+            raise ValueError("every piece must fit on a bar with kerf")
 
     def generate(self) -> CuttingStockInstance:
         """Return one instance; the same configuration always yields the same data."""
