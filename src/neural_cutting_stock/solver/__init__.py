@@ -2,6 +2,11 @@
 
 from .column_generation import ColumnGeneration, ColumnGenerationResult
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
+from .maximal_patterns import (
+    MaximalPatternLimits,
+    PatternEnumerationLimitExceeded,
+    iter_maximal_patterns,
+)
 from .pricing import ExactPricing, PricingResult
 from .rmp import RestrictedMasterProblem, RMPResult, RMPState
 from .verification import PlanVerification, verify_plan
@@ -11,6 +16,9 @@ __all__ = [
     "ColumnGenerationResult",
     "IntegerMasterResult",
     "IntegerRestrictedMasterProblem",
+    "MaximalPatternLimits",
+    "PatternEnumerationLimitExceeded",
+    "iter_maximal_patterns",
     "ExactPricing",
     "PricingResult",
     "RMPResult",
