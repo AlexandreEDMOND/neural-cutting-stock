@@ -212,6 +212,13 @@ def test_multi_format_generator_rejects_invalid_stock_lengths(stock_lengths) -> 
         MultiFormatSyntheticGenerator(seed=1, stock_lengths=stock_lengths)
 
 
+def test_multi_format_generator_shares_the_declared_stock_lengths_validation() -> None:
+    with pytest.raises(ValueError, match="between two and three"):
+        MultiFormatSyntheticGenerator(seed=1, stock_lengths=(100.0,))
+    with pytest.raises(ValueError, match="must be distinct"):
+        MultiFormatSyntheticGenerator(seed=1, stock_lengths=(100.0, 100.0))
+
+
 def test_multi_format_generator_requires_pieces_on_the_largest_format() -> None:
     with pytest.raises(ValueError, match="every piece must fit"):
         MultiFormatSyntheticGenerator(

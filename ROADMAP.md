@@ -218,7 +218,7 @@ barres, tout en gardant une vérification exacte accessible.
 - [x] **P8.06** — Geler partitions entraînement/validation/test des familles retenues avec manifestes versionnés et sans fuite.
 - [x] **P8.07** — Étendre le schéma de résultats aux nouveaux champs (formats multiples, kerf exercé) avec rétrocompatibilité des campagnes antérieures.
 - [x] **P8.08** — Bilan intermédiaire : tableau des marges par famille, choix documenté du benchmark qualité final.
-- [ ] **P8.09** — Nettoyage du code de la phase.
+- [x] **P8.09** — Nettoyage du code de la phase.
 - [ ] **P8.10** — Publication du bilan de phase, mise à jour du README et validation de la phase 8.
 
 ## Phase 9 — Agent deep RL d'amélioration primal

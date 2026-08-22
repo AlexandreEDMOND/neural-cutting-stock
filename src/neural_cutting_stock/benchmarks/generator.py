@@ -12,6 +12,7 @@ from typing import Any
 from neural_cutting_stock.problem import (
     CuttingStockInstance,
     MultiFormatCuttingStockInstance,
+    validated_stock_lengths,
 )
 
 TIGHT_RATIO_LENGTH_DISTRIBUTION = "tight_ratio_v1"
@@ -56,8 +57,7 @@ class SyntheticInstanceGenerator:
     version = "1"
 
     def __post_init__(self) -> None:
-        if not isinstance(self.seed, int) or isinstance(self.seed, bool):
-            raise ValueError("seed must be an integer")
+        _validate_seed(self.seed)
         if (
             isinstance(self.stock_length, bool)
             or not isinstance(self.stock_length, Real)
@@ -65,19 +65,8 @@ class SyntheticInstanceGenerator:
             or self.stock_length <= 0
         ):
             raise ValueError("stock_length must be finite and strictly positive")
-        if (
-            isinstance(self.kerf, bool)
-            or not isinstance(self.kerf, Real)
-            or not math.isfinite(self.kerf)
-            or self.kerf < 0
-        ):
-            raise ValueError("kerf must be finite and non-negative")
-        if (
-            not isinstance(self.number_of_types, int)
-            or isinstance(self.number_of_types, bool)
-            or self.number_of_types <= 0
-        ):
-            raise ValueError("number_of_types must be a positive integer")
+        _validate_kerf(self.kerf)
+        _validate_number_of_types(self.number_of_types)
         _validate_range(self.piece_length_range, "piece_length_range")
         _validate_range(self.demand_range, "demand_range")
         _validate_text(self.length_distribution, "length_distribution")
@@ -209,27 +198,12 @@ class MultiFormatSyntheticGenerator:
     piece_length_range: tuple[int, int] = (10, 90)
     demand_range: tuple[int, int] = (1, 10)
 
-    name = "uniform_integer_v1"
-    version = "1"
-
     def __post_init__(self) -> None:
-        if not isinstance(self.seed, int) or isinstance(self.seed, bool):
-            raise ValueError("seed must be an integer")
-        stock_lengths = _validated_format_lengths(self.stock_lengths)
+        _validate_seed(self.seed)
+        stock_lengths = validated_stock_lengths(self.stock_lengths)
         object.__setattr__(self, "stock_lengths", stock_lengths)
-        if (
-            isinstance(self.kerf, bool)
-            or not isinstance(self.kerf, Real)
-            or not math.isfinite(self.kerf)
-            or self.kerf < 0
-        ):
-            raise ValueError("kerf must be finite and non-negative")
-        if (
-            not isinstance(self.number_of_types, int)
-            or isinstance(self.number_of_types, bool)
-            or self.number_of_types <= 0
-        ):
-            raise ValueError("number_of_types must be a positive integer")
+        _validate_kerf(self.kerf)
+        _validate_number_of_types(self.number_of_types)
         _validate_range(self.piece_length_range, "piece_length_range")
         _validate_range(self.demand_range, "demand_range")
         if self.piece_length_range[1] + self.kerf > self.stock_lengths[-1]:
@@ -270,31 +244,28 @@ class MultiFormatSyntheticGenerator:
         }
 
 
-def _validated_format_lengths(value: tuple[float, ...]) -> tuple[float, ...]:
-    """Normalize and validate the declared stock lengths eagerly."""
+def _validate_seed(seed: int) -> None:
+    if not isinstance(seed, int) or isinstance(seed, bool):
+        raise ValueError("seed must be an integer")
 
-    try:
-        candidates = tuple(value)
-    except TypeError as error:
-        raise ValueError("stock_lengths must be iterable") from error
-    if len(candidates) < 2 or len(candidates) > 3:
-        raise ValueError("stock_lengths must declare two or three formats")
-    lengths = []
-    for candidate in candidates:
-        if isinstance(candidate, bool) or not isinstance(candidate, Real):
-            raise ValueError("stock_lengths must contain real numbers")
-        try:
-            number = float(candidate)
-        except OverflowError as error:
-            raise ValueError("stock_lengths must contain finite numbers") from error
-        if not math.isfinite(number):
-            raise ValueError("stock_lengths must contain finite numbers")
-        if number <= 0:
-            raise ValueError("stock_lengths must be strictly positive")
-        lengths.append(number)
-    if len(set(lengths)) != len(lengths):
-        raise ValueError("stock_lengths must be distinct")
-    return tuple(sorted(lengths))
+
+def _validate_kerf(kerf: float) -> None:
+    if (
+        isinstance(kerf, bool)
+        or not isinstance(kerf, Real)
+        or not math.isfinite(kerf)
+        or kerf < 0
+    ):
+        raise ValueError("kerf must be finite and non-negative")
+
+
+def _validate_number_of_types(number_of_types: int) -> None:
+    if (
+        not isinstance(number_of_types, int)
+        or isinstance(number_of_types, bool)
+        or number_of_types <= 0
+    ):
+        raise ValueError("number_of_types must be a positive integer")
 
 
 def _tight_ratio_window(stock_length: float, kerf: float) -> tuple[int, int]:

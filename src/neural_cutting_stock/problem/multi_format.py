@@ -37,7 +37,7 @@ class MultiFormatCuttingStockInstance:
     _reference: CuttingStockInstance = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
-        stock_lengths = _validated_stock_lengths(self.stock_lengths)
+        stock_lengths = validated_stock_lengths(self.stock_lengths)
         # Reuse the single-format invariants against the largest declared bar: it
         # normalizes and merges piece types, validates demands and enforces that
         # every piece fits with kerf on at least one declared stock length.
@@ -140,7 +140,15 @@ class MultiFormatCuttingStockInstance:
         return cls(value["stock_lengths"], value["kerf"], value["piece_lengths"], value["demands"])
 
 
-def _validated_stock_lengths(value: Iterable[object]) -> tuple[float, ...]:
+def validated_stock_lengths(value: Iterable[object]) -> tuple[float, ...]:
+    """Normalize declared stock lengths to distinct ascending positive floats.
+
+    This is the single validation of the declared multi-format invariant:
+    between two and three real, finite, strictly positive, pairwise distinct
+    lengths, sorted ascending. The declared instance and every benchmark
+    generator reusing the variant share it.
+    """
+
     try:
         candidates = tuple(value)
     except TypeError as error:
