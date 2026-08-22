@@ -21,6 +21,7 @@ from neural_cutting_stock.benchmarks import (
     TRAIN_SEEDS,
     VALIDATION_SEEDS,
     build_quality_partition_plan,
+    materialize_partition_instances,
     phase8_family_specs,
     read_quality_partition_manifest,
     validate_quality_partition_manifest,
@@ -315,3 +316,46 @@ def test_committed_manifest_matches_the_committed_measurement() -> None:
                 item["family_label"] == label and item["partition"] == partition for item in cells
             )
             assert present, f"{label} must populate the {partition} partition"
+
+
+def test_materialize_partition_instances_rebuilds_the_frozen_cells() -> None:
+    manifest = read_quality_partition_manifest(MANIFEST_PATH)
+
+    train = materialize_partition_instances(manifest, "train")
+    validation = materialize_partition_instances(manifest, "validation")
+
+    expected_train = {
+        item["instance_id"] for item in manifest["assignments"] if item["partition"] == "train"
+    }
+    assert set(train) == expected_train
+    assert len(train) == 9
+    assert len(validation) == 3
+    assert not set(train) & set(validation)
+    for instance_id, instance in {**train, **validation}.items():
+        assignment = next(
+            item for item in manifest["assignments"] if item["instance_id"] == instance_id
+        )
+        family = next(
+            family
+            for family in manifest["families"]
+            if family["family_label"] == assignment["family_label"]
+        )
+        assert instance.number_of_types == family["configuration"]["number_of_types"]
+        assert sum(instance.demands) > 0
+
+
+def test_materialize_partition_instances_refuses_unknown_partitions() -> None:
+    manifest = read_quality_partition_manifest(MANIFEST_PATH)
+
+    with pytest.raises(ValueError, match="unknown partition"):
+        materialize_partition_instances(manifest, "holdout")
+
+
+def test_materialize_partition_instances_refuses_tampered_manifests() -> None:
+    manifest = read_quality_partition_manifest(MANIFEST_PATH)
+
+    def relabel_one_instance(target: dict) -> None:
+        target["assignments"][0]["instance_id"] = "f" * 64
+
+    with pytest.raises(ValueError):
+        materialize_partition_instances(_tampered(manifest, relabel_one_instance), "test")

@@ -18,6 +18,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from neural_cutting_stock.problem import AnyCuttingStockInstance
+
 from ._validation import require_text as _require_text
 from .family_margins import (
     FAMILY_MARGINS_SCHEMA_VERSION,
@@ -273,6 +275,43 @@ def read_quality_partition_manifest(path: str | Path) -> dict[str, Any]:
     return manifest
 
 
+def materialize_partition_instances(
+    manifest: dict[str, Any], partition: str
+) -> dict[str, AnyCuttingStockInstance]:
+    """Re-materialize every instance assigned to one frozen partition.
+
+    The manifest must be valid, and each assignment of ``partition`` is
+    rebuilt through its recorded family configuration and seed exactly like
+    plan validation does, so downstream consumers can never drift away from
+    the frozen cells. Instances are keyed by their declared ``instance_id``.
+    """
+
+    validate_quality_partition_manifest(manifest)
+    seed_partitions = manifest["seed_partitions"]
+    if not isinstance(partition, str) or partition not in seed_partitions:
+        raise ValueError(f"unknown partition: {partition!r}")
+    configurations = {
+        family["family_label"]: family["configuration"] for family in manifest["families"]
+    }
+    instances: dict[str, AnyCuttingStockInstance] = {}
+    for assignment in manifest["assignments"]:
+        if assignment["partition"] != partition:
+            continue
+        generator = _generator_from_record(
+            assignment["family_label"],
+            configurations[assignment["family_label"]],
+            assignment["seed"],
+        )
+        if generator.instance_id != assignment["instance_id"]:
+            raise ValueError(
+                f"instance_id drift for ({assignment['family_label']!r}, {assignment['seed']})"
+            )
+        instances[assignment["instance_id"]] = generator.generate()
+    if not instances:
+        raise ValueError(f"partition {partition!r} holds no assigned instance")
+    return instances
+
+
 def write_quality_partition_manifest(path: str | Path, manifest: dict[str, Any]) -> None:
     """Validate then persist a canonical quality partition manifest."""
 
@@ -420,6 +459,7 @@ __all__ = [
     "TRAIN_SEEDS",
     "VALIDATION_SEEDS",
     "build_quality_partition_plan",
+    "materialize_partition_instances",
     "read_quality_partition_manifest",
     "validate_quality_partition_manifest",
     "write_quality_partition_manifest",
