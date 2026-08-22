@@ -1,0 +1,208 @@
+{
+  "assignments": [
+    {
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "instance_id": "f890cf01ef15e9b45e2589f23658f86b7a84bd03c287b192dadb8f65dd6ee4e3",
+      "partition": "test",
+      "seed": 5
+    },
+    {
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "instance_id": "2e4b00a9b8a555f2753885190fe62574bf1c2640e842578ea0864956faaf5fb0",
+      "partition": "test",
+      "seed": 6
+    },
+    {
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "instance_id": "cd3f91ce0ad7fd786bb153def0e309451a5381f0829bcacf239c8515e9f50a79",
+      "partition": "test",
+      "seed": 5
+    },
+    {
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "instance_id": "5250b4ad75b9f2eeba8e5ce9267cf6cf1e7e8b67f421373664a9c38b2e508e71",
+      "partition": "test",
+      "seed": 6
+    },
+    {
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "instance_id": "23e0fe633b02e891212870e92feacee1709276651e4fca2135bd55320e135524",
+      "partition": "test",
+      "seed": 5
+    },
+    {
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "instance_id": "01b5a876d7a444f5967ef0aa2ebb8d392bb294d3c28a8031b8ded4873612056a",
+      "partition": "test",
+      "seed": 6
+    },
+    {
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "instance_id": "22a9d5d9c1b31aeb25e9aea90718e699a42433fb557a1a6f7fe5cab36c9c9cb4",
+      "partition": "train",
+      "seed": 1
+    },
+    {
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "instance_id": "4f9c63312c5b05bb17499fc3bdd659653b8de5880da077543c0b24450ef7e168",
+      "partition": "train",
+      "seed": 2
+    },
+    {
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "instance_id": "c8f9eb999d72cec47b4235fb834a9809b3a362c5bf146395b2befe726db36420",
+      "partition": "train",
+      "seed": 3
+    },
+    {
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "instance_id": "577a1c8a265a29398ed2834a45e63020dcaba3c948fcca9bc27a0e780e293cfc",
+      "partition": "train",
+      "seed": 1
+    },
+    {
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "instance_id": "8df29b8c097ccd00fd408213586796a6e3d19c0c395d14d0f08310d96eef87ef",
+      "partition": "train",
+      "seed": 2
+    },
+    {
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "instance_id": "c45e8dd7bdce444593332730455ac62d45ed87126593969e5c816f04a2f2d2e4",
+      "partition": "train",
+      "seed": 3
+    },
+    {
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "instance_id": "f9a8b35dbc2b5fa5542d4f4091ac379f1b85dc05c49b4147e733f53cc9902fbb",
+      "partition": "train",
+      "seed": 1
+    },
+    {
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "instance_id": "ddd6241be3d7aac1b28d924aa01340060273957c44f4fe298ddad4b51c7606dc",
+      "partition": "train",
+      "seed": 2
+    },
+    {
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "instance_id": "dea0eba30d5f2af33c9c1efab3d8309d7d49b0b416c248d476b05142756f5485",
+      "partition": "train",
+      "seed": 3
+    },
+    {
+      "family_label": "scaled-tight-divisibility-t12-v1",
+      "instance_id": "02be7ee4ce402b9de27ce73e335b9195417cf41fcfc6c02bbef828ea0a2ac8d5",
+      "partition": "validation",
+      "seed": 4
+    },
+    {
+      "family_label": "structured-tight-divisibility-t3-v1",
+      "instance_id": "8a70203d87d47681b759ff95df8cf4458e56fa3cfe8ed6803fb38799ac7ccc8e",
+      "partition": "validation",
+      "seed": 4
+    },
+    {
+      "family_label": "structured-tight-divisibility-t4-v1",
+      "instance_id": "701c0ae70701667f612b744e4f228e8ea8174abd1fb1eb57395d6e7174f4cb17",
+      "partition": "validation",
+      "seed": 4
+    }
+  ],
+  "families": [
+    {
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          20,
+          100
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 12,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "scaled-tight-divisibility-t12-v1"
+    },
+    {
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 3,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t3-v1"
+    },
+    {
+      "configuration": {
+        "demand_distribution": "awkward_divisibility_v1",
+        "demand_range": [
+          5,
+          30
+        ],
+        "kerf": 0.0,
+        "length_distribution": "tight_ratio_v1",
+        "number_of_types": 4,
+        "piece_length_range": [
+          10,
+          90
+        ],
+        "stock_length": 100.0
+      },
+      "family_label": "structured-tight-divisibility-t4-v1"
+    }
+  ],
+  "plan_id": "b8ba8c2065d63bc2b1ba9a130e16751a2584fb2e24f107de055744aa1fc66ae9",
+  "schema_version": "phase-8-quality-partitions-v1",
+  "seed_partitions": {
+    "test": [
+      5,
+      6
+    ],
+    "train": [
+      1,
+      2,
+      3
+    ],
+    "validation": [
+      4
+    ]
+  },
+  "source": {
+    "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+    "schema_version": "family-margins-v1",
+    "significant_positive_share": 0.5
+  },
+  "statistics": {
+    "family_count": 3,
+    "instance_count": 18,
+    "partition_family_counts": {
+      "test": 3,
+      "train": 3,
+      "validation": 3
+    },
+    "partition_instance_counts": {
+      "test": 6,
+      "train": 9,
+      "validation": 3
+    },
+    "seeds_per_partition": {
+      "test": 2,
+      "train": 3,
+      "validation": 1
+    }
+  }
+}

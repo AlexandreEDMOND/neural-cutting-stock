@@ -103,6 +103,16 @@ from .profile import (
     profile_classical_runs,
     profile_neural_runs,
 )
+from .quality_partitions import (
+    QUALITY_PARTITIONS_SCHEMA_VERSION,
+    TEST_SEEDS,
+    TRAIN_SEEDS,
+    VALIDATION_SEEDS,
+    build_quality_partition_plan,
+    read_quality_partition_manifest,
+    validate_quality_partition_manifest,
+    write_quality_partition_manifest,
+)
 from .runner import ClassicalBenchmarkConfig, ClassicalBenchmarkRunner, write_raw_runs
 from .schema import (
     SCHEMA_VERSION,
@@ -196,6 +206,14 @@ __all__ = [
     "DatasetPartition",
     "PartitionAssignment",
     "PartitionPlan",
+    "QUALITY_PARTITIONS_SCHEMA_VERSION",
+    "TRAIN_SEEDS",
+    "VALIDATION_SEEDS",
+    "TEST_SEEDS",
+    "build_quality_partition_plan",
+    "read_quality_partition_manifest",
+    "validate_quality_partition_manifest",
+    "write_quality_partition_manifest",
     "ClassicalBenchmarkConfig",
     "ClassicalBenchmarkRunner",
     "write_raw_runs",
