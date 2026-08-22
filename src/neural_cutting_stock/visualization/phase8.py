@@ -274,6 +274,212 @@ def write_quality_benchmark_choice(
     Path(output_path).write_text("\n".join(lines), encoding="utf-8")
 
 
+def write_phase8_summary(
+    margins_report: Mapping[str, Any],
+    partitions_manifest: Mapping[str, Any],
+    output_path: str | Path,
+    *,
+    margins_link: str,
+    partitions_link: str,
+) -> None:
+    """Write the factual Phase 8 closure summary from persisted, validated sources.
+
+    Every number is derived from the persisted ``family-margins-v1`` measurement
+    and the frozen ``phase-8-quality-partitions-v1`` manifest; the publication
+    is refused on any drift between them or when no gap is available against a
+    verified exact reference. No duration enters the summary because quality is
+    the phase metric.
+    """
+
+    _validate_choice_sources(margins_report, partitions_manifest)
+    counts = margins_report["counts"]
+    if not counts["gap_available_count"]:
+        raise ValueError("no gap is available against a verified exact reference")
+    environment = margins_report["environment"]
+    cross_check = "activé" if margins_report["cross_check_with_enumeration"] else "désactivé"
+    instances = margins_report["instances"]
+    retained = [family for family in margins_report["families"] if family["retained"]]
+    retained_labels = {family["family_label"] for family in retained}
+    plan_gaps = [
+        entry["gap_bars"]
+        for entry in instances
+        if entry["gap_available"] and entry["family_label"] in retained_labels
+    ]
+    unavailable_count = sum(not entry["gap_available"] for entry in instances)
+    lines = [
+        "# Bilan de la Phase 8",
+        "",
+        "Sources validées : "
+        f"[`{Path(margins_link).name}`]({margins_link}) (schéma `{margins_report['schema_version']}`) "
+        f"et [`{partitions_link}`]({partitions_link}) (schéma "
+        f"`{partitions_manifest['schema_version']}`), produites par exécutions réelles : une "
+        "baseline classique et une référence exacte MILP vérifiée indépendamment par instance. "
+        "Aucune durée n'entre dans ce bilan.",
+        "",
+        "## Méthode, seuil et tolérances",
+        "",
+        "- Référence : méthode `milp_on_enumerated_patterns`, limites "
+        f"`{margins_report['reference_method_limits']}`.",
+        f"- Tolérances : coût réduit **{_number(margins_report['reduced_cost_tolerance'])}**, "
+        f"intégralité **{_number(margins_report['integrality_tolerance'])}**, faisabilité "
+        f"**{_number(margins_report['feasibility_tolerance'])}**.",
+        f"- Contrôle croisé d'énumération : **{cross_check}**.",
+        "- Règle de rétention : une famille est retenue lorsque chaque instance mesurée dispose d'un "
+        "écart disponible et qu'au moins "
+        f"**{margins_report['significant_positive_share'] * 100:.0f} %** des instances perdent au "
+        "moins une barre face à leur optimum entier certifié.",
+        f"- Environnement tracé : commit `{environment['code_commit'][:12]}…`, Python "
+        f"{environment['python_version']}, {environment['dependency_versions']}.",
+        "",
+        "## Couverture mesurée",
+        "",
+        f"- Familles déclarées et mesurées : **{counts['family_count']}**, soit "
+        f"**{counts['instance_count']}** instances avec baseline classique et référence exacte.",
+        f"- {_coverage_line(margins_report['families'])}",
+        f"- Écarts disponibles : **{counts['gap_available_count']}**, dont "
+        f"**{counts['positive_gap_count']}** positifs ; les instances perdant des barres face à "
+        "l'optimum entier certifié existent donc sur ce corpus.",
+    ]
+    if unavailable_count:
+        lines.append(
+            f"- {unavailable_count} instance(s) restent sans écart disponible et conservent leur "
+            "diagnostic dans le rapport source."
+        )
+    unmeasured = margins_report["unmeasured_families"]
+    if unmeasured:
+        lines.append(
+            f"- {len(unmeasured)} famille(s) déclarée(s) sans aucune mesure faute de support, non "
+            "retenues en l'état : "
+            + ", ".join(f"`{item['family_label']}`" for item in unmeasured)
+            + "."
+        )
+    lines += [
+        "",
+        "## Marge par famille",
+        "",
+        "| Famille | Instances | Écarts disponibles | Marge nulle | Marge positive | Part positive "
+        "| Écart maximal (barres) | Somme des écarts (barres) | Retenue |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---|",
+    ]
+    for family in margins_report["families"]:
+        lines.append(_choice_row(family, instances))
+    lines += [
+        "",
+        f"{counts['retained_family_count']} famille(s) retenue(s) sur {counts['family_count']} ; "
+        f"part positive globale : {counts['positive_gap_count']} instances positives sur "
+        f"{counts['instance_count']} mesurées.",
+        "",
+        "## Benchmark qualité final retenu",
+        "",
+        "Le benchmark qualité final de la phase est le plan de partitions gelé "
+        f"[`{partitions_link}`]({partitions_link}) (`plan_id` "
+        f"`{partitions_manifest['plan_id'][:12]}…`) : exactement les familles retenues ci-dessus, "
+        "sans aucune autre. Toute amélioration de qualité sera entraînée sur `train`, ajustée sur "
+        "`validation` et mesurée sur `test` ; aucune graine n'est partagée entre deux partitions "
+        "et chaque `instance_id` n'y apparaît qu'une fois.",
+        "",
+        "| Partition | Graines | Instances | Familles |",
+        "|---|---|---:|---:|",
+    ]
+    statistics = partitions_manifest["statistics"]
+    for partition in ("train", "validation", "test"):
+        lines.append(
+            f"| {partition} | {_seed_span(partitions_manifest['seed_partitions'][partition])} "
+            f"| {statistics['partition_instance_counts'][partition]} "
+            f"| {statistics['partition_family_counts'][partition]} |"
+        )
+    lines += [
+        "",
+        f"Sur ces {len(partitions_manifest['assignments'])} instances du plan, la marge mesurée "
+        f"s'étend de {_number(min(plan_gaps))} à {_number(max(plan_gaps))} barres par instance, "
+        f"soit {_number(sum(plan_gaps))} barres gagnables au total face aux optimaux entiers "
+        "certifiés."
+        f" {_plan_scope_line(retained)}",
+        "",
+        "## Garanties et limites",
+        "",
+        "- Les références proviennent d'un MILP sur motifs énumérés et sont vérifiées "
+        "indépendamment (faisabilité du plan, borne LP ≤ optimum).",
+        "- Les objectifs classiques restent des optimaux sur colonnes générées uniquement "
+        "(`optimal_over_generated_columns_only`) ; la marge est définie face à la référence exacte "
+        "vérifiée, pas face au maître entier restreint.",
+        "- Aucune durée n'entre dans ce bilan : la qualité est la métrique reine de la phase.",
+        "- Aucun écart indisponible ni famille non mesurée n'est filtré silencieusement ; les "
+        "diagnostics complets figurent dans le rapport source.",
+        "",
+        "## Commandes de reproduction",
+        "",
+        "Depuis la racine du dépôt, avec les arguments par défaut qui correspondent aux chemins "
+        "publiés :",
+        "",
+        "```bash",
+        "uv sync --extra dev",
+        "uv run python scripts/report_phase8_family_margins.py",
+        "uv run python scripts/freeze_phase8_partitions.py",
+        "uv run python scripts/report_phase8_quality_benchmark.py",
+        "uv run python scripts/report_phase8_summary.py",
+        "```",
+        "",
+    ]
+    Path(output_path).write_text("\n".join(lines), encoding="utf-8")
+
+
+def _coverage_line(families: list[Any]) -> str:
+    kerfs = sorted({family["configuration"].get("kerf", 0.0) or 0.0 for family in families})
+    formats = sorted(
+        {
+            len(family["configuration"]["stock_lengths"])
+            if "stock_lengths" in family["configuration"]
+            else 1
+            for family in families
+        }
+    )
+    types = sorted(
+        {
+            family["configuration"]["number_of_types"]
+            for family in families
+            if "number_of_types" in family["configuration"]
+        }
+    )
+    distributions = sorted(
+        {
+            family["configuration"]["demand_distribution"]
+            for family in families
+            if "demand_distribution" in family["configuration"]
+        }
+    )
+    parts = []
+    if kerfs[-1] > 0:
+        parts.append(f"kerf strictement positif exercé (`kerf = {_number(kerfs[-1])}`)")
+    if formats[-1] > 1:
+        parts.append(f"multi-formats ({formats[-1]} longueurs de stock)")
+    if distributions:
+        parts.append(
+            f"profils de demande structurés ({', '.join(f'`{d}`' for d in distributions)})"
+        )
+    if types:
+        parts.append(f"montée en taille jusqu'à {_number(types[-1])} types")
+    return "Variantes couvertes : " + "; ".join(parts) + "."
+
+
+def _plan_scope_line(retained: list[Any]) -> str:
+    single_format_zero_kerf = all(
+        (family["configuration"].get("kerf", 0.0) or 0.0) == 0
+        and "stock_lengths" not in family["configuration"]
+        for family in retained
+    )
+    if single_format_zero_kerf:
+        return (
+            "Le plan ne couvre que des barres à format unique sans kerf exercé (`kerf = 0`) : un "
+            "kerf exercé ou un multi-formats ne pourra y entrer qu'après la démonstration d'une "
+            "marge satisfaisant la règle de rétention sur de nouvelles familles mesurées."
+        )
+    return (
+        "Le plan couvre les variantes déclarées des familles retenues telles que mesurées dans le "
+        "rapport source."
+    )
+
+
 def _validate_choice_sources(
     margins_report: Mapping[str, Any], partitions_manifest: Mapping[str, Any]
 ) -> None:
@@ -329,4 +535,8 @@ def _seed_span(seeds: list[int]) -> str:
     return ", ".join(str(seed) for seed in seeds)
 
 
-__all__ = ["write_family_margins_markdown", "write_quality_benchmark_choice"]
+__all__ = [
+    "write_family_margins_markdown",
+    "write_phase8_summary",
+    "write_quality_benchmark_choice",
+]

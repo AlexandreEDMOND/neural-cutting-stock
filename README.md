@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Les sept premières phases du projet sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe. La Phase 6 a exécuté l'évaluation finale sur 12 instances non vues : la qualité est préservée sur toutes les paires, mais Neural CG n'accélère pas le temps mur-à-mur ; la réponse mesurée à l'hypothèse de recherche est négative pour le candidat gelé évalué (voir [Évaluation finale](#résultats-finaux-et-réponse-à-lhypothèse-phase-6) et [docs/conclusion.md](docs/conclusion.md)). La Phase 7 a établi la vérité terrain de la qualité : des références exactes vérifiées (MILP sur motifs énumérés) couvrent désormais 16 instances du corpus existant, le trou entier de la baseline classique y est quasi nul partout — une seule instance perd une barre face à l'optimum entier certifié — et les leviers du générateur susceptibles d'élargir cette marge sont documentés pour la Phase 8 (voir [Vérité terrain de qualité](#vérité-terrain-de-qualité-et-trou-doptimalité-entier-phase-7)).
+Les huit premières phases du projet sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe. La Phase 6 a exécuté l'évaluation finale sur 12 instances non vues : la qualité est préservée sur toutes les paires, mais Neural CG n'accélère pas le temps mur-à-mur ; la réponse mesurée à l'hypothèse de recherche est négative pour le candidat gelé évalué (voir [Évaluation finale](#résultats-finaux-et-réponse-à-lhypothèse-phase-6) et [docs/conclusion.md](docs/conclusion.md)). La Phase 7 a établi la vérité terrain de la qualité : des références exactes vérifiées (MILP sur motifs énumérés) couvrent désormais 16 instances du corpus existant, le trou entier de la baseline classique y est quasi nul partout — une seule instance perd une barre face à l'optimum entier certifié — et les leviers du générateur susceptibles d'élargir cette marge sont documentés pour la Phase 8 (voir [Vérité terrain de qualité](#vérité-terrain-de-qualité-et-trou-doptimalité-entier-phase-7)). La Phase 8 a construit les familles d'instances où gagner des barres est possible : six familles déclarées ont été mesurées contre des références exactes vérifiées (kerf exercé, multi-formats, profils de demande structurés, montée en taille), trois satisfont la règle de rétention avec une marge positive sur toutes leurs instances, et leurs partitions entraînement/validation/test sont gelées sans fuite pour les phases suivantes (voir [Familles à marge de qualité](#familles-dinstances-à-marge-de-qualité-phase-8)).
 
 ## Motivation
 
@@ -378,6 +378,52 @@ uv run python scripts/report_phase7_exact_gap_breakdown.py
 uv run python scripts/report_phase7_summary.py
 ```
 
+## Familles d'instances à marge de qualité (Phase 8)
+
+La Phase 7 a montré une marge quasi nulle sur le corpus existant ; la Phase 8 a donc construit et
+mesuré six familles où gagner des barres est possible : kerf strictement positif exercé
+(`kerf = 2.0`, convention conservative), multi-formats de barres (2 longueurs de stock),
+profils de demande structurés défavorables à l'arrondi du maître restreint, et montée en taille
+jusqu'à 12 types. Chaque instance mesurée dispose d'une baseline classique et d'une référence
+exacte MILP vérifiée indépendamment (faisabilité du plan, borne LP ≤ optimum) ; aucune durée
+n'entre dans ce bilan.
+
+Le bilan complet est publié dans [`results/phase-8-summary.md`](results/phase-8-summary.md), la
+ventilation par famille dans [`results/phase-8-family-margins.md`](results/phase-8-family-margins.md)
+et le choix documenté du benchmark qualité final dans
+[`docs/phase-8-quality-benchmark.md`](docs/phase-8-quality-benchmark.md) :
+
+| Famille | Instances | Marge positive | Part positive | Retenue |
+|---|---:|---:|---:|---|
+| `kerf-exercised-uniform-t4-v1` | 6 | 1 | 17 % | non |
+| `kerf-exercised-uniform-t6-v1` | 6 | 2 | 33 % | non |
+| `multi-stock-formats-t4-v1` | 6 | 1 | 17 % | non |
+| `scaled-tight-divisibility-t12-v1` | 6 | 6 | 100 % | oui |
+| `structured-tight-divisibility-t3-v1` | 6 | 6 | 100 % | oui |
+| `structured-tight-divisibility-t4-v1` | 6 | 6 | 100 % | oui |
+
+La règle de rétention (toutes les instances avec écart disponible, au moins 50 % d'instances à
+marge positive) retient trois familles sur six. Les familles kerf exercé et multi-formats restent
+modélisées et exécutables mais n'entrent pas dans le benchmark qualité final : leur marge mesurée
+y serait invérifiable. Le benchmark qualité final est le plan de partitions gelé
+[`data/phase-8-partitions/manifest.json`](data/phase-8-partitions/manifest.json)
+(`phase-8-quality-partitions-v1`) — train : graines 1–3, 9 instances ; validation : graine 4,
+3 instances ; test : graines 5–6, 6 instances ; chaque famille retenue apparaît dans les trois
+partitions, sans partage de graine ni doublon d'instance. Sur ces 18 instances du plan, la marge
+mesurée s'étend de 1 à 6 barres par instance face aux optimaux entiers certifiés, soit 54 barres
+gagnables au total ; le plan ne couvre toutefois que des barres à format unique sans kerf exercé.
+Les objectifs classiques restent des optimaux sur colonnes générées uniquement
+(`optimal_over_generated_columns_only`).
+
+Le bilan se régénère depuis les données persistées :
+
+```bash
+uv run python scripts/report_phase8_family_margins.py
+uv run python scripts/freeze_phase8_partitions.py
+uv run python scripts/report_phase8_quality_benchmark.py
+uv run python scripts/report_phase8_summary.py
+```
+
 ## Organisation du dépôt
 
 ```text
@@ -391,10 +437,12 @@ neural-cutting-stock/
 │   ├── benchmark_protocol.md
 │   ├── conclusion.md               # conclusion scientifique finale de Phase 6
 │   ├── formulation.md
-│   └── phase-7-gap-levers.md       # leviers de trous entiers du générateur (Phase 7)
+│   ├── phase-7-gap-levers.md       # leviers de trous entiers du générateur (Phase 7)
+│   └── phase-8-quality-benchmark.md # choix du benchmark qualité final (Phase 8)
 ├── data/
 │   ├── phase-3-corpus/             # trajectoires, manifeste et partitions validés
-│   └── phase-6-final/              # manifeste gelé des instances non vues
+│   ├── phase-6-final/              # manifeste gelé des instances non vues
+│   └── phase-8-partitions/         # partitions gelées du benchmark qualité final
 ├── models/                         # artefacts de modèle versionnés et hashés
 ├── results/                        # résultats et figures réellement mesurés
 ├── scripts/                        # points d’entrée fins, sans logique métier

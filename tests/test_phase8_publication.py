@@ -15,7 +15,10 @@ from neural_cutting_stock.benchmarks import (
     build_quality_partition_plan,
     phase8_family_specs,
 )
-from neural_cutting_stock.visualization.phase8 import write_quality_benchmark_choice
+from neural_cutting_stock.visualization.phase8 import (
+    write_phase8_summary,
+    write_quality_benchmark_choice,
+)
 
 ROOT = Path(__file__).parents[1]
 MARGINS_PATH = ROOT / "results/phase-8-family-margins.json"
@@ -209,3 +212,112 @@ def test_published_choice_is_regenerated_from_published_sources(tmp_path: Path) 
     assert counts["positive_gap_count"] == 22
     assert counts["instance_count"] == 36
     assert partitions_manifest["statistics"]["instance_count"] == 18
+
+
+def test_summary_reports_coverage_margins_benchmark_and_commands(tmp_path: Path) -> None:
+    report = _fabricated_report()
+    manifest = build_quality_partition_plan(report)
+
+    write_phase8_summary(
+        report,
+        manifest,
+        tmp_path / "phase-8-summary.md",
+        margins_link="phase-8-family-margins.json",
+        partitions_link="../data/phase-8-partitions/manifest.json",
+    )
+    text = (tmp_path / "phase-8-summary.md").read_text(encoding="utf-8")
+
+    assert "# Bilan de la Phase 8" in text
+    assert (
+        "[`phase-8-family-margins.json`](phase-8-family-margins.json) (schéma `family-margins-v1`)"
+        in text
+    )
+    assert "(schéma `phase-8-quality-partitions-v1`)" in text
+    tol_line = "- Tolérances : coût réduit **1e-09**, intégralité **1e-09**, faisabilité **1e-09**."
+    assert tol_line in text
+    assert "- Contrôle croisé d'énumération : **désactivé**." in text
+    assert "**50 %** des instances" in text
+    assert (
+        "- Familles déclarées et mesurées : **2**, soit **12** instances avec baseline classique "
+        "et référence exacte." in text
+    )
+    assert "Variantes couvertes : " in text
+    assert "- Écarts disponibles : **12**, dont **7** positifs ;" in text
+    assert "| `structured-tight-divisibility-t3-v1` | 6 | 6 | 0 | 6 | 100 % | 1 | 6 | oui |" in text
+    assert "| `structured-tight-divisibility-t4-v1` | 6 | 6 | 5 | 1 | 17 % | 2 | 2 | non |" in text
+    counts_line = (
+        "1 famille(s) retenue(s) sur 2 ; part positive globale : 7 instances positives sur 12"
+    )
+    assert counts_line in text
+    assert f"`{manifest['plan_id'][:12]}…`" in text
+    assert "| train | 1–3 | 3 | 1 |" in text
+    assert "| validation | 4 | 1 | 1 |" in text
+    assert "| test | 5, 6 | 2 | 1 |" in text
+    assert "s'étend de 1 à 1 barres par instance, soit 6 barres gagnables au total" in text
+    assert "`optimal_over_generated_columns_only`" in text
+    assert "uv run python scripts/report_phase8_summary.py" in text
+
+
+def test_summary_refuses_drift_and_publication_without_available_gap(tmp_path: Path) -> None:
+    report = _fabricated_report()
+    manifest = build_quality_partition_plan(report)
+    output = tmp_path / "phase-8-summary.md"
+
+    with pytest.raises(ValueError, match="unsupported margin report"):
+        write_phase8_summary(
+            {**report, "schema_version": "family-margins-v0"},
+            manifest,
+            output,
+            margins_link="m.json",
+            partitions_link="../p.json",
+        )
+    with pytest.raises(ValueError, match="do not cover exactly the retained families"):
+        extra_retained = [
+            {**family, "retained": True} if family["family_label"] == NOT_RETAINED else family
+            for family in report["families"]
+        ]
+        write_phase8_summary(
+            {**report, "families": extra_retained},
+            manifest,
+            output,
+            margins_link="m.json",
+            partitions_link="../p.json",
+        )
+    without_gaps = {
+        **report,
+        "counts": {**report["counts"], "gap_available_count": 0},
+        "instances": [
+            {
+                **entry,
+                "gap_available": False,
+                "gap_unavailable_reason": "reference_failed",
+                "gap_bars": None,
+            }
+            for entry in report["instances"]
+        ],
+    }
+    with pytest.raises(ValueError, match="no gap is available"):
+        write_phase8_summary(
+            without_gaps,
+            manifest,
+            output,
+            margins_link="m.json",
+            partitions_link="../p.json",
+        )
+
+
+def test_published_summary_is_regenerated_from_published_sources(tmp_path: Path) -> None:
+    margins_report = json.loads(MARGINS_PATH.read_text(encoding="utf-8"))
+    partitions_manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    output = tmp_path / "phase-8-summary.md"
+
+    write_phase8_summary(
+        margins_report,
+        partitions_manifest,
+        output,
+        margins_link="phase-8-family-margins.json",
+        partitions_link="../data/phase-8-partitions/manifest.json",
+    )
+
+    published = (ROOT / "results/phase-8-summary.md").read_text(encoding="utf-8")
+    assert output.read_text(encoding="utf-8") == published
