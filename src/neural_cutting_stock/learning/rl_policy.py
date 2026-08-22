@@ -519,6 +519,56 @@ def _decode_proposal(
     return QualityAgentProposal(tuple(combined), tuple(combined.values()))
 
 
+class RLQualityAgent:
+    """Deterministic inference wrapper turning a trained policy into an agent.
+
+    Training explores by sampling Poisson counts; at refinement time the
+    trained policy is applied greedily: every enumerated candidate receives
+    its rounded emitted rate capped by the demand bounds, and the same
+    deterministic completion as during training restores full coverage. The
+    resulting proposal carries no guarantee of its own — it flows through
+    the systematic independent review exactly like any other agent output,
+    and only a verified strict bar reduction can move an incumbent.
+    """
+
+    def __init__(
+        self,
+        policy: QualityRLPolicy,
+        pattern_limits: MaximalPatternLimits | None = None,
+    ) -> None:
+        _require_torch()
+        if not isinstance(policy, QualityRLPolicy):
+            raise ValueError("policy must be a QualityRLPolicy")
+        self._policy = policy
+        self._pattern_limits = pattern_limits
+
+    def propose(self, observation: QualityAgentInput) -> QualityAgentProposal:
+        """Return the greedy decoded plan for one observation of the interface."""
+
+        _require_torch()
+        candidates = enumerated_candidates(observation, self._pattern_limits)
+        if not candidates:
+            raise ValueError("candidate enumeration produced no maximal pattern")
+        rows = imitation_candidate_features_batch(observation, candidates)
+        features = torch.tensor(rows, dtype=torch.float32)
+        with torch.no_grad():
+            rates = self._policy.module(features).tolist()
+        caps = [
+            min(
+                demand
+                for count, demand in zip(pattern, observation.demands, strict=True)
+                if count > 0
+            )
+            for pattern in candidates
+        ]
+        counts = []
+        for rate, cap in zip(rates, caps, strict=True):
+            if not math.isfinite(rate):
+                raise ValueError("quality policy produced a non-finite rate")
+            counts.append(int(min(cap, max(0.0, math.floor(rate + 0.5)))))
+        return _decode_proposal(candidates, counts, observation.demands)
+
+
 __all__ = [
     "ALGORITHM_DOCUMENTATION",
     "ALGORITHM_IDENTIFIER",
@@ -531,6 +581,7 @@ __all__ = [
     "TRAINING_JOURNAL_SCHEMA_VERSION",
     "QualityPolicyNetwork",
     "QualityRLPolicy",
+    "RLQualityAgent",
     "RLEpisodeRecord",
     "train_quality_rl_policy",
     "training_journal_payload",

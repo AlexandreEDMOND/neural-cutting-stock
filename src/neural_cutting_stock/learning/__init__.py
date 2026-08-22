@@ -25,6 +25,16 @@ from .interfaces import (
     PricingState,
 )
 from .model import MODEL_SCHEMA_VERSION, LinearColumnScoringModel
+from .neural_qc import (
+    NEURAL_QC_PIPELINE_SCHEMA_VERSION,
+    STATUS_IMPROVED,
+    STATUS_UNCHANGED,
+    TERMINATION_BUDGET_EXHAUSTED,
+    TERMINATION_CONVERGED,
+    NeuralQCBudget,
+    NeuralQCRefinementResult,
+    run_neural_quality_refinement,
+)
 from .neural_solver import NeuralColumnGeneration, NeuralRuntimeProfile
 from .policy import LearnedColumnSelectionPolicy
 from .quality_agent import (
@@ -66,6 +76,7 @@ from .rl_policy import (
     QualityPolicyNetwork,
     QualityRLPolicy,
     RLEpisodeRecord,
+    RLQualityAgent,
     train_quality_rl_policy,
     training_journal_payload,
 )
@@ -92,6 +103,11 @@ __all__ = [
     "DEFAULT_MAX_STEPS",
     "QUALITY_RL_POLICY_SCHEMA_VERSION",
     "TRAINING_JOURNAL_SCHEMA_VERSION",
+    "NEURAL_QC_PIPELINE_SCHEMA_VERSION",
+    "STATUS_IMPROVED",
+    "STATUS_UNCHANGED",
+    "TERMINATION_BUDGET_EXHAUSTED",
+    "TERMINATION_CONVERGED",
     "ColumnSelectionDecision",
     "ColumnSelectionPolicy",
     "ColumnScoringModel",
@@ -110,6 +126,7 @@ __all__ = [
     "RefinementStep",
     "QualityPolicyNetwork",
     "QualityRLPolicy",
+    "RLQualityAgent",
     "RLEpisodeRecord",
     "TrainingCurvePoint",
     "TrainingCurves",
@@ -136,6 +153,9 @@ __all__ = [
     "train_artifact",
     "train_quality_rl_policy",
     "training_journal_payload",
+    "NeuralQCBudget",
+    "NeuralQCRefinementResult",
+    "run_neural_quality_refinement",
     "write_training_artifact",
     "verify_proposal",
     "load_checkpoint",
