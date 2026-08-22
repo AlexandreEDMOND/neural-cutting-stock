@@ -31,4 +31,10 @@ contient aucune durée ; il se régénère depuis les corpus et campagnes persis
 uv run python scripts/report_phase7_exact_gap.py
 ```
 
-Le bilan chiffré par famille et taille reste à publier dans l'itération suivante.
+Le bilan chiffré des marges par famille et par classe de taille est publié dans
+[`exact-gap-breakdown.md`](exact-gap-breakdown.md) et [`exact-gap-breakdown.json`](exact-gap-breakdown.json),
+agrégé uniquement depuis le rapport `exact-gap-v1` persisté :
+
+```bash
+uv run python scripts/report_phase7_exact_gap_breakdown.py
+```

@@ -31,6 +31,10 @@ from .exact_gap import (
     build_exact_gap_report,
     write_exact_gap_csv,
 )
+from .exact_gap_breakdown import (
+    EXACT_GAP_BREAKDOWN_SCHEMA_VERSION,
+    build_exact_gap_breakdown,
+)
 from .exact_reference import (
     EXACT_REFERENCE_SCHEMA_VERSION,
     MILP_METHOD_LIMITS_PREFIX,
@@ -132,8 +136,10 @@ __all__ = [
     "verify_milp_exact_reference",
     "solve_milp_exact_reference",
     "EXACT_GAP_SCHEMA_VERSION",
+    "EXACT_GAP_BREAKDOWN_SCHEMA_VERSION",
     "CorpusBaseline",
     "build_exact_gap_report",
+    "build_exact_gap_breakdown",
     "write_exact_gap_csv",
     "BenchmarkRunRecord",
     "EnvironmentMetadata",
