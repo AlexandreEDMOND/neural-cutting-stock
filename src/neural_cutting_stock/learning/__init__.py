@@ -15,6 +15,14 @@ from .interfaces import (
 from .model import MODEL_SCHEMA_VERSION, LinearColumnScoringModel
 from .neural_solver import NeuralColumnGeneration, NeuralRuntimeProfile
 from .policy import LearnedColumnSelectionPolicy
+from .quality_agent import (
+    QUALITY_AGENT_INTERFACE_SCHEMA_VERSION,
+    ProposalReview,
+    QualityAgent,
+    QualityAgentInput,
+    QualityAgentProposal,
+    verify_proposal,
+)
 from .training import (
     TRAINING_ARTIFACT_SCHEMA_VERSION,
     load_training_artifact,
@@ -24,12 +32,17 @@ from .training import (
 
 __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
+    "QUALITY_AGENT_INTERFACE_SCHEMA_VERSION",
     "ColumnSelectionDecision",
     "ColumnSelectionPolicy",
     "ColumnScoringModel",
     "PatternCandidate",
     "PatternScore",
     "PricingState",
+    "ProposalReview",
+    "QualityAgent",
+    "QualityAgentInput",
+    "QualityAgentProposal",
     "FEATURE_SCHEMA_VERSION",
     "pricing_features",
     "pricing_features_batch",
@@ -46,4 +59,5 @@ __all__ = [
     "load_training_artifact",
     "train_artifact",
     "write_training_artifact",
+    "verify_proposal",
 ]
