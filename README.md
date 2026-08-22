@@ -4,7 +4,7 @@
 
 ## État du projet
 
-Les Phases 1, 2, 3, 4 et 5 sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe.
+Les six phases du projet sont clôturées. La baseline classique de génération de colonnes comprend la validation des instances et du kerf, le RMP linéaire, le pricing entier exact, la boucle de génération de colonnes, le maître entier restreint, la vérification indépendante et la CLI structurée. La Phase 2 a ajouté un générateur déterministe, un schéma de résultats versionné, un runner classique, la persistance des échecs et limites de ressources, ainsi qu’un profilage par composants. La Phase 3 a ajouté un schéma de trajectoire rejouable, des partitions sans fuite et un petit corpus validé. La Phase 4 ajoute une sélection apprise bornée, un runner apparié et le recalcul des différences de qualité et de runtime depuis les données brutes. La Phase 5 a comparé le coût end-to-end, testé la robustesse de la sélection bornée et documenté l'absence de justification pour une politique séquentielle plus complexe. La Phase 6 a exécuté l'évaluation finale sur 12 instances non vues : la qualité est préservée sur toutes les paires, mais Neural CG n'accélère pas le temps mur-à-mur ; la réponse mesurée à l'hypothèse de recherche est négative pour le candidat gelé évalué (voir [Évaluation finale](#résultats-finaux-et-réponse-à-lhypothèse-phase-6) et [docs/conclusion.md](docs/conclusion.md)).
 
 ## Motivation
 
@@ -22,6 +22,14 @@ Le projet sera considéré comme concluant uniquement si les expériences mesur�
 - un temps mur-à-mur inférieur, et non seulement une inférence rapide ;
 - un gain qui se maintient ou augmente sur les instances les plus difficiles ;
 - aucune fausse convergence grâce à une vérification exacte du pricing.
+
+**Réponse mesurée à l'issue de la Phase 6 : négative pour le candidat gelé évalué.** Le premier
+critère est validé (différence d'objectif nulle sur les 36 paires finales) mais les trois suivants
+sont invalidés : Neural CG est plus lent que Classical CG sur 9 des 12 instances non vues, et plus
+lent sur chacune des six instances situées au-delà de la frontière d'entraînement. Les résultats,
+les limites de ce verdict et sa portée exacte sont détaillés dans
+[docs/conclusion.md](docs/conclusion.md) et dans la section
+[Résultats finaux](#résultats-finaux-et-réponse-à-lhypothèse-phase-6).
 
 ## Problème étudié
 
@@ -224,21 +232,13 @@ Le pricing exact reste le garde-fou de convergence et certifie l’optimalité d
 du maître complet à la tolérance déclarée lorsqu’aucune colonne améliorante n’est trouvée. Le maître
 entier final est résolu sur les colonnes générées uniquement et reste qualifié
 `optimal_over_generated_columns_only`, sans preuve d’optimalité entière globale. Chaque plan est
-vérifié indépendamment pour la demande, la capacité, le kerf et l’objectif. Les figures issues des
-mesures brutes sont [`runtime_comparison.png`](results/runtime_comparison.png) et
-[`speedup_by_size.png`](results/speedup_by_size.png).
+vérifié indépendamment pour la demande, la capacité, le kerf et l’objectif.
 
-Le pipeline de visualisation produit à partir des mesures brutes validées :
-
-- `results/runtime_comparison.png` — temps mur-à-mur de Classical CG et Neural CG par difficulté ;
-- `results/speedup_by_size.png` — accélération appariée par catégorie de taille.
-
-![Runtime comparison](results/runtime_comparison.png)
-![Speedup by size](results/speedup_by_size.png)
-
-Les courbes de runtime incluent uniquement les paires dont la qualité de solution respecte le seuil
-déclaré, par défaut une différence de zéro barre ; les paires non admissibles restent conservées dans
-les données brutes.
+Les figures de runtime et de speedup de cette phase ont été produites depuis
+[`results/phase-4-benchmark-runs.csv`](results/phase-4-benchmark-runs.csv). Les fichiers
+[`results/runtime_comparison.png`](results/runtime_comparison.png) et
+[`results/speedup_by_size.png`](results/speedup_by_size.png) ont ensuite été régénérés par la Phase 6
+depuis l'évaluation finale gelée : ils décrivent les mesures finales et non celles de cette section.
 
 ## Résultats et clôture de Phase 5
 
@@ -268,6 +268,79 @@ et [`phase5_speedup_by_size.png`](results/phase5_speedup_by_size.png). La Phase 
 la politique supervisée bornée comme solution retenue et sans modification des garanties du solveur
 classique.
 
+## Résultats finaux et réponse à l'hypothèse (Phase 6)
+
+L'évaluation finale suit le protocole gelé `phase-6-final-freeze-v1` ([`configs/phase-6-final.json`](configs/phase-6-final.json)) :
+12 instances synthétiques non vues, trois par strate cible `SMALL`, `MEDIUM`, `LARGE`, `XL`
+(2, 4, 6 et 8 types de pièces), appariées Classical CG / Neural CG par `instance_id`, trois
+répétitions par mode, tolérance de qualité de 0 barre et tolérance de coût réduit de 1e-9. Le
+candidat évalué est l'artefact gelé [`linear-scorer-v1-zero-weight`](models/linear-scorer-v1-zero-weight.json)
+avec un budget d'un candidat. Le bilan complet est publié dans
+[`results/phase-6-summary.md`](results/phase-6-summary.md) et la conclusion scientifique dans
+[docs/conclusion.md](docs/conclusion.md).
+
+### Qualité et garanties
+
+Les 72 exécutions forment 36 paires, toutes admissibles : plans faisables et convergés, différence
+d'objectif nulle à la tolérance déclarée, aucune violation recensée. Aucun échec ni timeout : les
+deux modes terminent 72 fois sur 72 en `optimal_lp_restricted_ip`. Le mode classique totalise 126
+appels exacts du pricing ; le mode neural en totalise 36 et recourt au fallback exact sur ses 36
+exécutions. Toute convergence reste donc certifiée par le contrôle exact du pricing, et chaque plan
+est vérifié indépendamment pour la demande, la capacité, le kerf et l'objectif. Les objectifs
+rapportés restent des optimaux sur colonnes générées uniquement.
+
+### Temps mur-à-mur
+
+| Strate cible | Instances | Paires admissibles | Classical médian (s) | Neural médian (s) | Speedup médian |
+|---|---:|---:|---:|---:|---:|
+| SMALL | 3 | 9 | 0.017027 | 0.019093 | 0.915631 |
+| MEDIUM | 3 | 9 | 0.127440 | 0.102831 | 1.203069 |
+| LARGE | 3 | 9 | 0.108184 | 0.125215 | 0.797016 |
+| XL | 3 | 9 | 0.214556 | 0.660288 | 0.201712 |
+
+Le speedup médian par instance s'étend de **0.039832** à **1.988822** : Neural CG est plus lent sur
+9 des 12 instances et plus rapide seulement sur trois instances `MEDIUM`, sous la frontière
+d'entraînement de 4 types. Sur les six instances au-delà de cette frontière, les 18 paires restent
+admissibles avec une différence d'objectif nulle, mais chaque instance a un speedup médian inférieur
+à 1. Le cas le plus défavorable (`XL`) montre un temps neural de 11.315339 s contre 0.450713 s en
+classique, alors même que le mode neural effectue moins d'itérations et ajoute moins de colonnes :
+la réduction du travail de génération de colonnes ne se traduit pas en gain mur-à-mur.
+
+Les figures finales sont générées uniquement depuis les exécutions brutes validées, regroupées selon
+le `target_size_class` figé du manifeste :
+
+![Runtime comparison](results/runtime_comparison.png)
+![Speedup by size](results/speedup_by_size.png)
+
+### Réponse à l'hypothèse de recherche
+
+**Sur ce gel expérimental, la réponse mesurée est négative** : la qualité comparable est acquise,
+mais la réduction significative du temps mur-à-mur — attendue surtout sur les instances les plus
+difficiles — n'est observée nulle part au-dessus de la frontière d'entraînement. Ce verdict porte
+sur le candidat évalué : les poids de `linear-scorer-v1-zero-weight` sont nuls, le classement se
+réduit à conserver le premier candidat du pool, et le corpus Phase 3 ne contenant aucun motif
+sélectionné, aucun signal supervisé n'était disponible pour entraîner un classement réel. Les
+mesures quantifient donc le surcoût end-to-end de l'architecture de sélection bornée ; elles ne
+démontrent pas qu'aucune politique apprise ne peut accélérer la boucle.
+
+### Limites
+
+1. Candidat non entraîné (poids nuls, budget 1) : le résultat négatif vaut pour cet artefact, pas
+   pour tout apprentissage.
+2. Échelle modeste : objectifs de 5 à 39 barres, temps classiques médians de 0.016449 s à
+   0.450713 s ; aucune extrapolation aux instances où la génération de colonnes prend des minutes.
+3. Environnement matériel unique tracé : seules les comparaisons appariées intra-campagne sont
+   interprétables, les durées absolues ne sont pas transférables.
+4. Incertitude estimée sur trois répétitions avec approximation normale.
+5. Garantie entière limitée aux colonnes générées (`optimal_over_generated_columns_only`), sans
+   branch-and-price.
+6. Kerf non exercé par la campagne finale (toutes instances à 0.0), bien que modélisé et testé.
+7. Deux identifiants de commit tracés (écriture du gel vs exécution des campagnes) : toute
+   reproduction doit vérifier leur cohérence d'environnement avant d'interpréter les durées.
+
+La liste exhaustive des limites et les conditions de reproductibilité figurent dans
+[docs/conclusion.md](docs/conclusion.md).
+
 ## Organisation du dépôt
 
 ```text
@@ -279,8 +352,12 @@ neural-cutting-stock/
 ├── configs/                        # configurations versionnées des expériences
 ├── docs/
 │   ├── benchmark_protocol.md
+│   ├── conclusion.md               # conclusion scientifique finale de Phase 6
 │   └── formulation.md
-├── data/phase-3-corpus/             # trajectoires, manifeste et partitions validés
+├── data/
+│   ├── phase-3-corpus/             # trajectoires, manifeste et partitions validés
+│   └── phase-6-final/              # manifeste gelé des instances non vues
+├── models/                         # artefacts de modèle versionnés et hashés
 ├── results/                        # résultats et figures réellement mesurés
 ├── scripts/                        # points d’entrée fins, sans logique métier
 ├── src/neural_cutting_stock/

@@ -156,7 +156,7 @@ Objectif : répondre sans ambiguïté à la question de recherche sur des instan
 - [x] **P6.12** — Rédiger la conclusion scientifique, les limites et les conditions de reproductibilité.
 - [x] **P6.13** — Effectuer l'audit final et retirer code mort, doublons et artefacts temporaires inutiles.
 - [x] **P6.14** — Publier `results/phase-6-summary.md`, le manifeste final et les commandes de reproduction.
-- [ ] **P6.15** — Mettre à jour le README final avec résultats, figures, limites et réponse à l'hypothèse.
+- [x] **P6.15** — Mettre à jour le README final avec résultats, figures, limites et réponse à l'hypothèse.
 
 Critère de succès : Neural CG conserve une qualité comparable à Classical CG tout en réduisant
 significativement le temps mur-à-mur, avec un bénéfice particulièrement visible sur les instances
