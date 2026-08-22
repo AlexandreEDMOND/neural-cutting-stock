@@ -196,7 +196,7 @@ restent gagnables avant de chercher à les gagner.
 - [x] **P7.02** — Implémenter l'énumération exhaustive des motifs maximaux pour instances bornées (types et demandes petits) avec génération paresseuse et garde-fou mémoire.
 - [x] **P7.03** — Résoudre le maître entier complet par MILP sur motifs énumérés via `scipy.optimize.milp` (HiGHS déjà présent) ; statut et preuve persistés dans `exact-reference-v1`.
 - [x] **P7.04** — Vérifier indépendamment chaque référence exacte : faisabilité du plan, cohérence borne LP ≤ optimum entier, contrôle croisé énumération/MILP sur un sous-échantillon.
-- [ ] **P7.05** — Calculer l'écart de la baseline classique (`optimal_over_generated_columns_only`) à la référence exacte sur tout le corpus existant et persister `results/exact-gap.*`.
+- [x] **P7.05** — Calculer l'écart de la baseline classique (`optimal_over_generated_columns_only`) à la référence exacte sur tout le corpus existant et persister `results/exact-gap.*`.
 - [ ] **P7.06** — Publier le bilan chiffré des écarts par famille et taille : où une marge de qualité existe réellement, où elle est nulle.
 - [ ] **P7.07** — Si la marge est quasi nulle partout, identifier dans le générateur déterministe les paramètres créant des trous entiers non triviaux (demandes peu divisibles, ratios tendus) et documenter ces leviers sans encore les activer.
 - [ ] **P7.08** — Tests de non-régression : la CG classique reste optimale LP et inchangée en objectif sur toutes les instances disposant d'une référence exacte.

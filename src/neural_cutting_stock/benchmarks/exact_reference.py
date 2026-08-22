@@ -230,7 +230,7 @@ def build_milp_exact_reference(
     return failed(outcome.message or f"complete master MILP stopped with status {outcome.status}")
 
 
-def compute_milp_exact_reference(
+def solve_milp_exact_reference(
     instance_id: str,
     instance: CuttingStockInstance,
     *,
@@ -238,13 +238,17 @@ def compute_milp_exact_reference(
     integrality_tolerance: float,
     feasibility_tolerance: float,
     limits: MaximalPatternLimits | None = None,
-) -> ExactReferenceRecord:
-    """Solve the complete master by MILP and persist its proof or failure.
+) -> tuple[CompleteMasterResult | None, ExactReferenceRecord]:
+    """Solve the complete master once and map its outcome onto its record.
 
-    Enumeration guards are captured as `failed` references so refused
-    instances stay visible in persisted data instead of disappearing.
+    The raw complete-master outcome is returned alongside the persisted
+    record so callers can verify the claim independently without re-solving.
+    Enumeration guards are captured as `failed` references with no outcome so
+    refused instances stay visible in persisted data instead of disappearing.
     """
 
+    if not instance_id.strip():
+        raise ValueError("instance_id must be a non-empty string")
     effective_limits = limits if limits is not None else MaximalPatternLimits()
     method_limits = (
         f"{MILP_METHOD_LIMITS_PREFIX}:max_search_space_size="
@@ -254,7 +258,7 @@ def compute_milp_exact_reference(
     try:
         outcome = CompleteIntegerMaster(instance, limits).solve()
     except PatternEnumerationLimitExceeded as error:
-        return ExactReferenceRecord(
+        return None, ExactReferenceRecord(
             instance_id=instance_id,
             reference_method=ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS,
             status=ExactReferenceStatus.FAILED,
@@ -264,7 +268,7 @@ def compute_milp_exact_reference(
             feasibility_tolerance=feasibility_tolerance,
             error_message=str(error),
         )
-    return build_milp_exact_reference(
+    return outcome, build_milp_exact_reference(
         instance_id,
         outcome,
         environment=environment,
@@ -272,6 +276,28 @@ def compute_milp_exact_reference(
         feasibility_tolerance=feasibility_tolerance,
         method_limits=method_limits,
     )
+
+
+def compute_milp_exact_reference(
+    instance_id: str,
+    instance: CuttingStockInstance,
+    *,
+    environment: EnvironmentMetadata,
+    integrality_tolerance: float,
+    feasibility_tolerance: float,
+    limits: MaximalPatternLimits | None = None,
+) -> ExactReferenceRecord:
+    """Solve the complete master by MILP and persist its proof or failure."""
+
+    _, record = solve_milp_exact_reference(
+        instance_id,
+        instance,
+        environment=environment,
+        integrality_tolerance=integrality_tolerance,
+        feasibility_tolerance=feasibility_tolerance,
+        limits=limits,
+    )
+    return record
 
 
 def _require_text(name: str, value: object) -> None:

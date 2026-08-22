@@ -19,3 +19,16 @@ Ces deux figures sont générées uniquement depuis les exécutions brutes valid
 [le protocole de benchmark](../docs/benchmark_protocol.md). Aucun graphique ou nombre factice ne
 doit être ajouté. La conclusion scientifique de la Phase 6 est publiée dans
 [`../docs/conclusion.md`](../docs/conclusion.md).
+
+## Référence exacte et écarts (Phase 7)
+
+L'écart de la baseline classique (`optimal_over_generated_columns_only`) aux références exactes
+vérifiées est persisté au schéma `exact-gap-v1` dans [`exact-gap.json`](exact-gap.json) et
+[`exact-gap.csv`](exact-gap.csv), avec les exclusions et diagnostics conservés. Le rapport ne
+contient aucune durée ; il se régénère depuis les corpus et campagnes persistés avec :
+
+```bash
+uv run python scripts/report_phase7_exact_gap.py
+```
+
+Le bilan chiffré par famille et taille reste à publier dans l'itération suivante.

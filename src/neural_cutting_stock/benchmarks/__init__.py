@@ -25,6 +25,12 @@ from .dataset import (
     build_dataset,
     load_phase3_dataset,
 )
+from .exact_gap import (
+    EXACT_GAP_SCHEMA_VERSION,
+    CorpusBaseline,
+    build_exact_gap_report,
+    write_exact_gap_csv,
+)
 from .exact_reference import (
     EXACT_REFERENCE_SCHEMA_VERSION,
     MILP_METHOD_LIMITS_PREFIX,
@@ -33,6 +39,7 @@ from .exact_reference import (
     ExactReferenceStatus,
     build_milp_exact_reference,
     compute_milp_exact_reference,
+    solve_milp_exact_reference,
 )
 from .exact_reference_verification import (
     ExactReferenceVerification,
@@ -123,6 +130,11 @@ __all__ = [
     "compute_milp_exact_reference",
     "ExactReferenceVerification",
     "verify_milp_exact_reference",
+    "solve_milp_exact_reference",
+    "EXACT_GAP_SCHEMA_VERSION",
+    "CorpusBaseline",
+    "build_exact_gap_report",
+    "write_exact_gap_csv",
     "BenchmarkRunRecord",
     "EnvironmentMetadata",
     "RunStatus",

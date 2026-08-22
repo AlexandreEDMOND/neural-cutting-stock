@@ -1,0 +1,744 @@
+{
+  "counts": {
+    "excluded_instance_count": 9,
+    "failed_reference_count": 0,
+    "gap_available_count": 16,
+    "instance_count": 16,
+    "lower_bound_only_reference_count": 0,
+    "optimal_reference_count": 16,
+    "positive_gap_count": 1,
+    "verification_failure_count": 0,
+    "zero_gap_count": 15
+  },
+  "cross_check_with_enumeration": false,
+  "environment": {
+    "code_commit": "5d05240fbbbaa7cb0ac5d4b8b220fe0261d0f0cd",
+    "dependency_versions": "numpy==2.4.6,scipy==1.17.1",
+    "hardware_id": "platform=macOS-26.4.1-arm64-arm-64bit;machine=arm64;processor=arm;cpu_count=10;threads=OMP_NUM_THREADS=unset,OPENBLAS_NUM_THREADS=unset,MKL_NUM_THREADS=unset",
+    "python_version": "3.11.15"
+  },
+  "excluded": [
+    {
+      "instance_id": "01687b09a674cfaf1f1d87b47614250293546dd3462e9a0e304d0d11736e93be",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "23c04540a76975fab315f7ca0d02a9ed95f1f55fe31bfee38e8c916f09782c47",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "380522a26071683958869d51658a9e5d4ab0014b903b88848c8385c863cc1be4",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "5794a38ecdeb809e07fcaba67125c3849d41389033eaaf672ff469feb8ad288f",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "69ca07fbf554679274e694ffeffa515fdcdb4f130215d27575c8041bb34629e6",
+      "reason": "no persisted classical baseline run",
+      "source": "data/phase-3-corpus/manifest.json"
+    },
+    {
+      "instance_id": "6ca13f3d72eca34ae78df7455fc1610ca61432eadf3eba844e175317ebe2d368",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "8cad6642164b676848a25fb3f8f60f7e4d18018cd8d577b434511f8775066467",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "d0fd6ac9c0af66644455327a59eb88359d8f61b66b8f0575202e22add6fdb2ee",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    },
+    {
+      "instance_id": "efe1010c4bcb99522f8b677768cc70ffc43f5c692ac37d6bcbabbc4509c15df0",
+      "reason": "instance data was never persisted; the exact reference cannot be bound to this baseline",
+      "source": "results/phase-2-baseline-profile.json"
+    }
+  ],
+  "feasibility_tolerance": 1e-09,
+  "instances": [
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        16.0
+      ],
+      "baseline_objective_bars_median": 16.0,
+      "baseline_optimal_run_count": 1,
+      "baseline_run_count": 1,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 1
+      },
+      "certified_lower_bound_bars": 16.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "0fd9968211d0856be24e2eb710d30ea0d121b8ce7060a0fe45fb72c32917f389",
+      "integer_optimum_bars": 16,
+      "kerf": 0.0,
+      "lp_bound_bars": 16.0,
+      "number_of_piece_types": 2,
+      "pattern_count": 2,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "results/phase-4-benchmark-runs.csv",
+      "stock_length": 100.0,
+      "total_demand": 16,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        27.0
+      ],
+      "baseline_objective_bars_median": 27.0,
+      "baseline_optimal_run_count": 1,
+      "baseline_run_count": 1,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 1
+      },
+      "certified_lower_bound_bars": 27.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "36719ab4e0c949b81feafb8c0f083cbdedd273246f8ee63338e3fed04d8c88bc",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "139c8f431ef38615737cb651076b3ef88e9780a2c891db925eae2ed33c1607a4",
+      "integer_optimum_bars": 27,
+      "kerf": 0.0,
+      "lp_bound_bars": 27.0,
+      "number_of_piece_types": 3,
+      "pattern_count": 3,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "results/phase-4-benchmark-runs.csv",
+      "stock_length": 100.0,
+      "total_demand": 27,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        23.0,
+        23.0,
+        23.0
+      ],
+      "baseline_objective_bars_median": 23.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 23.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "ecdaf63fdab485f4525ae4c3f6239db5fbf224d37475377f863478d7734f8ab7",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "2db8f04b0672b4e39578ab96c31e1989f5e93a806b484a143f83761c7a1f4c50",
+      "integer_optimum_bars": 23,
+      "kerf": 0.0,
+      "lp_bound_bars": 23.0,
+      "number_of_piece_types": 6,
+      "pattern_count": 7,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "LARGE",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 28,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        7.0,
+        7.0,
+        7.0
+      ],
+      "baseline_objective_bars_median": 7.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 7.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "2e8d6ecbaa342a376ff4bf4c2261c4dc9641091f94c4aebbb8364b9e2584f6af",
+      "integer_optimum_bars": 7,
+      "kerf": 0.0,
+      "lp_bound_bars": 7.0,
+      "number_of_piece_types": 2,
+      "pattern_count": 2,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 12,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "baseline_objective_bars_median": 30.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 30.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "ecdaf63fdab485f4525ae4c3f6239db5fbf224d37475377f863478d7734f8ab7",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "35714b99e7af814094a2bd53d0a82a4c33fb1c3bcdedddf861740c744140d125",
+      "integer_optimum_bars": 30,
+      "kerf": 0.0,
+      "lp_bound_bars": 29.5,
+      "number_of_piece_types": 6,
+      "pattern_count": 6,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "LARGE",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 35,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        12.0,
+        12.0,
+        12.0
+      ],
+      "baseline_objective_bars_median": 12.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 12.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "3eb804881591494848f167ba7b26a2b9267a3ba54e1727e6932ff3b14cd58e50",
+      "integer_optimum_bars": 12,
+      "kerf": 0.0,
+      "lp_bound_bars": 12.0,
+      "number_of_piece_types": 2,
+      "pattern_count": 2,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 15,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        15.0
+      ],
+      "baseline_objective_bars_median": 15.0,
+      "baseline_optimal_run_count": 1,
+      "baseline_run_count": 1,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 1
+      },
+      "certified_lower_bound_bars": 15.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "36719ab4e0c949b81feafb8c0f083cbdedd273246f8ee63338e3fed04d8c88bc",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "50a7b7eebb982f5cc8543118d4d0302afc8475cdc92c7f883e67a8e6f4446da4",
+      "integer_optimum_bars": 15,
+      "kerf": 0.0,
+      "lp_bound_bars": 14.5,
+      "number_of_piece_types": 3,
+      "pattern_count": 3,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "results/phase-4-benchmark-runs.csv",
+      "stock_length": 100.0,
+      "total_demand": 16,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        23.0,
+        23.0,
+        23.0
+      ],
+      "baseline_objective_bars_median": 23.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 23.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "268daf05c1f28c536573f20bbd06c4dba4453728268e5cb8190679b0eaaea3e4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "5d7cde942f6f9a9811561fb1c16bb97f0f197f7fd567dcb7f41c33103c0406a0",
+      "integer_optimum_bars": 23,
+      "kerf": 0.0,
+      "lp_bound_bars": 22.5,
+      "number_of_piece_types": 8,
+      "pattern_count": 11,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "XL",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 30,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        39.0,
+        39.0,
+        39.0
+      ],
+      "baseline_objective_bars_median": 39.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 39.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "268daf05c1f28c536573f20bbd06c4dba4453728268e5cb8190679b0eaaea3e4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "6a97075552eaa33fc90b205108ea38eed24df5e00e18099237a5924d12beab13",
+      "integer_optimum_bars": 39,
+      "kerf": 0.0,
+      "lp_bound_bars": 39.0,
+      "number_of_piece_types": 8,
+      "pattern_count": 9,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "XL",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 50,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        15.0,
+        15.0,
+        15.0
+      ],
+      "baseline_objective_bars_median": 15.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 15.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "a0828ac52b3d58f01bfdadbd2eee43a27a4dc2fb83b298eb885be71d25ab31a2",
+      "integer_optimum_bars": 15,
+      "kerf": 0.0,
+      "lp_bound_bars": 15.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 4,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "MEDIUM",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 20,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        14.0,
+        14.0,
+        14.0
+      ],
+      "baseline_objective_bars_median": 14.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 14.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "b09c9bbfd876bc77c5440191ebfb1a02f5aa41b774b446ae71d1f3ca862891e9",
+      "integer_optimum_bars": 14,
+      "kerf": 0.0,
+      "lp_bound_bars": 14.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 12,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "MEDIUM",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 29,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        24.0,
+        24.0,
+        24.0
+      ],
+      "baseline_objective_bars_median": 24.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 24.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "268daf05c1f28c536573f20bbd06c4dba4453728268e5cb8190679b0eaaea3e4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "b7dc915107b5020410fb5597772f3b4a18c1dc4ded8e114a35d3dc5e895e96cc",
+      "integer_optimum_bars": 24,
+      "kerf": 0.0,
+      "lp_bound_bars": 23.88888888888889,
+      "number_of_piece_types": 8,
+      "pattern_count": 29,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "XL",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 48,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        20.0,
+        20.0,
+        20.0
+      ],
+      "baseline_objective_bars_median": 20.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 19.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "ecdaf63fdab485f4525ae4c3f6239db5fbf224d37475377f863478d7734f8ab7",
+      "gap_available": true,
+      "gap_bars_median": 1.0,
+      "gap_bars_per_repetition": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "d71a500910a2039d84f38704af75d2036160060c50841a11b3d98be280d6f7fd",
+      "integer_optimum_bars": 19,
+      "kerf": 0.0,
+      "lp_bound_bars": 19.0,
+      "number_of_piece_types": 6,
+      "pattern_count": 24,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "LARGE",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 44,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": false
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        13.0,
+        13.0,
+        13.0
+      ],
+      "baseline_objective_bars_median": 13.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 13.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "0f4bb00c8bfe51bb842bd1aa894506947fff316fcb5774d9f427f4271e0f76eb",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "d98437a9e4d1ee8f330f95435351e503b39e6dc899a005394a24ce46ef0bfc7d",
+      "integer_optimum_bars": 13,
+      "kerf": 0.0,
+      "lp_bound_bars": 13.0,
+      "number_of_piece_types": 4,
+      "pattern_count": 4,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "MEDIUM",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 19,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        12.0
+      ],
+      "baseline_objective_bars_median": 12.0,
+      "baseline_optimal_run_count": 1,
+      "baseline_run_count": 1,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 1
+      },
+      "certified_lower_bound_bars": 12.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "dcb4ba00544ee1aa548605d2e6987cab2d744fbc5d3ec6a99fa3d01c61f74709",
+      "integer_optimum_bars": 12,
+      "kerf": 0.0,
+      "lp_bound_bars": 12.0,
+      "number_of_piece_types": 2,
+      "pattern_count": 2,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "results/phase-4-benchmark-runs.csv",
+      "stock_length": 100.0,
+      "total_demand": 15,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    },
+    {
+      "baseline_missing_objective_run_ids": [],
+      "baseline_non_optimal_run_ids": [],
+      "baseline_objective_bars": [
+        5.0,
+        5.0,
+        5.0
+      ],
+      "baseline_objective_bars_median": 5.0,
+      "baseline_optimal_run_count": 3,
+      "baseline_run_count": 3,
+      "baseline_status_counts": {
+        "optimal_lp_restricted_ip": 3
+      },
+      "certified_lower_bound_bars": 5.0,
+      "exhaustive_optimum_bars": null,
+      "family_id": "96bc46475a90fe1a58d8bde47415fa85dbc22bc83992b8892a2c6ba91e1e09b4",
+      "gap_available": true,
+      "gap_bars_median": 0.0,
+      "gap_bars_per_repetition": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gap_unavailable_reason": null,
+      "instance_id": "e89f36850422c2316a18c0e5c220f81c1d6ab1fbeb7c500622d6d755ac5409b2",
+      "integer_optimum_bars": 5,
+      "kerf": 0.0,
+      "lp_bound_bars": 5.0,
+      "number_of_piece_types": 2,
+      "pattern_count": 2,
+      "reference_error_message": null,
+      "reference_method": "milp_on_enumerated_patterns",
+      "reference_method_limits": "maximal_patterns:max_search_space_size=10000000,max_patterns=100000",
+      "reference_status": "optimal",
+      "size_class": "SMALL",
+      "source": "data/phase-6-final/manifest.json",
+      "stock_length": 100.0,
+      "total_demand": 9,
+      "verification_errors": [],
+      "verification_passed": true,
+      "zero_gap": true
+    }
+  ],
+  "integrality_tolerance": 1e-09,
+  "schema_version": "exact-gap-v1"
+}
