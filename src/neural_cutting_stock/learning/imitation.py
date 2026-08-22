@@ -45,22 +45,17 @@ except ImportError:  # pragma: no cover - exercised only without the extra
 
 from .features import _summary
 from .quality_agent import QualityAgentInput, QualityAgentProposal
-from .reproducibility import TrainingCurvePoint, TrainingCurves, set_reproducible_seed
+from .reproducibility import (
+    TrainingCurvePoint,
+    TrainingCurves,
+    _require_torch,
+    set_reproducible_seed,
+)
 
 IMITATION_BASELINE_SCHEMA_VERSION = "quality-imitation-baseline-v1"
 DEFAULT_EPOCHS = 3000
 DEFAULT_LEARNING_RATE = 0.01
 DEFAULT_HIDDEN_WIDTH = 32
-
-_IMITATION_TORCH_HINT = (
-    "PyTorch is required for the imitation baseline; install the versioned "
-    "'learning' extra (for example: uv sync --extra dev --extra learning)"
-)
-
-
-def _require_torch() -> None:
-    if torch is None:
-        raise RuntimeError(_IMITATION_TORCH_HINT)
 
 
 @dataclass(frozen=True, slots=True)
@@ -196,14 +191,6 @@ def enumerated_candidates(
     if view.piece_lengths != observation.piece_lengths or view.demands != observation.demands:
         raise ValueError("observation must be normalized before enumerating candidates")
     return tuple(iter_maximal_patterns(view, pattern_limits))
-
-
-def imitation_candidate_features(
-    observation: QualityAgentInput, pattern: tuple[int, ...]
-) -> tuple[float, ...]:
-    """Build the fixed-width feature vector for one candidate column."""
-
-    return imitation_candidate_features_batch(observation, (pattern,))[0]
 
 
 def imitation_candidate_features_batch(
@@ -450,7 +437,6 @@ __all__ = [
     "ImitationQualityAgent",
     "collect_exact_choice_demonstrations",
     "enumerated_candidates",
-    "imitation_candidate_features",
     "imitation_candidate_features_batch",
     "train_imitation_policy",
 ]

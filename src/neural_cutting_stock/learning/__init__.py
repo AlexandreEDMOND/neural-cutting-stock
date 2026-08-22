@@ -21,7 +21,6 @@ from .imitation import (
     ImitationQualityAgent,
     collect_exact_choice_demonstrations,
     enumerated_candidates,
-    imitation_candidate_features,
     imitation_candidate_features_batch,
     train_imitation_policy,
 )
@@ -192,7 +191,6 @@ __all__ = [
     "deterministic_candidate_pool",
     "collect_exact_choice_demonstrations",
     "enumerated_candidates",
-    "imitation_candidate_features",
     "imitation_candidate_features_batch",
     "train_imitation_policy",
     "TRAINING_ARTIFACT_SCHEMA_VERSION",

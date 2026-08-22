@@ -236,7 +236,7 @@ le vérificateur dispose.
 - [x] **P9.07** — Garde-fous de publication : toute solution finale vérifiée indépendamment, statuts honnêtes (amélioré/égal/dégradé), échecs conservés.
 - [x] **P9.08** — Évaluation offline sur partition de validation : gain moyen de barres vs baseline classique, par famille et taille.
 - [x] **P9.09** — Ablations obligatoires : recherche aléatoire et gloutonne à budget égal, pour prouver l'apport propre de l'apprentissage.
-- [ ] **P9.10** — Nettoyage du code de la phase.
+- [x] **P9.10** — Nettoyage du code de la phase.
 - [ ] **P9.11** — Publication du bilan de phase, mise à jour du README et validation de la phase 9.
 
 ## Phase 10 — Évaluation finale qualité et réponse

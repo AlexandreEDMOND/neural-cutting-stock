@@ -39,7 +39,12 @@ except ImportError:  # pragma: no cover - exercised only without the extra
 from .imitation import enumerated_candidates, imitation_candidate_features_batch
 from .quality_agent import QualityAgentInput, QualityAgentProposal
 from .quality_env import QualityRefinementEnv
-from .reproducibility import TrainingCurvePoint, TrainingCurves, set_reproducible_seed
+from .reproducibility import (
+    TrainingCurvePoint,
+    TrainingCurves,
+    _require_torch,
+    set_reproducible_seed,
+)
 
 QUALITY_RL_POLICY_SCHEMA_VERSION = "quality-rl-policy-v1"
 TRAINING_JOURNAL_SCHEMA_VERSION = "phase-9-training-journal-v1"
@@ -52,11 +57,6 @@ DEFAULT_BASELINE_MOMENTUM = 0.8
 
 _MIN_RATE = 1e-6
 _ADVANTAGE_EPSILON = 1e-8
-
-_TORCH_HINT = (
-    "PyTorch is required for deep RL training; install the versioned 'learning' "
-    "extra (for example: uv sync --extra dev --extra learning)"
-)
 
 ALGORITHM_DOCUMENTATION: Mapping[str, str] = {
     "identifier": ALGORITHM_IDENTIFIER,
@@ -78,11 +78,6 @@ ALGORITHM_DOCUMENTATION: Mapping[str, str] = {
     "baseline": "exponential running mean of episode returns, tracked per instance",
     "optimizer": "Adam",
 }
-
-
-def _require_torch() -> None:
-    if torch is None:
-        raise RuntimeError(_TORCH_HINT)
 
 
 class QualityPolicyNetwork(nn.Module):
@@ -229,8 +224,9 @@ def train_quality_rl_policy(
 
     ordered_ids = sorted(instances)
     starting_points: dict[str, tuple[AnyCuttingStockInstance, tuple, tuple]] = {}
+    observations: dict[str, QualityAgentInput] = {}
     bases: dict[str, tuple[tuple[int, ...], ...]] = {}
-    caps: dict[str, list[float]] = {}
+    caps: dict[str, list[int]] = {}
     for instance_id in ordered_ids:
         instance = instances[instance_id]
         cg_result = ColumnGeneration(instance, instance_id=instance_id).solve()
@@ -262,6 +258,7 @@ def train_quality_rl_policy(
             solution_patterns=cg_result.patterns,
             solution_column_values=integer_master.column_values,
         )
+        observations[instance_id] = observation
         basis = enumerated_candidates(observation, pattern_limits)
         if not basis:
             raise ValueError(f"{instance_id} enumerates an empty maximal-pattern basis")
@@ -269,17 +266,7 @@ def train_quality_rl_policy(
         caps[instance_id] = _candidate_caps(observation, basis)
 
     first_rows = imitation_candidate_features_batch(
-        QualityAgentInput(
-            instance_id=ordered_ids[0],
-            stock_length=instances[ordered_ids[0]].stock_length,
-            kerf=instances[ordered_ids[0]].kerf,
-            piece_lengths=instances[ordered_ids[0]].piece_lengths,
-            demands=instances[ordered_ids[0]].demands,
-            column_pool=starting_points[ordered_ids[0]][1],
-            solution_patterns=starting_points[ordered_ids[0]][1],
-            solution_column_values=starting_points[ordered_ids[0]][2],
-        ),
-        bases[ordered_ids[0]],
+        observations[ordered_ids[0]], bases[ordered_ids[0]]
     )
     feature_width = len(first_rows[0])
 

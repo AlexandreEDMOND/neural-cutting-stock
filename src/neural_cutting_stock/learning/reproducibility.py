@@ -117,9 +117,6 @@ class TrainingCurves:
     def from_points(cls, points: Iterable[TrainingCurvePoint]) -> "TrainingCurves":
         return cls(tuple(points))
 
-    def extended(self, step: int, metrics: Mapping[str, float]) -> "TrainingCurves":
-        return TrainingCurves(self.points + (TrainingCurvePoint(step, dict(metrics)),))
-
     def to_payload(self) -> dict[str, Any]:
         return {
             "schema_version": TRAINING_CURVES_SCHEMA_VERSION,

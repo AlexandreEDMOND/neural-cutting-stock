@@ -86,17 +86,20 @@ def test_training_curves_require_strictly_increasing_steps() -> None:
             TrainingCurvePoint(2, {"loss": 0.5}),
         )
     )
-    extended = curves.extended(5, {"loss": 0.25})
 
-    assert len(extended.points) == 3
-    assert extended.points[-1].metrics == {"loss": 0.25}
-    with pytest.raises(ValueError):
-        curves.extended(1, {"loss": 0.9})
+    assert curves.points[-1].metrics == {"loss": 0.5}
     with pytest.raises(ValueError):
         TrainingCurves(
             (
                 TrainingCurvePoint(0, {"loss": 1.0}),
                 TrainingCurvePoint(0, {"loss": 1.0}),
+            )
+        )
+    with pytest.raises(ValueError):
+        TrainingCurves(
+            (
+                TrainingCurvePoint(2, {"loss": 1.0}),
+                TrainingCurvePoint(1, {"loss": 1.0}),
             )
         )
 
