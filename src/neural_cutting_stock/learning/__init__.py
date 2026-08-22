@@ -23,6 +23,12 @@ from .quality_agent import (
     QualityAgentProposal,
     verify_proposal,
 )
+from .quality_env import (
+    DEFAULT_INVALID_PLAN_PENALTY,
+    QUALITY_REFINEMENT_ENV_SCHEMA_VERSION,
+    QualityRefinementEnv,
+    RefinementStep,
+)
 from .training import (
     TRAINING_ARTIFACT_SCHEMA_VERSION,
     load_training_artifact,
@@ -33,6 +39,7 @@ from .training import (
 __all__ = [
     "LEARNING_INTERFACE_SCHEMA_VERSION",
     "QUALITY_AGENT_INTERFACE_SCHEMA_VERSION",
+    "QUALITY_REFINEMENT_ENV_SCHEMA_VERSION",
     "ColumnSelectionDecision",
     "ColumnSelectionPolicy",
     "ColumnScoringModel",
@@ -43,6 +50,9 @@ __all__ = [
     "QualityAgent",
     "QualityAgentInput",
     "QualityAgentProposal",
+    "QualityRefinementEnv",
+    "RefinementStep",
+    "DEFAULT_INVALID_PLAN_PENALTY",
     "FEATURE_SCHEMA_VERSION",
     "pricing_features",
     "pricing_features_batch",
