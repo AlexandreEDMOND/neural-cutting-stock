@@ -27,9 +27,12 @@ from .dataset import (
 )
 from .exact_reference import (
     EXACT_REFERENCE_SCHEMA_VERSION,
+    MILP_METHOD_LIMITS_PREFIX,
     ExactReferenceMethod,
     ExactReferenceRecord,
     ExactReferenceStatus,
+    build_milp_exact_reference,
+    compute_milp_exact_reference,
 )
 from .failures import FAILURE_ANALYSIS_SCHEMA_VERSION, analyze_campaign_failures
 from .final_baseline import (
@@ -108,9 +111,12 @@ from .uncertainty import (
 __all__ = [
     "SCHEMA_VERSION",
     "EXACT_REFERENCE_SCHEMA_VERSION",
+    "MILP_METHOD_LIMITS_PREFIX",
     "ExactReferenceMethod",
     "ExactReferenceRecord",
     "ExactReferenceStatus",
+    "build_milp_exact_reference",
+    "compute_milp_exact_reference",
     "BenchmarkRunRecord",
     "EnvironmentMetadata",
     "RunStatus",

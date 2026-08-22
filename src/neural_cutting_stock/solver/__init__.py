@@ -1,6 +1,7 @@
 """Classical column-generation components and orchestration."""
 
 from .column_generation import ColumnGeneration, ColumnGenerationResult
+from .complete_master import CompleteIntegerMaster, CompleteMasterResult
 from .integer_master import IntegerMasterResult, IntegerRestrictedMasterProblem
 from .maximal_patterns import (
     MaximalPatternLimits,
@@ -14,6 +15,8 @@ from .verification import PlanVerification, verify_plan
 __all__ = [
     "ColumnGeneration",
     "ColumnGenerationResult",
+    "CompleteIntegerMaster",
+    "CompleteMasterResult",
     "IntegerMasterResult",
     "IntegerRestrictedMasterProblem",
     "MaximalPatternLimits",

@@ -5,9 +5,21 @@ from dataclasses import dataclass, fields
 from enum import StrEnum
 from typing import Any
 
+from neural_cutting_stock.problem import CuttingStockInstance
+from neural_cutting_stock.solver.complete_master import (
+    CompleteIntegerMaster,
+    CompleteMasterResult,
+)
+from neural_cutting_stock.solver.maximal_patterns import (
+    MaximalPatternLimits,
+    PatternEnumerationLimitExceeded,
+)
+
 from .schema import EnvironmentMetadata
 
 EXACT_REFERENCE_SCHEMA_VERSION = "exact-reference-v1"
+
+MILP_METHOD_LIMITS_PREFIX = "maximal_patterns"
 
 
 class ExactReferenceMethod(StrEnum):
@@ -144,6 +156,122 @@ class ExactReferenceRecord:
             **record_fields,
             environment=EnvironmentMetadata(**environment_fields),
         )
+
+
+def build_milp_exact_reference(
+    instance_id: str,
+    outcome: CompleteMasterResult,
+    *,
+    environment: EnvironmentMetadata,
+    integrality_tolerance: float,
+    feasibility_tolerance: float,
+    method_limits: str,
+) -> ExactReferenceRecord:
+    """Map a complete-master MILP outcome onto an `exact-reference-v1` record.
+
+    A proven optimum carries the integer objective together with HiGHS'
+    dual bound, clamped to the proven optimum so numeric noise never lifts
+    the bound above it. A solver limit keeps its certified dual bound as a
+    `lower_bound_only` reference. Every other outcome persists as `failed`
+    with its diagnosis and without numerical claims.
+    """
+
+    def failed(message: str) -> ExactReferenceRecord:
+        return ExactReferenceRecord(
+            instance_id=instance_id,
+            reference_method=ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS,
+            status=ExactReferenceStatus.FAILED,
+            method_limits=method_limits,
+            environment=environment,
+            integrality_tolerance=integrality_tolerance,
+            feasibility_tolerance=feasibility_tolerance,
+            error_message=message,
+        )
+
+    if not instance_id.strip():
+        raise ValueError("instance_id must be a non-empty string")
+
+    if outcome.status == 0:
+        if outcome.objective_value is None:
+            return failed("optimal termination reported no objective value")
+        bars = round(outcome.objective_value)
+        if abs(outcome.objective_value - bars) > integrality_tolerance or bars < 1:
+            return failed("objective_value is not a positive integer within integrality_tolerance")
+        if outcome.certified_lower_bound is None:
+            return failed("optimal termination reported no certified lower bound")
+        return ExactReferenceRecord(
+            instance_id=instance_id,
+            reference_method=ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS,
+            status=ExactReferenceStatus.OPTIMAL,
+            method_limits=method_limits,
+            environment=environment,
+            integrality_tolerance=integrality_tolerance,
+            feasibility_tolerance=feasibility_tolerance,
+            integer_optimum_bars=bars,
+            certified_lower_bound_bars=min(outcome.certified_lower_bound, float(bars)),
+        )
+
+    if (
+        outcome.status == 1
+        and outcome.certified_lower_bound is not None
+        and outcome.certified_lower_bound > 0
+    ):
+        return ExactReferenceRecord(
+            instance_id=instance_id,
+            reference_method=ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS,
+            status=ExactReferenceStatus.LOWER_BOUND_ONLY,
+            method_limits=method_limits,
+            environment=environment,
+            integrality_tolerance=integrality_tolerance,
+            feasibility_tolerance=feasibility_tolerance,
+            certified_lower_bound_bars=outcome.certified_lower_bound,
+        )
+
+    return failed(outcome.message or f"complete master MILP stopped with status {outcome.status}")
+
+
+def compute_milp_exact_reference(
+    instance_id: str,
+    instance: CuttingStockInstance,
+    *,
+    environment: EnvironmentMetadata,
+    integrality_tolerance: float,
+    feasibility_tolerance: float,
+    limits: MaximalPatternLimits | None = None,
+) -> ExactReferenceRecord:
+    """Solve the complete master by MILP and persist its proof or failure.
+
+    Enumeration guards are captured as `failed` references so refused
+    instances stay visible in persisted data instead of disappearing.
+    """
+
+    effective_limits = limits if limits is not None else MaximalPatternLimits()
+    method_limits = (
+        f"{MILP_METHOD_LIMITS_PREFIX}:max_search_space_size="
+        f"{effective_limits.max_search_space_size},max_patterns="
+        f"{effective_limits.max_patterns}"
+    )
+    try:
+        outcome = CompleteIntegerMaster(instance, limits).solve()
+    except PatternEnumerationLimitExceeded as error:
+        return ExactReferenceRecord(
+            instance_id=instance_id,
+            reference_method=ExactReferenceMethod.MILP_ON_ENUMERATED_PATTERNS,
+            status=ExactReferenceStatus.FAILED,
+            method_limits=method_limits,
+            environment=environment,
+            integrality_tolerance=integrality_tolerance,
+            feasibility_tolerance=feasibility_tolerance,
+            error_message=str(error),
+        )
+    return build_milp_exact_reference(
+        instance_id,
+        outcome,
+        environment=environment,
+        integrality_tolerance=integrality_tolerance,
+        feasibility_tolerance=feasibility_tolerance,
+        method_limits=method_limits,
+    )
 
 
 def _require_text(name: str, value: object) -> None:

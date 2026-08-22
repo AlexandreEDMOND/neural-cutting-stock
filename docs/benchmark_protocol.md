@@ -230,3 +230,15 @@ certifiée associée.
   recomposée à la volée ne peut se substituer à une référence enregistrée. Un optimum entier issu
   d’un maître restreint reste qualifié `optimal_over_generated_columns_only` et n’est jamais
   confondu avec cette référence.
+
+### Production par MILP sur motifs énumérés (`milp_on_enumerated_patterns`)
+
+La méthode `milp_on_enumerated_patterns` résout le maître entier complet par `scipy.optimize.milp`
+(HiGHS) sur l’ensemble des motifs maximaux énumérés exhaustivement, avec les garde-fous mémoire
+déclarés. Tout plan du maître complet s’étend barre par barre en un plan sur motifs maximaux de
+même nombre de barres ; l’optimum du MILP restreint aux motifs maximaux est donc l’optimum entier
+du maître complet. HiGHS est exécuté avec un écart relatif nul ; sa borne dual de branch-and-bound
+est persistée comme `certified_lower_bound_bars`, ramenée sous l’optimum prouvé pour absorber le
+bruit numérique. Une limite du solveur produit un statut `lower_bound_only` portant cette borne ;
+un garde-fou d’énumération dépassé ou toute autre issue produit un statut `failed` persisté sans
+valeur numérique. L’optimum entier du plan retourné reste vérifiable indépendamment avant usage.
